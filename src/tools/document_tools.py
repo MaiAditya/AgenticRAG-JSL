@@ -66,9 +66,14 @@ class DocumentAnalysisTool(BaseTool):
             table_extractor = TableExtractor()
             result = await table_extractor.extract(image)
             
-            if result and "tables" in result:
-                logger.info("Successfully extracted tables from page")
-                return result["tables"]
+            if result and "table_data" in result and result["table_data"]:
+                logger.info(f"Successfully extracted {len(result['table_data'])} table rows")
+                return [{
+                    "cells": result["table_data"],
+                    "structure": result["table_data"],
+                    "num_rows": len(result["table_data"]),
+                    "num_cols": len(result["table_data"][0]) if result["table_data"] else 0
+                }]
             return []
             
         except Exception as e:
@@ -112,35 +117,52 @@ class StructureDetectionTool(BaseTool):
     name = "structure_detection"
     description = "Detect and classify document structural elements"
 
-    def _run(self, document: Any) -> Dict[str, Any]:
+    def _run(self, file_path: str) -> Dict[str, Any]:
         try:
-            # Extract text content from the page
-            if hasattr(document, 'get_text'):
-                text_content = document.get_text()
-            else:
-                text_content = str(document)
-
-            # Basic structure detection
-            structure = {
-                "type": "page",
-                "content": text_content,
-                "components": [
-                    {
+            import fitz  # PyMuPDF
+            
+            doc = fitz.open(file_path)
+            total_pages = len(doc)
+            processed_pages = 0
+            components = []
+            
+            for page in doc:
+                text_content = page.get_text()
+                if text_content.strip():
+                    components.append({
                         "type": "text",
                         "content": text_content
-                    }
-                ]
+                    })
+                
+                # Get images if any
+                image_list = page.get_images()
+                for img in image_list:
+                    components.append({
+                        "type": "image",
+                        "location": img,
+                        "image": page.get_pixmap()
+                    })
+                
+                processed_pages += 1
+            
+            return {
+                "type": "document",
+                "total_pages": total_pages,
+                "processed_pages": processed_pages,
+                "components": components
             }
-            return structure
+            
         except Exception as e:
             logger.error(f"Error in structure detection: {str(e)}")
             return {
                 "type": "error",
                 "error": str(e)
             }
+    async def _arun(self, file_path: str) -> Dict[str, Any]:
+        return self._run(file_path)
 
-    async def _arun(self, document: Any) -> Dict[str, Any]:
-        return self._run(document)
+    async def analyze(self, file_path: str) -> Dict[str, Any]:
+        return await self._arun(file_path)
 
 class ContentExtractionTool(BaseTool):
     name = "content_extraction"
@@ -151,7 +173,13 @@ class ContentExtractionTool(BaseTool):
         self.extractors = extractors
 
     async def _arun(self, content_type: str, content: Any) -> Dict[str, Any]:
-        extractor = self.extractors.get(content_type)
-        if not extractor:
-            raise ValueError(f"No extractor found for content type: {content_type}")
-        return await extractor.extract(content) 
+        try:
+            extractor = self.extractors.get(content_type)
+            if not extractor:
+                raise ValueError(f"No extractor found for content type: {content_type}")
+            
+            # Only pass the content argument to extract()
+            return await extractor.extract(content)
+        except Exception as e:
+            logger.error(f"Error extracting component: {str(e)}")
+            return {"error": str(e)} 

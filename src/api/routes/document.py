@@ -5,7 +5,7 @@ from src.extractors import TextExtractor, ImageExtractor, TableExtractor
 from src.core.dependencies import get_vector_store, get_document_cache
 from src.processors.parallel_processor import ParallelDocumentProcessor
 from src.core.error_handling import ProcessingError
-from src.core.initialization import get_extractors
+from src.core.initialization import get_extractors, get_tools
 from src.vectorstore.chroma_store import ChromaStore
 from src.core.cache import DocumentCache
 import aiofiles
@@ -39,14 +39,9 @@ async def upload_document(
         file_path = await save_upload_file(file)
         logger.debug(f"File saved to: {file_path}")
         
-        # Get singleton extractors
+        # Get singleton instances
         extractors = get_extractors()
-        
-        # Initialize tools
-        tools = [
-            DocumentAnalysisTool(),
-            StructureDetectionTool()
-        ]
+        tools = get_tools()
         
         # Initialize coordinator agent
         coordinator = CoordinatorAgent(
@@ -60,6 +55,9 @@ async def upload_document(
         result = await coordinator.process_document(file_path)
         return result
         
+    except ProcessingError as e:
+        logger.error(f"Processing error: {str(e)}")
+        raise HTTPException(status_code=422, detail=str(e))
     except Exception as e:
         logger.error(f"Error processing document upload: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

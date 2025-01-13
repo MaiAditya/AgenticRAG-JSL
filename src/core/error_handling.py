@@ -2,6 +2,7 @@ from loguru import logger
 from typing import Any, Callable
 from functools import wraps
 from fastapi import FastAPI
+import os
 
 def handle_extraction_error(func: Callable) -> Callable:
     @wraps(func)
@@ -17,10 +18,18 @@ class ExtractionError(Exception):
     pass
 
 class ProcessingError(Exception):
-    pass
+    """Custom exception for document processing errors"""
+    def __init__(self, message: str, details: dict = None):
+        self.message = message
+        self.details = details or {}
+        super().__init__(self.message)
 
 def setup_error_handling(app: FastAPI):
-    # Setup logging
+    # Create logs directory if it doesn't exist
+    os.makedirs("logs/images", exist_ok=True)
+    os.makedirs("logs/tables", exist_ok=True)
+    
+    # Setup logging configurations
     logger.add(
         "logs/error.log",
         rotation="500 MB",
@@ -34,16 +43,23 @@ def setup_error_handling(app: FastAPI):
         "logs/info.log",
         rotation="500 MB",
         retention="10 days",
-        level="INFO",
-        filter=lambda record: record["level"].name == "INFO"
+        level="INFO"
     )
     
     logger.add(
-        "logs/debug.log",
+        "logs/images/extractions.log",
         rotation="500 MB",
         retention="10 days",
-        level="DEBUG",
-        filter=lambda record: record["level"].name == "DEBUG"
+        level="INFO",
+        filter=lambda record: "image_extraction" in record["extra"]
+    )
+    
+    logger.add(
+        "logs/tables/extractions.log",
+        rotation="500 MB",
+        retention="10 days",
+        level="INFO",
+        filter=lambda record: "table_extraction" in record["extra"]
     )
     
     # Add exception handlers

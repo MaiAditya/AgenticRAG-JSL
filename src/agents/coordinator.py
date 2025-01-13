@@ -11,6 +11,11 @@ from src.vectorstore.chroma_store import ChromaStore
 from src.core.cache import DocumentCache
 from src.core.types import DocumentProcessor
 from src.processors.parallel_processor import ParallelDocumentProcessor
+from src.tools.document_tools import StructureDetectionTool, ContentExtractionTool
+from src.extractors.text_extractor import TextExtractor
+from src.extractors.table_extractor import TableExtractor
+from src.extractors.image_extractor import ImageExtractor
+from src.core.error_handling import ProcessingError
 
 class CoordinatorAgent(DocumentProcessor):
     def __init__(self, extractors: Dict[str, Any], tools: List[BaseTool], 
@@ -21,31 +26,60 @@ class CoordinatorAgent(DocumentProcessor):
         self.knowledge_integrator = KnowledgeIntegrationAgent(vector_store=vector_store)
         self.document_cache = document_cache
         self.parallel_processor = ParallelDocumentProcessor(self)
+        # Use extractors passed in instead of creating new instances
+        self.text_extractor = extractors.get('text')
+        self.table_extractor = extractors.get('table')
+        self.image_extractor = extractors.get('image')
         logger.info("Initializing CoordinatorAgent")
 
     async def process_document(self, file_path: str) -> Dict[str, Any]:
-        """Process a document using parallel processing"""
         try:
-            # Process document using parallel processor
-            results = await self.parallel_processor.process_document(file_path)
+            # Initialize results
+            results = []
             
-            # Cache the processed document
-            self.document_cache.add_document(file_path, results)
+            # Detect content type and structure
+            structure_tool = StructureDetectionTool()
+            document_structure = await structure_tool.analyze(file_path)
+            
+            for component in document_structure['components']:
+                try:
+                    if component['type'] == 'text':
+                        extracted = await self.text_extractor.extract(component['content'])
+                        results.append({
+                            'type': 'text',
+                            'content': component['content'],
+                            'extracted': extracted
+                        })
+                    elif component['type'] == 'table':
+                        extracted = await self.table_extractor.extract(component['image'])
+                        results.append({
+                            'type': 'table',
+                            'content': component['content'],
+                            'extracted': extracted
+                        })
+                    elif component['type'] == 'image':
+                        extracted = await self.image_extractor.extract(component['image'])
+                        if 'error' in extracted:
+                            logger.warning(f"Image extraction warning: {extracted['error']}")
+                            continue
+                        results.append({
+                            'type': 'image',
+                            'location': component['location'],
+                            'extracted': extracted
+                        })
+                except Exception as component_error:
+                    logger.error(f"Error processing component: {str(component_error)}")
+                    continue
             
             return {
-                "status": "success",
-                "message": "Document processed successfully",
-                "file_path": file_path,
-                "results": results
+                'success': True,
+                'processed_pages': document_structure['processed_pages'],
+                'results': results
             }
             
         except Exception as e:
-            logger.error(f"Error processing document {file_path}: {str(e)}")
-            return {
-                "status": "error",
-                "message": str(e),
-                "file_path": file_path
-            }
+            logger.error(f"Error in document processing: {str(e)}")
+            raise ProcessingError(f"Failed to process document: {str(e)}")
 
     async def process_page(self, page) -> Dict[str, Any]:
         """Process a single page of the document"""

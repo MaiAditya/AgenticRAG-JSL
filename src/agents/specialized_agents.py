@@ -1,9 +1,32 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from langchain.tools import BaseTool
 from loguru import logger
 from src.vectorstore.chroma_store import ChromaStore
 from langchain_openai import ChatOpenAI
 from src.core.config import settings
+from enum import Enum
+
+class SupportedFileTypes(Enum):
+    PDF = "pdf"
+    TXT = "txt"
+    DOC = "doc"
+    DOCX = "docx"
+    TEXT = "text"  # Add support for plain text content
+    UNKNOWN = "unknown"  # Default type for text content
+
+    @classmethod
+    def get_type(cls, content_or_path: str) -> str:
+        """Get file type from content or path"""
+        if not content_or_path:
+            return cls.UNKNOWN.value
+            
+        if isinstance(content_or_path, str) and '.' in content_or_path:
+            ext = content_or_path.split('.')[-1].lower()
+            try:
+                return cls(ext).value
+            except ValueError:
+                return cls.TEXT.value
+        return cls.TEXT.value
 
 class DocumentAnalysisAgent:
     def __init__(self, tools: List[BaseTool]):
@@ -95,6 +118,25 @@ class DocumentAnalysisAgent:
             
         return components if components else [{"type": "text", "content": analysis}]
 
+    def validate_file_type(self, file_path: str) -> Optional[str]:
+        file_extension = file_path.split('.')[-1].lower()
+        try:
+            return SupportedFileTypes(file_extension).value
+        except ValueError:
+            logger.error(f"Unsupported file type: {file_extension}")
+            return None
+            
+    async def extract_component(self, file_path: str, content: Any) -> Dict[str, Any]:
+        file_type = self.validate_file_type(file_path)
+        if not file_type:
+            raise ValueError(f"Unsupported file type for: {file_path}")
+            
+        extractor = self.extractors.get(file_type)
+        if not extractor:
+            raise ValueError(f"No extractor found for file type: {file_type}")
+            
+        return await extractor.extract(content)
+
 class ExtractionAgent:
     def __init__(self, extractors: Dict[str, Any]):
         self.extractors = extractors
@@ -103,20 +145,15 @@ class ExtractionAgent:
     async def extract_component(self, component: Dict[str, Any], page_text: str = None) -> Dict[str, Any]:
         """Extract content from a specific component"""
         try:
-            component_type = component.get("type", "text")  # Default to text type
+            component_type = component.get("type", "text")
             content = component.get("content", "")
             
-            # Map unknown types to text
-            if component_type not in self.extractors:
-                logger.warning(f"No extractor found for component type: {component_type}, defaulting to text")
-                component_type = "text"
-                
-            extractor = self.extractors.get(component_type)
+            # Always use text extractor for component extraction
+            extractor = self.extractors.get("text")
             if not extractor:
-                raise ValueError(f"No extractor found for component type: {component_type}")
+                raise ValueError("Text extractor not found")
             
-            # Pass both content and page_text to extractor if needed
-            result = await extractor.extract(content, page_text) if page_text else await extractor.extract(content)
+            result = await extractor.extract(content)
             return {
                 "type": component_type,
                 "content": content,
