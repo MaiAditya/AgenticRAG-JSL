@@ -1,6 +1,7 @@
-from langchain.prompts import PromptTemplate
+from typing import Dict, Any
 from langchain.chains import LLMChain
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
+from langchain.prompts import PromptTemplate
 from src.retrieval.hybrid_retriever import HybridRetriever
 
 class AdvancedRAGPipeline:
@@ -31,6 +32,14 @@ class AdvancedRAGPipeline:
         
         self.chain = LLMChain(llm=self.llm, prompt=self.cot_prompt)
 
+    def _extract_reasoning(self, response: str) -> list:
+        # Extract reasoning steps from response
+        steps = []
+        for line in response.split('\n'):
+            if line.strip().startswith(('1)', '2)', '3)', '4)')):
+                steps.append(line.strip())
+        return steps
+
     async def get_answer(self, query: str) -> Dict[str, Any]:
         # Retrieve relevant documents
         relevant_docs = await self.retriever.retrieve(query)
@@ -48,12 +57,4 @@ class AdvancedRAGPipeline:
             "answer": response,
             "sources": relevant_docs,
             "reasoning_chain": self._extract_reasoning(response)
-        }
-    
-    def _extract_reasoning(self, response: str) -> List[str]:
-        # Extract the reasoning steps from the response
-        steps = []
-        for line in response.split("\n"):
-            if line.strip().startswith(("1)", "2)", "3)", "4)")):
-                steps.append(line.strip())
-        return steps 
+        } 

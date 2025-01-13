@@ -4,7 +4,7 @@ from PIL import Image
 import torch
 import numpy as np
 from .base_extractor import BaseExtractor
-from core.config import settings
+from src.core.config import settings
 
 class TableExtractor(BaseExtractor):
     def __init__(self):
@@ -23,13 +23,13 @@ class TableExtractor(BaseExtractor):
     def preprocess(self, image: Image.Image) -> dict:
         return self.feature_extractor(images=image, return_tensors="pt")
 
-    async def extract_cell_content(self, cell_image: Image.Image) -> str:
+    def extract_cell_content(self, cell_image: Image.Image) -> str:
         # Process cell image with TrOCR
         pixel_values = self.trocr_processor(cell_image, return_tensors="pt").pixel_values.to(settings.DEVICE)
         generated_ids = self.trocr_model.generate(pixel_values)
         return self.trocr_processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
-    def extract(self, image: Image.Image) -> dict:
+    async def extract(self, image: Image.Image) -> dict:
         # Detect and recognize table structure
         inputs = self.preprocess(image)
         outputs = self.model(**inputs)
@@ -48,8 +48,8 @@ class TableExtractor(BaseExtractor):
             cell_box = box.tolist()
             cell_image = image.crop(cell_box)
             
-            # Extract cell content using TrOCR
-            cell_content = await self.extract_cell_content(cell_image)
+            # Extract cell content using TrOCR (now synchronous)
+            cell_content = self.extract_cell_content(cell_image)
             
             cells.append({
                 "cell_type": self.model.config.id2label[label.item()],
@@ -68,16 +68,8 @@ class TableExtractor(BaseExtractor):
                 "num_rows": len(table_structure),
                 "num_cols": len(table_structure[0]) if table_structure else 0
             })
-
-        return {
-            "type": "table",
-            "content": tables,
-            "metadata": {
-                "source": "table_transformer_trocr",
-                "num_tables": len(tables),
-                "confidence": float(torch.mean(results["scores"]))
-            }
-        }
+        
+        return {"tables": tables}
 
     def _organize_table_structure(self, cells):
         # Sort cells by vertical position first, then horizontal

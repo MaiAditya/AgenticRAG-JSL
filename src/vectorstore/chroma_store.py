@@ -1,6 +1,6 @@
 import chromadb
 from chromadb.config import Settings as ChromaSettings
-from core.config import settings
+from src.core.config import settings
 from typing import List, Dict, Any
 
 class ChromaStore:

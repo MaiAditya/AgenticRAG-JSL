@@ -1,5 +1,5 @@
+from langchain_community.chat_models import ChatOpenAI
 from langchain.agents import create_structured_chat_agent, AgentExecutor
-from langchain.chat_models import ChatOpenAI
 from typing import List, Dict, Any
 
 class DocumentAnalysisAgent:

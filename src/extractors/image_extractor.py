@@ -2,7 +2,7 @@ from transformers import ViTImageProcessor, ViTForImageClassification
 from ultralytics import YOLO
 from PIL import Image
 from .base_extractor import BaseExtractor
-from core.config import settings
+from src.core.config import settings
 import torch
 
 class ImageExtractor(BaseExtractor):

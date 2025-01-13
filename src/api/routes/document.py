@@ -22,8 +22,8 @@ async def save_upload_file(upload_file: UploadFile) -> str:
 
 @router.post("/upload")
 async def upload_document(
-    file: UploadFile = File(...),
     background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
     vector_store=Depends(get_vector_store),
     document_cache=Depends(get_document_cache)
 ):

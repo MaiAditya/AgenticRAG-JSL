@@ -1,6 +1,7 @@
 from unstructured.partition.auto import partition
 from transformers import AutoTokenizer, AutoModel
 from .base_extractor import BaseExtractor
+from typing import List, Dict, Any
 
 class TextExtractor(BaseExtractor):
     def __init__(self):
