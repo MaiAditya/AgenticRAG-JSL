@@ -1,4 +1,5 @@
-from transformers import DonutProcessor, VisionEncoderDecoderModel
+from transformers import ViTImageProcessor, ViTForImageClassification
+from ultralytics import YOLO
 from PIL import Image
 from .base_extractor import BaseExtractor
 from core.config import settings
@@ -6,37 +7,47 @@ import torch
 
 class ImageExtractor(BaseExtractor):
     def __init__(self):
-        self.processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base-finetuned-docvqa")
-        self.model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base-finetuned-docvqa")
+        # Initialize YOLO for object detection
+        self.detector = YOLO('yolov8n.pt')
+        
+        # Initialize ViT for image understanding
+        self.processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
+        self.model = ViTForImageClassification.from_pretrained('google/vit-base-patch16-224')
         self.model.to(settings.DEVICE)
 
     def preprocess(self, image: Image.Image) -> torch.Tensor:
-        pixel_values = self.processor(image, return_tensors="pt").pixel_values
-        return pixel_values.to(settings.DEVICE)
+        return self.processor(images=image, return_tensors="pt").pixel_values.to(settings.DEVICE)
 
     def extract(self, image: Image.Image) -> dict:
-        pixel_values = self.preprocess(image)
+        # Detect objects in image
+        detections = self.detector(image)[0]
         
-        outputs = self.model.generate(
-            pixel_values,
-            max_length=512,
-            early_stopping=True,
-            pad_token_id=self.processor.tokenizer.pad_token_id,
-            eos_token_id=self.processor.tokenizer.eos_token_id,
-            use_cache=True,
-            num_beams=4,
-            bad_words_ids=[[self.processor.tokenizer.unk_token_id]],
-            return_dict_in_generate=True
-        )
-
-        sequence = self.processor.batch_decode(outputs.sequences)[0]
-        sequence = sequence.replace(self.processor.tokenizer.eos_token, "").replace(self.processor.tokenizer.pad_token, "")
+        # Process whole image with ViT
+        inputs = self.preprocess(image)
+        outputs = self.model(inputs)
+        
+        # Extract detected objects and their classifications
+        objects = []
+        for det in detections.boxes.data:
+            x1, y1, x2, y2, conf, cls = det
+            obj_image = image.crop((x1, y1, x2, y2))
+            obj_features = self.model(self.preprocess(obj_image))
+            
+            objects.append({
+                "bbox": [float(x1), float(y1), float(x2), float(y2)],
+                "confidence": float(conf),
+                "class": detections.names[int(cls)],
+                "features": obj_features.logits.tolist()
+            })
 
         return {
             "type": "image",
-            "content": sequence,
+            "content": {
+                "objects": objects,
+                "global_features": outputs.logits.tolist()
+            },
             "metadata": {
-                "source": "image_extractor",
-                "model": "donut-base-finetuned-docvqa"
+                "source": "yolo_vit",
+                "num_objects": len(objects)
             }
         } 

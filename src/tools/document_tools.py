@@ -1,32 +1,33 @@
 from langchain.tools import BaseTool
-from typing import Optional
+from typing import Dict, Any
 from src.vectorstore.chroma_store import ChromaStore
 
-class DocumentSearchTool(BaseTool):
-    name = "document_search"
-    description = "Search for relevant information in the document collection"
+class DocumentAnalysisTool(BaseTool):
+    name = "document_analysis"
+    description = "Analyze document structure and identify components"
 
-    def __init__(self, vector_store: ChromaStore):
-        super().__init__()
-        self.vector_store = vector_store
+    def _run(self, document: Any) -> Dict[str, Any]:
+        # Implement document analysis logic
+        pass
 
-    def _run(self, query: str) -> str:
-        results = self.vector_store.collection.query(
-            query_texts=[query],
-            n_results=3
-        )
-        return results
+class StructureDetectionTool(BaseTool):
+    name = "structure_detection"
+    description = "Detect and classify document structural elements"
+
+    def _run(self, document: Any) -> Dict[str, Any]:
+        # Implement structure detection logic
+        pass
 
 class ContentExtractionTool(BaseTool):
     name = "content_extraction"
-    description = "Extract specific content from documents based on type (text, table, image)"
+    description = "Extract specific content from documents"
 
-    def __init__(self, extractors: dict):
+    def __init__(self, extractors: Dict[str, Any]):
         super().__init__()
         self.extractors = extractors
 
-    def _run(self, content_type: str, content: Any) -> dict:
+    async def _arun(self, content_type: str, content: Any) -> Dict[str, Any]:
         extractor = self.extractors.get(content_type)
         if not extractor:
             raise ValueError(f"No extractor found for content type: {content_type}")
-        return extractor.extract(content) 
+        return await extractor.extract(content) 

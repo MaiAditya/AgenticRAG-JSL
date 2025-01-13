@@ -1,48 +1,78 @@
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
-from typing import List
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, BackgroundTasks
+from src.agents.coordinator import CoordinatorAgent
+from src.tools.document_tools import DocumentAnalysisTool, StructureDetectionTool
+from src.extractors import TextExtractor, ImageExtractor, TableExtractor
+from src.core.dependencies import get_vector_store, get_document_cache
+from src.processors.parallel_processor import ParallelDocumentProcessor
+from src.core.error_handling import ProcessingError
 import aiofiles
 import os
-from src.api.models import DocumentResponse
-from src.core.error_handling import ProcessingError
-from ..dependencies import get_vector_store, get_document_cache, get_extractors
-from src.processors.parallel_processor import ParallelDocumentProcessor
 
 router = APIRouter(prefix="/documents", tags=["documents"])
+
+async def save_upload_file(upload_file: UploadFile) -> str:
+    file_path = f"uploads/{upload_file.filename}"
+    os.makedirs("uploads", exist_ok=True)
+    
+    async with aiofiles.open(file_path, 'wb') as out_file:
+        content = await upload_file.read()
+        await out_file.write(content)
+    
+    return file_path
 
 @router.post("/upload")
 async def upload_document(
     file: UploadFile = File(...),
+    background_tasks: BackgroundTasks,
     vector_store=Depends(get_vector_store),
     document_cache=Depends(get_document_cache)
 ):
     try:
-        processor = ParallelDocumentProcessor()
+        # Save uploaded file
+        file_path = await save_upload_file(file)
         
-        # Process document in parallel
-        results = await processor.process_document(file.filename)
-        
-        # Store results in vector store
-        await vector_store.add_documents(results)
-        
-        return {
-            "status": "success",
-            "pages_processed": len(results),
-            "details": {
-                "text_chunks": sum(len(page["text"]) for page in results),
-                "images_processed": sum(len(page["images"]) for page in results),
-                "tables_extracted": sum(len(page["tables"]) for page in results)
+        # Check cache first
+        cached_result = document_cache.get(file_path)
+        if cached_result:
+            return cached_result
+
+        # Initialize tools and coordinator
+        tools = {
+            "analysis": [
+                DocumentAnalysisTool(),
+                StructureDetectionTool()
+            ],
+            "extraction": {
+                "text": TextExtractor(),
+                "image": ImageExtractor(),
+                "table": TableExtractor()
             }
         }
+        
+        coordinator = CoordinatorAgent(tools, vector_store)
+        processor = ParallelDocumentProcessor(coordinator)
+        
+        # Process document in background
+        background_tasks.add_task(
+            processor.process_document,
+            file_path
+        )
+        
+        return {
+            "status": "processing",
+            "document_id": file_path,
+            "message": "Document upload successful. Processing started."
+        }
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.delete("/{document_id}")
-async def delete_document(
+@router.get("/{document_id}")
+async def get_document(
     document_id: str,
-    vector_store=Depends(get_vector_store)
+    document_cache=Depends(get_document_cache)
 ):
-    try:
-        vector_store.delete_document(document_id)
-        return {"status": "success", "message": f"Document {document_id} deleted"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+    result = document_cache.get(document_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Document not found")
+    return result 
