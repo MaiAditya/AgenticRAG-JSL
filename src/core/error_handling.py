@@ -25,7 +25,25 @@ def setup_error_handling(app: FastAPI):
         "logs/error.log",
         rotation="500 MB",
         retention="10 days",
-        level="ERROR"
+        level="ERROR",
+        backtrace=True,
+        diagnose=True
+    )
+    
+    logger.add(
+        "logs/info.log",
+        rotation="500 MB",
+        retention="10 days",
+        level="INFO",
+        filter=lambda record: record["level"].name == "INFO"
+    )
+    
+    logger.add(
+        "logs/debug.log",
+        rotation="500 MB",
+        retention="10 days",
+        level="DEBUG",
+        filter=lambda record: record["level"].name == "DEBUG"
     )
     
     # Add exception handlers

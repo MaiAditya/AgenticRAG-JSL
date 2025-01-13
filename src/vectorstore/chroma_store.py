@@ -9,14 +9,33 @@ class ChromaStore:
             persist_directory=settings.CHROMA_PERSIST_DIR,
             anonymized_telemetry=False
         ))
-        self.collection = self.client.create_collection(
-            name="cpg_documents",
-            metadata={"hnsw:space": "cosine"}
-        )
+        # Create collection with a unique name
+        try:
+            self.collection = self.client.get_collection("cpg_documents")
+        except ValueError:
+            self.collection = self.client.create_collection(
+                name="cpg_documents",
+                metadata={"hnsw:space": "cosine"}
+            )
     
-    def add_documents(self, documents: List[Dict[str, Any]], embeddings: List[List[float]]):
+    def __getstate__(self):
+        """Custom serialization method"""
+        state = self.__dict__.copy()
+        # Don't pickle the client and collection
+        state['client'] = None
+        state['collection'] = None
+        return state
+
+    def __setstate__(self, state):
+        """Custom deserialization method"""
+        self.__dict__.update(state)
+        # Reinitialize the client and collection
+        self.__init__()
+
+    async def add_texts(self, texts: List[str], metadatas: List[Dict[str, Any]]):
+        # Add documents to the collection
         self.collection.add(
-            embeddings=embeddings,
-            documents=[doc["content"] for doc in documents],
-            metadatas=[doc["metadata"] for doc in documents]
+            documents=texts,
+            metadatas=metadatas,
+            ids=[f"doc_{i}" for i in range(len(texts))]
         ) 

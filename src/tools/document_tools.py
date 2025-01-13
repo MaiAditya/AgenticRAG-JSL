@@ -1,6 +1,9 @@
 from langchain.tools import BaseTool
 from typing import Dict, Any
 from src.vectorstore.chroma_store import ChromaStore
+import logging
+
+logger = logging.getLogger(__name__)
 
 class DocumentAnalysisTool(BaseTool):
     name = "document_analysis"
@@ -15,8 +18,34 @@ class StructureDetectionTool(BaseTool):
     description = "Detect and classify document structural elements"
 
     def _run(self, document: Any) -> Dict[str, Any]:
-        # Implement structure detection logic
-        pass
+        try:
+            # Extract text content from the page
+            if hasattr(document, 'get_text'):
+                text_content = document.get_text()
+            else:
+                text_content = str(document)
+
+            # Basic structure detection
+            structure = {
+                "type": "page",
+                "content": text_content,
+                "components": [
+                    {
+                        "type": "text",
+                        "content": text_content
+                    }
+                ]
+            }
+            return structure
+        except Exception as e:
+            logger.error(f"Error in structure detection: {str(e)}")
+            return {
+                "type": "error",
+                "error": str(e)
+            }
+
+    async def _arun(self, document: Any) -> Dict[str, Any]:
+        return self._run(document)
 
 class ContentExtractionTool(BaseTool):
     name = "content_extraction"

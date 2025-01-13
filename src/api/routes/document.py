@@ -5,8 +5,14 @@ from src.extractors import TextExtractor, ImageExtractor, TableExtractor
 from src.core.dependencies import get_vector_store, get_document_cache
 from src.processors.parallel_processor import ParallelDocumentProcessor
 from src.core.error_handling import ProcessingError
+from src.core.initialization import get_extractors
+from src.vectorstore.chroma_store import ChromaStore
+from src.core.cache import DocumentCache
 import aiofiles
 import os
+from loguru import logger
+from typing import Dict, Any
+from chromadb.api.models import Collection
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -24,47 +30,62 @@ async def save_upload_file(upload_file: UploadFile) -> str:
 async def upload_document(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
-    vector_store=Depends(get_vector_store),
-    document_cache=Depends(get_document_cache)
+    document_cache: DocumentCache = Depends(get_document_cache)
 ):
     try:
+        logger.info(f"Received upload request for file: {file.filename}")
+        
         # Save uploaded file
         file_path = await save_upload_file(file)
+        logger.debug(f"File saved to: {file_path}")
+        
+        # Generate cache key from file path
+        cache_key = document_cache.get_cache_key(file_path)
         
         # Check cache first
-        cached_result = document_cache.get(file_path)
+        cached_result = document_cache.get(cache_key)
         if cached_result:
+            logger.info(f"Returning cached result for {file_path}")
             return cached_result
 
-        # Initialize tools and coordinator
+        logger.info("Initializing document processing tools")
         tools = {
             "analysis": [
                 DocumentAnalysisTool(),
                 StructureDetectionTool()
             ],
-            "extraction": {
-                "text": TextExtractor(),
-                "image": ImageExtractor(),
-                "table": TableExtractor()
+            "extraction": get_extractors()
+        }
+        
+        # Process document
+        try:
+            vector_store = ChromaStore()
+            coordinator = CoordinatorAgent(tools, vector_store)
+            processor = ParallelDocumentProcessor(coordinator)
+            result = await processor.process_document(file_path)
+            
+            response = {
+                "status": "completed",
+                "document_id": cache_key,
+                "content": result
             }
-        }
-        
-        coordinator = CoordinatorAgent(tools, vector_store)
-        processor = ParallelDocumentProcessor(coordinator)
-        
-        # Process document in background
-        background_tasks.add_task(
-            processor.process_document,
-            file_path
-        )
-        
-        return {
-            "status": "processing",
-            "document_id": file_path,
-            "message": "Document upload successful. Processing started."
-        }
-        
+            
+            # Cache the result
+            document_cache.set(cache_key, response)
+            return response
+            
+        except Exception as e:
+            logger.error(f"Processing error: {str(e)}")
+            error_response = {
+                "status": "error",
+                "document_id": cache_key,
+                "error": str(e)
+            }
+            document_cache.set(cache_key, error_response)
+            raise HTTPException(status_code=500, detail=str(e))
+            
     except Exception as e:
+        logger.error(f"Error processing document upload: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{document_id}")
