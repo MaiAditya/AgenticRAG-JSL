@@ -1,7 +1,7 @@
 from unstructured.partition.auto import partition
 from transformers import AutoTokenizer, AutoModel
 from .base_extractor import BaseExtractor
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 class TextExtractor(BaseExtractor):
     def __init__(self):
@@ -12,8 +12,10 @@ class TextExtractor(BaseExtractor):
         elements = partition(content)
         return [str(element) for element in elements]
     
-    def extract(self, content: str) -> Dict[str, Any]:
-        processed_text = self.preprocess(content)
+    async def extract(self, content: str, page_text: Optional[str] = None) -> Dict[str, Any]:
+        # Use page_text if provided, otherwise use content
+        text_to_process = page_text if page_text else content
+        processed_text = self.preprocess(text_to_process)
         return {
             "type": "text",
             "content": processed_text,

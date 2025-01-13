@@ -28,10 +28,10 @@ async def save_upload_file(upload_file: UploadFile) -> str:
 
 @router.post("/upload")
 async def upload_document(
-    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
+    vector_store: ChromaStore = Depends(get_vector_store),
     document_cache: DocumentCache = Depends(get_document_cache)
-):
+) -> Dict[str, Any]:
     try:
         logger.info(f"Received upload request for file: {file.filename}")
         
@@ -39,53 +39,29 @@ async def upload_document(
         file_path = await save_upload_file(file)
         logger.debug(f"File saved to: {file_path}")
         
-        # Generate cache key from file path
-        cache_key = document_cache.get_cache_key(file_path)
+        # Get singleton extractors
+        extractors = get_extractors()
         
-        # Check cache first
-        cached_result = document_cache.get(cache_key)
-        if cached_result:
-            logger.info(f"Returning cached result for {file_path}")
-            return cached_result
-
-        logger.info("Initializing document processing tools")
-        tools = {
-            "analysis": [
-                DocumentAnalysisTool(),
-                StructureDetectionTool()
-            ],
-            "extraction": get_extractors()
-        }
+        # Initialize tools
+        tools = [
+            DocumentAnalysisTool(),
+            StructureDetectionTool()
+        ]
+        
+        # Initialize coordinator agent
+        coordinator = CoordinatorAgent(
+            extractors=extractors,
+            tools=tools,
+            vector_store=vector_store,
+            document_cache=document_cache
+        )
         
         # Process document
-        try:
-            vector_store = ChromaStore()
-            coordinator = CoordinatorAgent(tools, vector_store)
-            processor = ParallelDocumentProcessor(coordinator)
-            result = await processor.process_document(file_path)
-            
-            response = {
-                "status": "completed",
-                "document_id": cache_key,
-                "content": result
-            }
-            
-            # Cache the result
-            document_cache.set(cache_key, response)
-            return response
-            
-        except Exception as e:
-            logger.error(f"Processing error: {str(e)}")
-            error_response = {
-                "status": "error",
-                "document_id": cache_key,
-                "error": str(e)
-            }
-            document_cache.set(cache_key, error_response)
-            raise HTTPException(status_code=500, detail=str(e))
-            
+        result = await coordinator.process_document(file_path)
+        return result
+        
     except Exception as e:
-        logger.error(f"Error processing document upload: {str(e)}", exc_info=True)
+        logger.error(f"Error processing document upload: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{document_id}")

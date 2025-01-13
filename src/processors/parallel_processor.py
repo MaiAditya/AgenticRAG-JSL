@@ -1,11 +1,11 @@
 from typing import List, Dict, Any
 import fitz  # PyMuPDF
-from src.agents.coordinator import CoordinatorAgent
+from src.core.types import DocumentProcessor
 from loguru import logger
 import asyncio
 
 class ParallelDocumentProcessor:
-    def __init__(self, coordinator: CoordinatorAgent, max_workers: int = 4):
+    def __init__(self, coordinator: DocumentProcessor, max_workers: int = 4):
         self.coordinator = coordinator
         self.max_workers = max_workers
 

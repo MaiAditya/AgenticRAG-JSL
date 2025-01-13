@@ -2,45 +2,63 @@ from loguru import logger
 from src.extractors.image_extractor import ImageExtractor
 from src.extractors.table_extractor import TableExtractor
 from src.extractors.text_extractor import TextExtractor
+from typing import Dict, Any
 
-_image_extractor = None
-_table_extractor = None
-_text_extractor = None
+_extractors = {}
+_initialized = False
+_models_initialized = False
 
-def initialize_models():
-    """Initialize all ML models before server startup"""
-    global _image_extractor, _table_extractor, _text_extractor
+def initialize_models() -> None:
+    """Initialize all ML models"""
+    global _models_initialized
     
+    if _models_initialized:
+        return
+        
     logger.info("Initializing ML models...")
-    
     try:
-        logger.info("Loading Image Extractor...")
-        _image_extractor = ImageExtractor()
-        
-        try:
-            logger.info("Loading Table Extractor...")
-            _table_extractor = TableExtractor()
-        except ImportError as e:
-            logger.warning(f"Table Extractor initialization failed: {str(e)}")
-            logger.warning("Table extraction functionality will be disabled")
-            _table_extractor = None
-        
-        logger.info("Loading Text Extractor...")
-        _text_extractor = TextExtractor()
-        
-        logger.info("All available models initialized successfully!")
+        # Initialize any ML models here if needed
+        # For now, this is a placeholder for future model initialization
+        _models_initialized = True
+        logger.info("ML models initialized successfully")
     except Exception as e:
-        logger.error(f"Error initializing models: {str(e)}")
+        logger.error(f"Error initializing ML models: {str(e)}")
         raise
 
-def get_extractors():
-    """Get initialized extractors"""
-    extractors = {
-        "image": _image_extractor,
-        "text": _text_extractor
-    }
+def initialize_extractors() -> None:
+    """Initialize all extractors as singletons"""
+    global _extractors, _initialized
     
-    if _table_extractor:
-        extractors["table"] = _table_extractor
+    if _initialized:
+        return
+    
+    logger.info("Initializing extractors...")
+    
+    try:
+        _extractors["text"] = TextExtractor()
+        logger.info("Text extractor initialized")
         
-    return {k: v for k, v in extractors.items() if v is not None} 
+        _extractors["image"] = ImageExtractor()
+        logger.info("Image extractor initialized")
+        
+        try:
+            _extractors["table"] = TableExtractor()
+            logger.info("Table extractor initialized")
+        except ImportError as e:
+            logger.warning(f"Table extractor initialization failed: {str(e)}")
+            logger.warning("Table extraction functionality will be disabled")
+    
+        _initialized = True
+        logger.info("All extractors initialized successfully!")
+    except Exception as e:
+        logger.error(f"Error initializing extractors: {str(e)}")
+        raise
+
+def get_extractors() -> Dict[str, Any]:
+    """Get initialized extractors"""
+    global _extractors, _initialized
+    
+    if not _initialized:
+        initialize_extractors()
+    
+    return _extractors 

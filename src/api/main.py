@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.api.routes import document_router, query_router, stats_router
 from src.core.error_handling import setup_error_handling
 from src.core.config import settings
-from src.core.initialization import initialize_models
+from src.core.initialization import initialize_models, initialize_extractors
 from loguru import logger
 
 app = FastAPI(
@@ -22,8 +22,14 @@ async def startup_event():
             raise ValueError("OPENAI_API_KEY not found in environment")
         logger.info("Environment variables verified")
         
-        # Initialize models
+        # Initialize models first
         initialize_models()
+        logger.info("ML models initialized")
+        
+        # Then initialize extractors
+        initialize_extractors()
+        logger.info("Extractors initialized")
+        
         logger.info("Application initialization complete!")
     except Exception as e:
         logger.error(f"Failed to initialize application: {str(e)}")
