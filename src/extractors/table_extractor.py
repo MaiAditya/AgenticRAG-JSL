@@ -29,6 +29,7 @@ class TableExtractor:
         # Create output directories for debugging
         os.makedirs("logs/table_detections/originals", exist_ok=True)
         os.makedirs("logs/table_detections/visualizations", exist_ok=True)
+        os.makedirs("logs/table_detections/cells", exist_ok=True)
 
     async def extract(self, image) -> dict:
         try:
@@ -136,101 +137,118 @@ class TableExtractor:
             return {"error": str(e)}
 
     def _analyze_table_structure(self, table_image: Image.Image) -> Dict[str, Any]:
-        """Analyze table structure and extract text from cells using OCR."""
         try:
-            # Convert to numpy array
+            # Convert and preprocess
             table_np = np.array(table_image)
+            original = table_np.copy()
             
-            # Process table structure
+            # Better preprocessing for medical text
             gray = cv2.cvtColor(table_np, cv2.COLOR_RGB2GRAY)
-            _, binary = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY_INV)
-            
-            # Detect lines
-            horizontal = self._detect_lines(binary, "horizontal")
-            vertical = self._detect_lines(binary, "vertical")
-            
-            # Find cell intersections
-            intersections = cv2.bitwise_and(horizontal, vertical)
-            
-            # Get cell coordinates
-            contours, _ = cv2.findContours(
-                intersections,
-                cv2.RETR_EXTERNAL,
-                cv2.CHAIN_APPROX_SIMPLE
+            # Apply adaptive thresholding
+            binary = cv2.adaptiveThreshold(
+                gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                cv2.THRESH_BINARY_INV, 21, 10
             )
             
-            # Initialize Tesseract OCR
-            import pytesseract
+            # Remove noise
+            kernel = np.ones((2,2), np.uint8)
+            binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
             
+            # Detect table structure
+            scale = table_np.shape[1] // 30
+            ver_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, scale))
+            hor_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (scale, 1))
+            
+            # Detect lines
+            vertical = cv2.morphologyEx(binary, cv2.MORPH_OPEN, ver_kernel, iterations=2)
+            horizontal = cv2.morphologyEx(binary, cv2.MORPH_OPEN, hor_kernel, iterations=2)
+            
+            # Find table grid
+            grid = cv2.addWeighted(vertical, 1, horizontal, 1, 0)
+            
+            # Find cells with better contour detection
+            contours, _ = cv2.findContours(grid, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            
+            # Process cells
+            min_area = 500  # Larger minimum area
             cells = []
+            
             for contour in contours:
+                area = cv2.contourArea(contour)
+                if area < min_area:
+                    continue
+                    
                 x, y, w, h = cv2.boundingRect(contour)
+                cell_roi = original[y:y+h, x:x+w]
                 
-                # Extract cell region from original image
-                cell_roi = table_np[y:y+h, x:x+w]
-                
-                # Convert to grayscale for better OCR
+                if cell_roi.size == 0:
+                    continue
+                    
+                # Enhanced OCR preprocessing
                 cell_gray = cv2.cvtColor(cell_roi, cv2.COLOR_RGB2GRAY)
+                # Apply CLAHE
+                clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+                cell_gray = clahe.apply(cell_gray)
                 
-                # Apply thresholding to clean up the image
-                _, cell_binary = cv2.threshold(cell_gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+                # Scale up image
+                scale_factor = 3
+                cell_scaled = cv2.resize(cell_gray, None, 
+                                       fx=scale_factor, 
+                                       fy=scale_factor, 
+                                       interpolation=cv2.INTER_CUBIC)
                 
-                # Extract text using OCR
+                # Improve contrast
+                cell_scaled = cv2.normalize(cell_scaled, None, 0, 255, cv2.NORM_MINMAX)
+                
                 try:
-                    text = pytesseract.image_to_string(cell_binary, config='--psm 6').strip()
-                except Exception as ocr_error:
-                    logger.error(f"OCR error for cell at {x},{y}: {str(ocr_error)}")
-                    text = ""
-                
-                cells.append({
-                    "bbox": [x, y, x+w, y+h],
-                    "text": text
-                })
-                
-                # Log extracted text for debugging
-                if text:
-                    logger.debug(f"Extracted text from cell at {x},{y}: {text}")
+                    # Optimize OCR settings for medical text
+                    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()/.+-%[] " -c tessedit_char_blacklist="|~`@#$^&*_={};<>?"'
+                    text = pytesseract.image_to_string(
+                        cell_scaled,
+                        config=custom_config,
+                        lang='eng'
+                    ).strip()
+                    
+                    if text:
+                        cells.append({
+                            "bbox": [x, y, w, h],
+                            "text": text,
+                            "is_header": y < table_image.size[1] * 0.2
+                        })
+                        
+                        # Save cell image for debugging
+                        debug_path = f"logs/table_detections/cells/cell_{len(cells)}.png"
+                        cv2.imwrite(debug_path, cell_scaled)
+                        
+                except Exception as e:
+                    logger.error(f"OCR error: {str(e)}")
+                    continue
             
-            # Sort cells by position
-            cells.sort(key=lambda c: (c["bbox"][1], c["bbox"][0]))  # Sort by y, then x
+            # Organize cells into structured data
+            if cells:
+                return {
+                    "cells": cells,
+                    "num_rows": len(set(c["bbox"][1] for c in cells)),
+                    "num_cols": len(set(c["bbox"][0] for c in cells)),
+                    "headers": [c["text"] for c in cells if c["is_header"]]
+                }
             
-            # Group cells into rows based on y-coordinate similarity
-            row_threshold = 10  # pixels
-            rows = []
-            current_row = []
-            last_y = -row_threshold
-            
-            for cell in cells:
-                y = cell["bbox"][1]
-                if abs(y - last_y) > row_threshold and current_row:
-                    rows.append(current_row)
-                    current_row = []
-                current_row.append(cell)
-                last_y = y
-            
-            if current_row:
-                rows.append(current_row)
-            
-            # Sort cells within each row by x-coordinate
-            for row in rows:
-                row.sort(key=lambda c: c["bbox"][0])
-            
-            # Flatten back to list while maintaining order
-            cells = [cell for row in rows for cell in row]
-            
-            return {
-                "cells": cells,
-                "num_rows": len(rows),
-                "num_cols": max(len(row) for row in rows) if rows else 0
-            }
+            return None
             
         except Exception as e:
             logger.error(f"Error analyzing table structure: {str(e)}")
             return None
 
-    def _detect_lines(self, img: np.ndarray, direction: str) -> np.ndarray:
-        """Detect horizontal or vertical lines in the image."""
-        kernel_length = img.shape[1]//40 if direction == "horizontal" else img.shape[0]//40
-        kernel = np.ones((1, kernel_length)) if direction == "horizontal" else np.ones((kernel_length, 1))
-        morphed = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
-        return morphed 
+    def _detect_lines(self, img: np.ndarray, direction: str, size: int) -> np.ndarray:
+        """Detect horizontal or vertical lines in the image with improved parameters."""
+        # Create structure element
+        if direction == "horizontal":
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (size, 1))
+        else:
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, size))
+        
+        # Apply morphology operations
+        eroded = cv2.erode(img, kernel, iterations=1)
+        dilated = cv2.dilate(eroded, kernel, iterations=1)
+        
+        return dilated 
