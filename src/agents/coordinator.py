@@ -63,11 +63,13 @@ class CoordinatorAgent(DocumentProcessor):
                             continue
                     elif component['type'] == 'text':
                         extracted = await self.text_extractor.extract(component['content'])
-                        results.append({
-                            'type': 'text',
-                            'content': component['content'],
-                            'extracted': extracted
-                        })
+                        if extracted:  # Only append if we got valid extracted text
+                            results.append({
+                                'type': 'text',
+                                'content': component['content'],
+                                'extracted': extracted
+                            })
+                            logger.info(f"Successfully extracted text content")
                     elif component['type'] == 'image':
                         extracted = await self.image_extractor.extract(component['image'])
                         if 'error' in extracted:
@@ -81,6 +83,14 @@ class CoordinatorAgent(DocumentProcessor):
                 except Exception as component_error:
                     logger.error(f"Error processing component: {str(component_error)}")
                     continue
+            
+            # Explicitly integrate knowledge after processing all components
+            if results:
+                try:
+                    logger.info("Integrating extracted knowledge into vector store")
+                    await self.knowledge_integrator.integrate_knowledge(results)
+                except Exception as e:
+                    logger.error(f"Error during knowledge integration: {str(e)}")
             
             return {
                 'success': True,

@@ -173,18 +173,34 @@ class KnowledgeIntegrationAgent:
         self.vector_store = vector_store
         logger.info("Initializing KnowledgeIntegrationAgent")
 
-    def integrate_knowledge(self, results: List[Dict[str, Any]]) -> None:
+    async def integrate_knowledge(self, results: List[Dict[str, Any]]) -> None:
         """Integrate extracted knowledge into the vector store"""
         try:
             # Process and store the extracted information
             documents = []
+            metadatas = []
+            
             for result in results:
-                if isinstance(result.get("extracted_data"), str):
-                    documents.append(result["extracted_data"])
+                if result.get('type') == 'text' and result.get('content'):
+                    documents.append(result['content'])
+                    metadatas.append({
+                        'type': 'text',
+                        'source': 'document'
+                    })
+                elif result.get('type') == 'table' and result.get('extracted'):
+                    table_text = str(result['extracted'].get('table_data', ''))
+                    if table_text:
+                        documents.append(table_text)
+                        metadatas.append({
+                            'type': 'table',
+                            'source': 'document'
+                        })
             
             if documents:
-                self.vector_store.add_texts(documents)
+                logger.info(f"Adding {len(documents)} documents to vector store")
+                await self.vector_store.add_texts(documents, metadatas)
                 logger.info(f"Successfully integrated {len(documents)} documents")
+            
         except Exception as e:
             logger.error(f"Error integrating knowledge: {str(e)}")
             raise

@@ -6,9 +6,9 @@ router = APIRouter(prefix="/stats", tags=["stats"])
 
 @router.get("/", response_model=CollectionStats)
 async def get_stats(vector_store=Depends(get_vector_store)):
-    stats = {
-        "total_documents": len(vector_store.collection),
-        "collections": ["default"],
-        "embedding_dimensions": 384  # Default for MiniLM-L6-v2
-    }
-    return CollectionStats(**stats) 
+    stats = await vector_store.get_stats()
+    return CollectionStats(
+        total_documents=stats["total_documents"],
+        collections=[stats["collection_name"]],
+        embedding_dimensions=stats["embedding_dimensions"]
+    ) 

@@ -56,6 +56,14 @@ class AdvancedRAGPipeline:
             logger.debug("Retrieving relevant documents")
             relevant_docs = await self.retriever.retrieve(query)
             
+            if not relevant_docs:
+                return {
+                    "answer": "I don't have enough information in my knowledge base to answer this question.",
+                    "sources": [],
+                    "reasoning_chain": ["1) No relevant documents found in the knowledge base"],
+                    "confidence": 0.0
+                }
+            
             # Combine context
             context = "\n".join([doc.page_content for doc in relevant_docs])
             
