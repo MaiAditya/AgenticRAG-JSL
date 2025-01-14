@@ -16,6 +16,8 @@ from src.extractors.text_extractor import TextExtractor
 from src.extractors.table_extractor import TableExtractor
 from src.extractors.image_extractor import ImageExtractor
 from src.core.error_handling import ProcessingError
+import io
+from PIL import Image
 
 class CoordinatorAgent(DocumentProcessor):
     def __init__(self, extractors: Dict[str, Any], tools: List[BaseTool], 
@@ -34,7 +36,6 @@ class CoordinatorAgent(DocumentProcessor):
 
     async def process_document(self, file_path: str) -> Dict[str, Any]:
         try:
-            # Initialize results
             results = []
             
             # Detect content type and structure
@@ -43,17 +44,27 @@ class CoordinatorAgent(DocumentProcessor):
             
             for component in document_structure['components']:
                 try:
-                    if component['type'] == 'text':
+                    if component['type'] == 'table':
+                        logger.info("Processing table component")
+                        # Convert pixmap to PIL Image
+                        pix = component['image']
+                        try:
+                            # Send the pixmap directly to the table extractor
+                            extracted = await self.table_extractor.extract(pix)
+                            if extracted and 'table_data' in extracted and extracted['table_data']:
+                                results.append({
+                                    'type': 'table',
+                                    'page_number': component.get('page_number'),
+                                    'extracted': extracted
+                                })
+                                logger.info(f"Successfully extracted table from page {component.get('page_number')}")
+                        except Exception as img_error:
+                            logger.error(f"Error converting image for table extraction: {str(img_error)}")
+                            continue
+                    elif component['type'] == 'text':
                         extracted = await self.text_extractor.extract(component['content'])
                         results.append({
                             'type': 'text',
-                            'content': component['content'],
-                            'extracted': extracted
-                        })
-                    elif component['type'] == 'table':
-                        extracted = await self.table_extractor.extract(component['image'])
-                        results.append({
-                            'type': 'table',
                             'content': component['content'],
                             'extracted': extracted
                         })

@@ -58,22 +58,22 @@ class DocumentAnalysisTool(BaseTool):
 
     async def _detect_tables(self, page: Any) -> List[Dict[str, Any]]:
         try:
-            # Convert page to image for table detection
+            # Convert page to numpy array for better handling
             pix = page.get_pixmap()
-            img_data = pix.tobytes("png")
-            image = Image.open(io.BytesIO(img_data))
             
+            # Create table extractor instance
             table_extractor = TableExtractor()
-            result = await table_extractor.extract(image)
+            result = await table_extractor.extract(pix)
             
             if result and "table_data" in result and result["table_data"]:
-                logger.info(f"Successfully extracted {len(result['table_data'])} table rows")
+                logger.info(f"Successfully extracted {len(result['table_data'])} tables")
                 return [{
-                    "cells": result["table_data"],
-                    "structure": result["table_data"],
-                    "num_rows": len(result["table_data"]),
-                    "num_cols": len(result["table_data"][0]) if result["table_data"] else 0
-                }]
+                    "cells": table_data,
+                    "structure": table_data,
+                    "num_rows": len(table_data),
+                    "num_cols": len(table_data[0]) if table_data else 0,
+                    "metadata": result["metadata"]
+                } for table_data in result["table_data"]]
             return []
             
         except Exception as e:
@@ -127,12 +127,21 @@ class StructureDetectionTool(BaseTool):
             components = []
             
             for page in doc:
+                # Get text content
                 text_content = page.get_text()
                 if text_content.strip():
                     components.append({
                         "type": "text",
                         "content": text_content
                     })
+                
+                # Convert page to image for table detection
+                pix = page.get_pixmap()
+                components.append({
+                    "type": "table",
+                    "image": pix,
+                    "page_number": page.number
+                })
                 
                 # Get images if any
                 image_list = page.get_images()
