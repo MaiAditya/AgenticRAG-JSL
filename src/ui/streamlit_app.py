@@ -7,6 +7,20 @@ from typing import Dict, Any
 
 # Constants
 API_BASE_URL = "http://localhost:8000"
+PREDEFINED_PDFS_DIR = Path("predefined-pdfs")
+
+# Add these predefined questions
+PREDEFINED_QUESTIONS = [
+    "What happens when patients experiences characteristic epigastic abdominal pain and lipase >3x upper limit of normal?",
+    "How much bolus should be repeated in case of urine output<0.5 or systemic BP < 90.",
+    "What considerations should be taken for fontan repair lesions?",
+    "How do I treat abdominal pain and kidney stone issues?",
+    "Can I give NSAIDs for kidney stones and headaches?",
+    "What patient education is needed for kidney stones during discharge?",
+    "What are the clinical indications abdominal pain?",
+    "What are the local complications for pancreatitis?",
+    "What is the severity level for a pancreatitis bedside index of more than 3?"
+]
 
 def setup_page():
     st.set_page_config(
@@ -60,10 +74,31 @@ def main():
     
     if page == "Upload":
         st.header("Document Upload")
+        
+        # Add predefined PDFs section
+        st.subheader("Predefined Documents")
+        predefined_files = list(PREDEFINED_PDFS_DIR.glob("*.pdf"))
+        if predefined_files:
+            selected_file = st.selectbox(
+                "Select a predefined document",
+                options=predefined_files,
+                format_func=lambda x: x.name
+            )
+            
+            if st.button("Process Predefined Document"):
+                with st.spinner("Processing document..."):
+                    with selected_file.open("rb") as file:
+                        result = upload_document(file)
+                        if result:
+                            st.success("Document processed successfully!")
+                            st.json(result)
+        
+        # Existing upload functionality
+        st.subheader("Custom Document Upload")
         uploaded_file = st.file_uploader("Choose a document", type=["pdf", "txt", "doc", "docx"])
         
         if uploaded_file:
-            if st.button("Process Document"):
+            if st.button("Process Custom Document"):
                 with st.spinner("Processing document..."):
                     result = upload_document(uploaded_file)
                     if result:
@@ -72,7 +107,14 @@ def main():
     
     elif page == "Query":
         st.header("Document Query")
-        query = st.text_input("Enter your question:")
+        
+        # Add predefined questions section
+        query_type = st.radio("Query Type", ["Predefined Questions", "Custom Question"])
+        
+        if query_type == "Predefined Questions":
+            query = st.selectbox("Select a question:", PREDEFINED_QUESTIONS)
+        else:
+            query = st.text_input("Enter your question:")
         
         if query:
             if st.button("Submit Query"):
