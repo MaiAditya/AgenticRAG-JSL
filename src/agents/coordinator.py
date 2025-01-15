@@ -18,6 +18,7 @@ from src.extractors.image_extractor import ImageExtractor
 from src.core.error_handling import ProcessingError
 import io
 from PIL import Image
+import fitz
 
 class CoordinatorAgent(DocumentProcessor):
     def __init__(self, extractors: Dict[str, Any], tools: List[BaseTool], 
@@ -36,66 +37,101 @@ class CoordinatorAgent(DocumentProcessor):
 
     async def process_document(self, file_path: str) -> Dict[str, Any]:
         try:
-            results = []
+            # Open document using PyMuPDF
+            doc = fitz.open(file_path)
+            total_pages = len(doc)
             
-            # Detect content type and structure
-            structure_tool = StructureDetectionTool()
-            document_structure = await structure_tool.analyze(file_path)
+            # Create tasks for parallel processing
+            tasks = []
+            semaphore = asyncio.Semaphore(self.parallel_processor.max_workers)
             
-            for component in document_structure['components']:
-                try:
-                    if component['type'] == 'table':
-                        logger.info("Processing table component")
-                        # Convert pixmap to PIL Image
-                        pix = component['image']
+            async def process_page_with_semaphore(page_num):
+                async with semaphore:
+                    page = doc[page_num]
+                    # Detect content type and structure for this page
+                    structure_tool = StructureDetectionTool()
+                    page_structure = await structure_tool.analyze_page(page)
+                    
+                    if "error" in page_structure:
+                        logger.error(f"Error analyzing page {page_num}: {page_structure['error']}")
+                        return {
+                            'page_number': page_num,
+                            'results': []
+                        }
+                    
+                    page_results = []
+                    for component in page_structure['components']:
                         try:
-                            # Send the pixmap directly to the table extractor
-                            extracted = await self.table_extractor.extract(pix)
-                            if extracted and 'table_data' in extracted and extracted['table_data']:
-                                results.append({
-                                    'type': 'table',
-                                    'page_number': component.get('page_number'),
+                            if component['type'] == 'table':
+                                logger.info(f"Processing table component on page {page_num}")
+                                pix = component['image']
+                                try:
+                                    extracted = await self.table_extractor.extract(pix)
+                                    if extracted and 'table_data' in extracted and extracted['table_data']:
+                                        page_results.append({
+                                            'type': 'table',
+                                            'page_number': page_num,
+                                            'extracted': extracted
+                                        })
+                                        logger.info(f"Successfully extracted table from page {page_num}")
+                                except Exception as img_error:
+                                    logger.error(f"Error converting image for table extraction: {str(img_error)}")
+                                    continue
+                            elif component['type'] == 'text':
+                                extracted = await self.text_extractor.extract(component['content'])
+                                if extracted:
+                                    page_results.append({
+                                        'type': 'text',
+                                        'content': component['content'],
+                                        'extracted': extracted
+                                    })
+                                    logger.info(f"Successfully extracted text content from page {page_num}")
+                            elif component['type'] == 'image':
+                                extracted = await self.image_extractor.extract(component['image'])
+                                if 'error' in extracted:
+                                    logger.warning(f"Image extraction warning on page {page_num}: {extracted['error']}")
+                                    continue
+                                page_results.append({
+                                    'type': 'image',
+                                    'location': component['location'],
                                     'extracted': extracted
                                 })
-                                logger.info(f"Successfully extracted table from page {component.get('page_number')}")
-                        except Exception as img_error:
-                            logger.error(f"Error converting image for table extraction: {str(img_error)}")
+                        except Exception as component_error:
+                            logger.error(f"Error processing component on page {page_num}: {str(component_error)}")
                             continue
-                    elif component['type'] == 'text':
-                        extracted = await self.text_extractor.extract(component['content'])
-                        if extracted:  # Only append if we got valid extracted text
-                            results.append({
-                                'type': 'text',
-                                'content': component['content'],
-                                'extracted': extracted
-                            })
-                            logger.info(f"Successfully extracted text content")
-                    elif component['type'] == 'image':
-                        extracted = await self.image_extractor.extract(component['image'])
-                        if 'error' in extracted:
-                            logger.warning(f"Image extraction warning: {extracted['error']}")
-                            continue
-                        results.append({
-                            'type': 'image',
-                            'location': component['location'],
-                            'extracted': extracted
-                        })
-                except Exception as component_error:
-                    logger.error(f"Error processing component: {str(component_error)}")
-                    continue
+                    
+                    return {
+                        'page_number': page_num,
+                        'results': page_results
+                    }
+
+            # Create tasks for all pages
+            tasks = [
+                asyncio.create_task(process_page_with_semaphore(page_num))
+                for page_num in range(total_pages)
+            ]
             
-            # Explicitly integrate knowledge after processing all components
-            if results:
+            # Wait for all tasks to complete
+            all_results = await asyncio.gather(*tasks)
+            
+            # Combine results from all pages
+            combined_results = []
+            for page_result in all_results:
+                combined_results.extend(page_result['results'])
+                
+            # Integrate knowledge after processing all pages
+            if combined_results:
                 try:
                     logger.info("Integrating extracted knowledge into vector store")
-                    await self.knowledge_integrator.integrate_knowledge(results)
+                    await self.knowledge_integrator.integrate_knowledge(combined_results)
                 except Exception as e:
                     logger.error(f"Error during knowledge integration: {str(e)}")
             
+            doc.close()
             return {
                 'success': True,
-                'processed_pages': document_structure['processed_pages'],
-                'results': results
+                'processed_pages': total_pages,
+                'results': combined_results
             }
             
         except Exception as e:

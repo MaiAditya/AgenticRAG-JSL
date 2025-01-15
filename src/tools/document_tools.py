@@ -173,6 +173,48 @@ class StructureDetectionTool(BaseTool):
     async def analyze(self, file_path: str) -> Dict[str, Any]:
         return await self._arun(file_path)
 
+    async def analyze_page(self, page) -> Dict[str, Any]:
+        """Analyze a single page from PyMuPDF"""
+        try:
+            components = []
+            
+            # Get text content
+            text_content = page.get_text()
+            if text_content.strip():
+                components.append({
+                    "type": "text",
+                    "content": text_content
+                })
+            
+            # Convert page to image for table detection
+            pix = page.get_pixmap()
+            components.append({
+                "type": "table",
+                "image": pix,
+                "page_number": page.number
+            })
+            
+            # Get images if any
+            image_list = page.get_images()
+            for img in image_list:
+                components.append({
+                    "type": "image",
+                    "location": img,
+                    "image": page.get_pixmap()
+                })
+            
+            return {
+                "type": "page",
+                "components": components
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in page analysis: {str(e)}")
+            return {
+                "type": "error",
+                "error": str(e)
+            }
+
 class ContentExtractionTool(BaseTool):
     name = "content_extraction"
     description = "Extract specific content from documents"
