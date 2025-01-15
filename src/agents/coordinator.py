@@ -45,63 +45,100 @@ class CoordinatorAgent(DocumentProcessor):
             # Create semaphore for controlling concurrent processing
             semaphore = asyncio.Semaphore(self.parallel_processor.max_workers)
             
+            # Create a thread pool for CPU-bound operations
+            thread_pool = concurrent.futures.ThreadPoolExecutor(
+                max_workers=self.parallel_processor.max_workers
+            )
+            
             async def process_page_with_semaphore(page_num):
                 async with semaphore:
-                    # Get the page
                     page = doc[page_num]
                     
-                    # Create structure detection tool and analyze page
+                    # Run CPU-bound operations in thread pool
+                    loop = asyncio.get_event_loop()
+                    
+                    # Process text extraction in thread pool
+                    text_content = await loop.run_in_executor(
+                        thread_pool, 
+                        page.get_text
+                    )
+                    
+                    # Create structure detection tool
                     structure_tool = StructureDetectionTool()
-                    # Since analyze_page is async, we need to await it
-                    page_structure = await structure_tool.analyze_page(page)
                     
-                    if "error" in page_structure:
-                        logger.error(f"Error analyzing page {page_num}: {page_structure['error']}")
-                        return {
-                            'page_number': page_num,
-                            'results': []
-                        }
+                    # Process components in parallel
+                    components = []
+                    if text_content.strip():
+                        components.append({
+                            "type": "text",
+                            "content": text_content
+                        })
                     
-                    page_results = []
-                    tasks = []
+                    # Get pixmap for table detection
+                    pix = await loop.run_in_executor(
+                        thread_pool,
+                        page.get_pixmap
+                    )
                     
-                    # Create extraction tasks for each component
-                    for component in page_structure['components']:
-                        if component['type'] == 'table':
-                            tasks.append(self._extract_table(component, page_num))
-                        elif component['type'] == 'text':
-                            tasks.append(self._extract_text(component))
-                        elif component['type'] == 'image':
-                            tasks.append(self._extract_image(component))
+                    if pix:
+                        components.append({
+                            "type": "table",
+                            "image": pix,
+                            "page_number": page_num
+                        })
+                    
+                    # Get images in parallel
+                    image_list = await loop.run_in_executor(
+                        thread_pool,
+                        page.get_images
+                    )
+                    
+                    for img in image_list:
+                        components.append({
+                            "type": "image",
+                            "location": img,
+                            "image": await loop.run_in_executor(thread_pool, page.get_pixmap)
+                        })
                     
                     # Process all components concurrently
-                    component_results = await asyncio.gather(*tasks, return_exceptions=True)
+                    extraction_tasks = []
+                    for component in components:
+                        if component['type'] == 'table':
+                            extraction_tasks.append(self._extract_table(component, page_num))
+                        elif component['type'] == 'text':
+                            extraction_tasks.append(self._extract_text(component))
+                        elif component['type'] == 'image':
+                            extraction_tasks.append(self._extract_image(component))
                     
-                    # Filter out errors and add successful results
-                    for result in component_results:
-                        if isinstance(result, dict) and not result.get('error'):
-                            page_results.append(result)
+                    # Execute all extraction tasks concurrently
+                    component_results = await asyncio.gather(*extraction_tasks, return_exceptions=True)
+                    
+                    # Filter successful results
+                    page_results = [
+                        result for result in component_results 
+                        if isinstance(result, dict) and not result.get('error')
+                    ]
                     
                     return {
                         'page_number': page_num,
                         'results': page_results
                     }
             
-            # Create tasks for all pages
+            # Process all pages concurrently
             tasks = [
-                process_page_with_semaphore(page_num)
+                asyncio.create_task(process_page_with_semaphore(page_num))
                 for page_num in range(total_pages)
             ]
             
-            # Process all pages concurrently
+            # Wait for all pages to complete
             all_results = await asyncio.gather(*tasks)
             
-            # Combine results from all pages
+            # Combine results
             combined_results = []
             for page_result in all_results:
                 combined_results.extend(page_result['results'])
             
-            # Integrate knowledge after processing all pages
+            # Integrate knowledge in parallel if results exist
             if combined_results:
                 try:
                     logger.info("Integrating extracted knowledge into vector store")
@@ -109,6 +146,8 @@ class CoordinatorAgent(DocumentProcessor):
                 except Exception as e:
                     logger.error(f"Error during knowledge integration: {str(e)}")
             
+            # Cleanup
+            thread_pool.shutdown(wait=False)
             doc.close()
             
             return {
