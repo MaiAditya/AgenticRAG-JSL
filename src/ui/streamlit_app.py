@@ -87,11 +87,22 @@ def main():
             
             if st.button("Process Predefined Document"):
                 with st.spinner("Processing document..."):
-                    with selected_file.open("rb") as file:
-                        result = upload_document(file)
-                        if result:
-                            st.success("Document processed successfully!")
-                            st.json(result)
+                    # Check if document is already in cache
+                    cache_file = Path("predefined-cache") / f"{selected_file.stem}_results.json"
+                    if cache_file.exists():
+                        st.info("Using cached version of the document")
+                        # Load cached results
+                        with open(cache_file, 'r') as f:
+                            cached_data = json.loads(f.read())
+                            st.success("Document loaded from cache successfully!")
+                            st.json(cached_data)
+                    else:
+                        # Only process if not cached
+                        with selected_file.open("rb") as file:
+                            result = upload_document(file)
+                            if result:
+                                st.success("Document processed successfully!")
+                                st.json(result)
         
         # Existing upload functionality
         st.subheader("Custom Document Upload")

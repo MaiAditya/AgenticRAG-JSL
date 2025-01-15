@@ -5,6 +5,8 @@ from src.core.error_handling import setup_error_handling
 from src.core.config import settings
 from src.core.initialization import initialize_models, initialize_extractors
 from loguru import logger
+from src.core.predefined_docs import PredefinedDocsManager
+from src.core.dependencies import get_vector_store, get_document_cache
 
 app = FastAPI(
     title="Document Processing API",
@@ -26,9 +28,16 @@ async def startup_event():
         initialize_models()
         logger.info("ML models initialized")
         
-        # Then initialize extractors
+        # Initialize extractors
         initialize_extractors()
         logger.info("Extractors initialized")
+        
+        # Initialize predefined documents
+        vector_store = get_vector_store()
+        document_cache = get_document_cache()
+        predefined_manager = PredefinedDocsManager(vector_store, document_cache)
+        await predefined_manager.initialize_predefined_docs()
+        logger.info("Predefined documents initialized")
         
         logger.info("Application initialization complete!")
     except Exception as e:
