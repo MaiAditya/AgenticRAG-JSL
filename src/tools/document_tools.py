@@ -117,7 +117,7 @@ class StructureDetectionTool(BaseTool):
     name = "structure_detection"
     description = "Detect and classify document structural elements"
 
-    def _run(self, file_path: str) -> Dict[str, Any]:
+    async def _run(self, file_path: str) -> Dict[str, Any]:
         try:
             import fitz  # PyMuPDF
             
@@ -132,41 +132,56 @@ class StructureDetectionTool(BaseTool):
                 if text_content.strip():
                     components.append({
                         "type": "text",
-                        "content": text_content
+                        "content": text_content,
+                        "page_number": page.number
                     })
                 
-                # Convert page to image for table detection
+                # Process tables
                 pix = page.get_pixmap()
-                components.append({
-                    "type": "table",
-                    "image": pix,
-                    "page_number": page.number
-                })
+                if pix:
+                    components.append({
+                        "type": "table",
+                        "image": pix,
+                        "page_number": page.number,
+                        "raw_image": pix.tobytes("png")
+                    })
                 
-                # Get images if any
+                # Process images
                 image_list = page.get_images()
                 for img in image_list:
-                    components.append({
-                        "type": "image",
-                        "location": img,
-                        "image": page.get_pixmap()
-                    })
+                    try:
+                        xref = img[0]
+                        base_image = doc.extract_image(xref)
+                        if base_image:
+                            image_data = base_image["image"]
+                            components.append({
+                                "type": "image",
+                                "image": image_data,
+                                "metadata": {
+                                    "page_number": page.number,
+                                    "width": img[2],
+                                    "height": img[3],
+                                    "colorspace": img[4],
+                                    "xref": xref
+                                }
+                            })
+                            logger.info(f"Added image from page {page.number} for processing")
+                    except Exception as img_error:
+                        logger.error(f"Error extracting image: {str(img_error)}")
                 
                 processed_pages += 1
             
+            logger.info(f"Document structure detection completed: {len(components)} components found")
             return {
                 "type": "document",
                 "total_pages": total_pages,
                 "processed_pages": processed_pages,
                 "components": components
             }
-            
         except Exception as e:
             logger.error(f"Error in structure detection: {str(e)}")
-            return {
-                "type": "error",
-                "error": str(e)
-            }
+            raise
+
     async def _arun(self, file_path: str) -> Dict[str, Any]:
         return self._run(file_path)
 

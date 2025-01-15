@@ -1,0 +1,2237 @@
+{
+  "file_path": "uploads/Asthma 1.pdf",
+  "timestamp": "2025-01-15T18:02:17.548253",
+  "results": {
+    "success": true,
+    "total_pages": 4,
+    "processed_pages": 4,
+    "results": [
+      {
+        "type": "text",
+        "content": "Based on the provided page content, here is the structured format identifying its components:",
+        "extracted": {
+          "type": "text",
+          "content": "Based on the provided page content, here is the structured format identifying its components:",
+          "elements": [
+            "Based on the provided page content, here is the structured format identifying its components:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Headers or Titles:",
+        "extracted": {
+          "type": "text",
+          "content": "- Headers or Titles:",
+          "elements": [
+            "- Headers or Titles:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Symptoms\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Symptoms\"",
+          "elements": [
+            "- \"Symptoms\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Recommended Treatment\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Recommended Treatment\"",
+          "elements": [
+            "- \"Recommended Treatment\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Components of Control\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Components of Control\"",
+          "elements": [
+            "- \"Components of Control\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Classification of Asthma Control (> 12 years of age)\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Classification of Asthma Control (> 12 years of age)\"",
+          "elements": [
+            "- \"Classification of Asthma Control (> 12 years of age)\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"RISK\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"RISK\"",
+          "elements": [
+            "- \"RISK\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Notes:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Notes:\"",
+          "elements": [
+            "- \"Notes:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Key Points\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Key Points\"",
+          "elements": [
+            "- \"Key Points\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"OSUWMC Clinical Practice Guideline\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"OSUWMC Clinical Practice Guideline\"",
+          "elements": [
+            "- \"OSUWMC Clinical Practice Guideline\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Outpatient Asthma: Evaluation and Management\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Outpatient Asthma: Evaluation and Management\"",
+          "elements": [
+            "- \"Outpatient Asthma: Evaluation and Management\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"What You Need to Know\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"What You Need to Know\"",
+          "elements": [
+            "- \"What You Need to Know\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Before Step Up in Therapy:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Before Step Up in Therapy:\"",
+          "elements": [
+            "- \"Before Step Up in Therapy:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Assessing Asthma Control and Adjusting Therapy in Youth > 4 Years of Age and Adults\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Assessing Asthma Control and Adjusting Therapy in Youth > 4 Years of Age and Adults\"",
+          "elements": [
+            "- \"Assessing Asthma Control and Adjusting Therapy in Youth > 4 Years of Age and Adults\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Regular Text Paragraphs:",
+        "extracted": {
+          "type": "text",
+          "content": "- Regular Text Paragraphs:",
+          "elements": [
+            "- Regular Text Paragraphs:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph 1: \"Medication side effects can vary in intensity from none to very troublesome and worrisome. The level of intensity does not correlate to specific levels of control, but should be considered in the overall assessment of risk.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph 1: \"Medication side effects can vary in intensity from none to very troublesome and worrisome. The level of intensity does not correlate to specific levels of control, but should be considered in the overall assessment of risk.\"",
+          "elements": [
+            "- Paragraph 1: \"Medication side effects can vary in intensity from none to very troublesome and worrisome. The level of intensity does not correlate to specific levels of control, but should be considered in the overall assessment of risk.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"Notes:\" (bullet points are part of the list)",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"Notes:\" (bullet points are part of the list)",
+          "elements": [
+            "- Paragraph under \"Notes:\" (bullet points are part of the list)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"Key Points\" (bullet points are part of the list)",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"Key Points\" (bullet points are part of the list)",
+          "elements": [
+            "- Paragraph under \"Key Points\" (bullet points are part of the list)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Copyright notice at the bottom of the page.",
+        "extracted": {
+          "type": "text",
+          "content": "- Copyright notice at the bottom of the page.",
+          "elements": [
+            "- Copyright notice at the bottom of the page."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"What You Need to Know\"",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"What You Need to Know\"",
+          "elements": [
+            "- Paragraph under \"What You Need to Know\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"Before Step Up in Therapy:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"Before Step Up in Therapy:\"",
+          "elements": [
+            "- Paragraph under \"Before Step Up in Therapy:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Lists or Bullet Points:",
+        "extracted": {
+          "type": "text",
+          "content": "- Lists or Bullet Points:",
+          "elements": [
+            "- Lists or Bullet Points:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Under \"Recommended Treatment\":",
+        "extracted": {
+          "type": "text",
+          "content": "- Under \"Recommended Treatment\":",
+          "elements": [
+            "- Under \"Recommended Treatment\":"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"MAINTAIN current step\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"MAINTAIN current step\"",
+          "elements": [
+            "- \"MAINTAIN current step\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Regular follow-up every 1–6 months to maintain control\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Regular follow-up every 1–6 months to maintain control\"",
+          "elements": [
+            "- \"Regular follow-up every 1–6 months to maintain control\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Consider STEP DOWN if well controlled for at least 3 months\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Consider STEP DOWN if well controlled for at least 3 months\"",
+          "elements": [
+            "- \"Consider STEP DOWN if well controlled for at least 3 months\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Under \"STEP UP 1 Step\":",
+        "extracted": {
+          "type": "text",
+          "content": "- Under \"STEP UP 1 Step\":",
+          "elements": [
+            "- Under \"STEP UP 1 Step\":"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Reevaluate in 2–6 weeks\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Reevaluate in 2–6 weeks\"",
+          "elements": [
+            "- \"Reevaluate in 2–6 weeks\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"If side effects, consider alternative treatments\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"If side effects, consider alternative treatments\"",
+          "elements": [
+            "- \"If side effects, consider alternative treatments\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Under \"STEP UP 1–2 Steps\":",
+        "extracted": {
+          "type": "text",
+          "content": "- Under \"STEP UP 1–2 Steps\":",
+          "elements": [
+            "- Under \"STEP UP 1–2 Steps\":"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Consider short course of oral systemic corticosteroids\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Consider short course of oral systemic corticosteroids\"",
+          "elements": [
+            "- \"Consider short course of oral systemic corticosteroids\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Reevaluate in 2 weeks\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Reevaluate in 2 weeks\"",
+          "elements": [
+            "- \"Reevaluate in 2 weeks\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"If side effects, consider alternative treatments\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"If side effects, consider alternative treatments\"",
+          "elements": [
+            "- \"If side effects, consider alternative treatments\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Under \"Notes:\" (after the introductory paragraph)",
+        "extracted": {
+          "type": "text",
+          "content": "- Under \"Notes:\" (after the introductory paragraph)",
+          "elements": [
+            "- Under \"Notes:\" (after the introductory paragraph)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Under \"Key Points\" (after the introductory paragraph)",
+        "extracted": {
+          "type": "text",
+          "content": "- Under \"Key Points\" (after the introductory paragraph)",
+          "elements": [
+            "- Under \"Key Points\" (after the introductory paragraph)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Under \"Before Step Up in Therapy:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- Under \"Before Step Up in Therapy:\"",
+          "elements": [
+            "- Under \"Before Step Up in Therapy:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Tables (Tabular Data):",
+        "extracted": {
+          "type": "text",
+          "content": "- Tables (Tabular Data):",
+          "elements": [
+            "- Tables (Tabular Data):"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- The content under \"Classification of Asthma Control (> 12 years of age)\" appears to be tabular data, but it is not formatted as a traditional table in the provided text. It includes categories such as \"Well Controlled,\" \"NOT Well Controlled,\" and \"Very Poorly Controlled,\" with corresponding criteria like \"Nighttime awakenings,\" \"Interference with normal activity,\" etc.\nPlease note that the actual visual formatting of the document (such as bold text, italics, or table borders) is not preserved in the provided text, so some assumptions were made based on the content and structure of the text.",
+        "extracted": {
+          "type": "text",
+          "content": "- The content under \"Classification of Asthma Control (> 12 years of age)\" appears to be tabular data, but it is not formatted as a traditional table in the provided text. It includes categories such as \"Well Controlled,\" \"NOT Well Controlled,\" and \"Very Poorly Controlled,\" with corresponding criteria like \"Nighttime awakenings,\" \"Interference with normal activity,\" etc.\nPlease note that the actual visual formatting of the document (such as bold text, italics, or table borders) is not preserved in the provided text, so some assumptions were made based on the content and structure of the text.",
+          "elements": [
+            "- The content under \"Classification of Asthma Control (> 12 years of age)\" appears to be tabular data, but it is not formatted as a traditional table in the provided text. It includes categories such as \"Well Controlled,\" \"NOT Well Controlled,\" and \"Very Poorly Controlled,\" with corresponding criteria like \"Nighttime awakenings,\" \"Interference with normal activity,\" etc.",
+            "Please note that the actual visual formatting of the document (such as bold text, italics, or table borders) is not preserved in the provided text, so some assumptions were made based on the content and structure of the text."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "The document page content can be structured as follows:",
+        "extracted": {
+          "type": "text",
+          "content": "The document page content can be structured as follows:",
+          "elements": [
+            "The document page content can be structured as follows:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Headers or Titles:",
+        "extracted": {
+          "type": "text",
+          "content": "Headers or Titles:",
+          "elements": [
+            "Headers or Titles:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Chronic Outpatient Management\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Chronic Outpatient Management\"",
+          "elements": [
+            "- \"Chronic Outpatient Management\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Assess Symptom Control\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Assess Symptom Control\"",
+          "elements": [
+            "- \"Assess Symptom Control\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Manage Medications\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Manage Medications\"",
+          "elements": [
+            "- \"Manage Medications\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Update Asthma Action Plan\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Update Asthma Action Plan\"",
+          "elements": [
+            "- \"Update Asthma Action Plan\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Follow-up\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Follow-up\"",
+          "elements": [
+            "- \"Follow-up\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"PREFERRED Controller\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"PREFERRED Controller\"",
+          "elements": [
+            "- \"PREFERRED Controller\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Alternative Controllers\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Alternative Controllers\"",
+          "elements": [
+            "- \"Alternative Controllers\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"RELIEVER\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"RELIEVER\"",
+          "elements": [
+            "- \"RELIEVER\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Before Step Up in Therapy:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Before Step Up in Therapy:\"",
+          "elements": [
+            "- \"Before Step Up in Therapy:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"NOTE: For an explanation of levels of evidence, see 2023 GINA Report, Global Strategy for Asthma Management and Prevention.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"NOTE: For an explanation of levels of evidence, see 2023 GINA Report, Global Strategy for Asthma Management and Prevention.\"",
+          "elements": [
+            "- \"NOTE: For an explanation of levels of evidence, see 2023 GINA Report, Global Strategy for Asthma Management and Prevention.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Copyright ©1998. The Ohio State University. All rights reserved.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Copyright ©1998. The Ohio State University. All rights reserved.\"",
+          "elements": [
+            "- \"Copyright ©1998. The Ohio State University. All rights reserved.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Regular Text Paragraphs:",
+        "extracted": {
+          "type": "text",
+          "content": "Regular Text Paragraphs:",
+          "elements": [
+            "Regular Text Paragraphs:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Patients with symptoms or reliever use > 2 times per month should be on Step 2 therapy\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Patients with symptoms or reliever use > 2 times per month should be on Step 2 therapy\"",
+          "elements": [
+            "- \"Patients with symptoms or reliever use > 2 times per month should be on Step 2 therapy\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"No Change ----------OR---------- Stable for 3 months ↓ by 1 Step ↑ by 1 Step ↑ by 1 – 2 Steps + Burst of Oral Corticosteroids: Burst = 5 – 10 days of prednisone, prednisolone, or methylprednisolone\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"No Change ----------OR---------- Stable for 3 months ↓ by 1 Step ↑ by 1 Step ↑ by 1 – 2 Steps + Burst of Oral Corticosteroids: Burst = 5 – 10 days of prednisone, prednisolone, or methylprednisolone\"",
+          "elements": [
+            "- \"No Change ----------OR---------- Stable for 3 months ↓ by 1 Step ↑ by 1 Step ↑ by 1 – 2 Steps + Burst of Oral Corticosteroids: Burst = 5 – 10 days of prednisone, prednisolone, or methylprednisolone\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"No tapering required until > 3 weeks 5 – 11 y/o: 1 – 2 mg/kg/day as two divided doses (max 60 mg/day) 12 + y/o: 40 – 60 mg/day as single or split dose\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"No tapering required until > 3 weeks 5 – 11 y/o: 1 – 2 mg/kg/day as two divided doses (max 60 mg/day) 12 + y/o: 40 – 60 mg/day as single or split dose\"",
+          "elements": [
+            "- \"No tapering required until > 3 weeks 5 – 11 y/o: 1 – 2 mg/kg/day as two divided doses (max 60 mg/day) 12 + y/o: 40 – 60 mg/day as single or split dose\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Evaluate asthma endotype and qualification for biologic therapy:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Evaluate asthma endotype and qualification for biologic therapy:\"",
+          "elements": [
+            "- \"Evaluate asthma endotype and qualification for biologic therapy:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Consult with a specialist\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Consult with a specialist\"",
+          "elements": [
+            "- \"Consult with a specialist\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Consult with a specialist\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Consult with a specialist\"",
+          "elements": [
+            "- \"Consult with a specialist\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Consult with a specialist\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Consult with a specialist\"",
+          "elements": [
+            "- \"Consult with a specialist\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"The stepwise approach is meant to assist, not replace, the clinical decision making required to meet individual patient needs.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"The stepwise approach is meant to assist, not replace, the clinical decision making required to meet individual patient needs.\"",
+          "elements": [
+            "- \"The stepwise approach is meant to assist, not replace, the clinical decision making required to meet individual patient needs.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Biologic therapies should be considered prior to or while starting daily systemic corticosteroids.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Biologic therapies should be considered prior to or while starting daily systemic corticosteroids.\"",
+          "elements": [
+            "- \"Biologic therapies should be considered prior to or while starting daily systemic corticosteroids.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Evidence for recommendations:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Evidence for recommendations:\"",
+          "elements": [
+            "- \"Evidence for recommendations:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Immunotherapy for steps 2-4 is based on Evidence B for house-dust mites, animal danders, and pollens; evidence is weak or lacking for molds and cockroaches. Evidence is strongest for immunotherapy with single allergens. The role of allergy in asthma is greater in children than in adults.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Immunotherapy for steps 2-4 is based on Evidence B for house-dust mites, animal danders, and pollens; evidence is weak or lacking for molds and cockroaches. Evidence is strongest for immunotherapy with single allergens. The role of allergy in asthma is greater in children than in adults.\"",
+          "elements": [
+            "- \"Immunotherapy for steps 2-4 is based on Evidence B for house-dust mites, animal danders, and pollens; evidence is weak or lacking for molds and cockroaches. Evidence is strongest for immunotherapy with single allergens. The role of allergy in asthma is greater in children than in adults.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Clinicians who administer immunotherapy, omalizumab, or mepolizumab should be prepared to identify and treat anaphylaxis that may occur.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Clinicians who administer immunotherapy, omalizumab, or mepolizumab should be prepared to identify and treat anaphylaxis that may occur.\"",
+          "elements": [
+            "- \"Clinicians who administer immunotherapy, omalizumab, or mepolizumab should be prepared to identify and treat anaphylaxis that may occur.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Anti-inflammatory reliever (AIR) therapy (ICS-SABA or ICS-formoterol) is an important change in these guidelines. If a patient is prescribed SABA-only reliever therapy, adherence to maintenance ICS is key to risk reduction.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Anti-inflammatory reliever (AIR) therapy (ICS-SABA or ICS-formoterol) is an important change in these guidelines. If a patient is prescribed SABA-only reliever therapy, adherence to maintenance ICS is key to risk reduction.\"",
+          "elements": [
+            "- \"Anti-inflammatory reliever (AIR) therapy (ICS-SABA or ICS-formoterol) is an important change in these guidelines. If a patient is prescribed SABA-only reliever therapy, adherence to maintenance ICS is key to risk reduction.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Reliever therapy should include low dose ICS whenever SABA is used (or prescribed as ICS-SABA inhaler), or combination ICS-formoterol when this inhaler is used as both maintenance and reliever therapy. Do NOT combine different ICS-LABA inhalers.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Reliever therapy should include low dose ICS whenever SABA is used (or prescribed as ICS-SABA inhaler), or combination ICS-formoterol when this inhaler is used as both maintenance and reliever therapy. Do NOT combine different ICS-LABA inhalers.\"",
+          "elements": [
+            "- \"Reliever therapy should include low dose ICS whenever SABA is used (or prescribed as ICS-SABA inhaler), or combination ICS-formoterol when this inhaler is used as both maintenance and reliever therapy. Do NOT combine different ICS-LABA inhalers.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Personalized choice between strategies of therapy is key. Consideration of adherence to scheduled inhalers, cost of inhalers, and patient preference can guide between preferred and alternative controller and reliever therapies.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Personalized choice between strategies of therapy is key. Consideration of adherence to scheduled inhalers, cost of inhalers, and patient preference can guide between preferred and alternative controller and reliever therapies.\"",
+          "elements": [
+            "- \"Personalized choice between strategies of therapy is key. Consideration of adherence to scheduled inhalers, cost of inhalers, and patient preference can guide between preferred and alternative controller and reliever therapies.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Use of reliever > 2 days a week for symptom relief (not prevention of EIB) generally indicates inadequate control and the need to step up treatment.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Use of reliever > 2 days a week for symptom relief (not prevention of EIB) generally indicates inadequate control and the need to step up treatment.\"",
+          "elements": [
+            "- \"Use of reliever > 2 days a week for symptom relief (not prevention of EIB) generally indicates inadequate control and the need to step up treatment.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Anti-inflammatory relievers are preferred: PRN low dose ICS-formoterol when used as same Maintenance And Reliever Therapy (MART). Do not combine two ICS-LABA products for use in the same patient. If not using ICS-formoterol MART approach, AIR therapy can be achieved with PRN budesonide-albuterol instead of SABA-only reliever. Evidence is greatest for PRN ICS-SABA reliever at Step 3+.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Anti-inflammatory relievers are preferred: PRN low dose ICS-formoterol when used as same Maintenance And Reliever Therapy (MART). Do not combine two ICS-LABA products for use in the same patient. If not using ICS-formoterol MART approach, AIR therapy can be achieved with PRN budesonide-albuterol instead of SABA-only reliever. Evidence is greatest for PRN ICS-SABA reliever at Step 3+.\"",
+          "elements": [
+            "- \"Anti-inflammatory relievers are preferred: PRN low dose ICS-formoterol when used as same Maintenance And Reliever Therapy (MART). Do not combine two ICS-LABA products for use in the same patient. If not using ICS-formoterol MART approach, AIR therapy can be achieved with PRN budesonide-albuterol instead of SABA-only reliever. Evidence is greatest for PRN ICS-SABA reliever at Step 3+.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Alternate reliever: PRN SABA. If using SABA-only reliever therapy (with maintenance ICS), ensure patient adherence to ICS. No patient should be on SABA-only therapy.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Alternate reliever: PRN SABA. If using SABA-only reliever therapy (with maintenance ICS), ensure patient adherence to ICS. No patient should be on SABA-only therapy.\"",
+          "elements": [
+            "- \"Alternate reliever: PRN SABA. If using SABA-only reliever therapy (with maintenance ICS), ensure patient adherence to ICS. No patient should be on SABA-only therapy.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Review with patient adherence to medication, inhaler technique, environmental control, and comorbid conditions.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Review with patient adherence to medication, inhaler technique, environmental control, and comorbid conditions.\"",
+          "elements": [
+            "- \"Review with patient adherence to medication, inhaler technique, environmental control, and comorbid conditions.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"If alternative treatment is used and response is inadequate, discontinue it and use the preferred treatment before stepping up.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"If alternative treatment is used and response is inadequate, discontinue it and use the preferred treatment before stepping up.\"",
+          "elements": [
+            "- \"If alternative treatment is used and response is inadequate, discontinue it and use the preferred treatment before stepping up.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"This document may be used for noncommercial educational and noncommercial (NOT funded by a commercial entity) research use only.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"This document may be used for noncommercial educational and noncommercial (NOT funded by a commercial entity) research use only.\"",
+          "elements": [
+            "- \"This document may be used for noncommercial educational and noncommercial (NOT funded by a commercial entity) research use only.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"OSUWMC Clinical Practice Guidelines may not be reproduced, displayed, modified, or distributed in any form without a written agreement with The Ohio State University Technology Commercialization Office. Requests can be directed to Technology Commercialization Office (TCO) or email innovate@osu.edu.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"OSUWMC Clinical Practice Guidelines may not be reproduced, displayed, modified, or distributed in any form without a written agreement with The Ohio State University Technology Commercialization Office. Requests can be directed to Technology Commercialization Office (TCO) or email innovate@osu.edu.\"",
+          "elements": [
+            "- \"OSUWMC Clinical Practice Guidelines may not be reproduced, displayed, modified, or distributed in any form without a written agreement with The Ohio State University Technology Commercialization Office. Requests can be directed to Technology Commercialization Office (TCO) or email innovate@osu.edu.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Lists or Bullet Points:",
+        "extracted": {
+          "type": "text",
+          "content": "Lists or Bullet Points:",
+          "elements": [
+            "Lists or Bullet Points:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Well Controlled 20 +\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Well Controlled 20 +\"",
+          "elements": [
+            "- \"Well Controlled 20 +\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"NOT Well Controlled 16 – 19\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"NOT Well Controlled 16 – 19\"",
+          "elements": [
+            "- \"NOT Well Controlled 16 – 19\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"VERY Poorly Controlled ≤ 15\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"VERY Poorly Controlled ≤ 15\"",
+          "elements": [
+            "- \"VERY Poorly Controlled ≤ 15\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"1 – 6 months\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"1 – 6 months\"",
+          "elements": [
+            "- \"1 – 6 months\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"2 – 6 weeks\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"2 – 6 weeks\"",
+          "elements": [
+            "- \"2 – 6 weeks\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 1\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 1\"",
+          "elements": [
+            "- \"Step 1\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 2\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 2\"",
+          "elements": [
+            "- \"Step 2\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 3\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 3\"",
+          "elements": [
+            "- \"Step 3\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 4\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 4\"",
+          "elements": [
+            "- \"Step 4\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 5\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 5\"",
+          "elements": [
+            "- \"Step 5\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 6\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 6\"",
+          "elements": [
+            "- \"Step 6\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"CBC with diff\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"CBC with diff\"",
+          "elements": [
+            "- \"CBC with diff\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Total IgE\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Total IgE\"",
+          "elements": [
+            "- \"Total IgE\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Consider evaluation for allergen sensitization by RAST or percutaneous testing\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Consider evaluation for allergen sensitization by RAST or percutaneous testing\"",
+          "elements": [
+            "- \"Consider evaluation for allergen sensitization by RAST or percutaneous testing\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Consult with specialist for step up to biologic therapies\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Consult with specialist for step up to biologic therapies\"",
+          "elements": [
+            "- \"Consult with specialist for step up to biologic therapies\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Low dose maintenance ICS-LABA*\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Low dose maintenance ICS-LABA*\"",
+          "elements": [
+            "- \"Low dose maintenance ICS-LABA*\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"High dose ICS-LABA + Targeted biologic therapy\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"High dose ICS-LABA + Targeted biologic therapy\"",
+          "elements": [
+            "- \"High dose ICS-LABA + Targeted biologic therapy\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Low dose ICS whenever SABA is taken (PRN ICS-SABA)\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Low dose ICS whenever SABA is taken (PRN ICS-SABA)\"",
+          "elements": [
+            "- \"Low dose ICS whenever SABA is taken (PRN ICS-SABA)\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Low dose scheduled maintenance ICS\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Low dose scheduled maintenance ICS\"",
+          "elements": [
+            "- \"Low dose scheduled maintenance ICS\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Medium dose ICS\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Medium dose ICS\"",
+          "elements": [
+            "- \"Medium dose ICS\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Or add LTRA\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Or add LTRA\"",
+          "elements": [
+            "- \"Or add LTRA\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 1: ICS-LABA PRN [Evidence B]. PRN ICS taken whenever SABA is taken [Evidence B];\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 1: ICS-LABA PRN [Evidence B]. PRN ICS taken whenever SABA is taken [Evidence B];\"",
+          "elements": [
+            "- \"Step 1: ICS-LABA PRN [Evidence B]. PRN ICS taken whenever SABA is taken [Evidence B];\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 2: ICS OR PRN ICS-LABA [Evidence A]. LTRA alternative is inferior to ICS [Evidence A] and inferior to ICS whenever SABA is taken [Evidence B];\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 2: ICS OR PRN ICS-LABA [Evidence A]. LTRA alternative is inferior to ICS [Evidence A] and inferior to ICS whenever SABA is taken [Evidence B];\"",
+          "elements": [
+            "- \"Step 2: ICS OR PRN ICS-LABA [Evidence A]. LTRA alternative is inferior to ICS [Evidence A] and inferior to ICS whenever SABA is taken [Evidence B];\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 3: low dose ICS-formoterol maintenance and reliever therapy (MART) [Evidence A]. Alternative: maintenance low dose ICS-LABA with PRN SABA reliever [Evidence A]. ICS-SABA reliever data is for combination with ICS-LABA at step 3 and above;\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 3: low dose ICS-formoterol maintenance and reliever therapy (MART) [Evidence A]. Alternative: maintenance low dose ICS-LABA with PRN SABA reliever [Evidence A]. ICS-SABA reliever data is for combination with ICS-LABA at step 3 and above;\"",
+          "elements": [
+            "- \"Step 3: low dose ICS-formoterol maintenance and reliever therapy (MART) [Evidence A]. Alternative: maintenance low dose ICS-LABA with PRN SABA reliever [Evidence A]. ICS-SABA reliever data is for combination with ICS-LABA at step 3 and above;\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 4: medium dose ICS- formoterol maintenance (2 puffs) and reliever therapy (1 puff) (MART) [Evidence A]. Alternative medium dose ICS-LABA maintenance with SABA reliever [Evidence B]. Addition of LAMA to medium or high dose ICS-LABA can improvement in lung function and reduce risk of exacerbation [Evidence A]. Addition of LTRA [Evidence A] to ICS is not as effective as addition of LABA; Note FDA black-box warning for montelukast used at any step;\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 4: medium dose ICS- formoterol maintenance (2 puffs) and reliever therapy (1 puff) (MART) [Evidence A]. Alternative medium dose ICS-LABA maintenance with SABA reliever [Evidence B]. Addition of LAMA to medium or high dose ICS-LABA can improvement in lung function and reduce risk of exacerbation [Evidence A]. Addition of LTRA [Evidence A] to ICS is not as effective as addition of LABA; Note FDA black-box warning for montelukast used at any step;\"",
+          "elements": [
+            "- \"Step 4: medium dose ICS- formoterol maintenance (2 puffs) and reliever therapy (1 puff) (MART) [Evidence A]. Alternative medium dose ICS-LABA maintenance with SABA reliever [Evidence B]. Addition of LAMA to medium or high dose ICS-LABA can improvement in lung function and reduce risk of exacerbation [Evidence A]. Addition of LTRA [Evidence A] to ICS is not as effective as addition of LABA; Note FDA black-box warning for montelukast used at any step;\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 5: high dose ICS-LABA [Evidence A] should be added to medium dose ICS-LABA and 3rd controller (LTRA) [Evidence B] on a trial basis of 3-6 months;\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 5: high dose ICS-LABA [Evidence A] should be added to medium dose ICS-LABA and 3rd controller (LTRA) [Evidence B] on a trial basis of 3-6 months;\"",
+          "elements": [
+            "- \"Step 5: high dose ICS-LABA [Evidence A] should be added to medium dose ICS-LABA and 3rd controller (LTRA) [Evidence B] on a trial basis of 3-6 months;\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Step 6: add -on Biologic therapies of anti-IgE, anti-IL5/5R, anti IL-4Ra, and anti- TLSP [Evidence A].\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Step 6: add -on Biologic therapies of anti-IgE, anti-IL5/5R, anti IL-4Ra, and anti- TLSP [Evidence A].\"",
+          "elements": [
+            "- \"Step 6: add -on Biologic therapies of anti-IgE, anti-IL5/5R, anti IL-4Ra, and anti- TLSP [Evidence A].\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Tables:",
+        "extracted": {
+          "type": "text",
+          "content": "Tables:",
+          "elements": [
+            "Tables:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- No explicit tables are detected in the provided content. However, the steps (Step 1 to Step 6) and associated treatments could potentially be formatted as a table for clarity.\nPlease note that the content provided is a mix of structured and unstructured information, and the above breakdown is an attempt to categorize the information based on the cues given in the text.",
+        "extracted": {
+          "type": "text",
+          "content": "- No explicit tables are detected in the provided content. However, the steps (Step 1 to Step 6) and associated treatments could potentially be formatted as a table for clarity.\nPlease note that the content provided is a mix of structured and unstructured information, and the above breakdown is an attempt to categorize the information based on the cues given in the text.",
+          "elements": [
+            "- No explicit tables are detected in the provided content. However, the steps (Step 1 to Step 6) and associated treatments could potentially be formatted as a table for clarity.",
+            "Please note that the content provided is a mix of structured and unstructured information, and the above breakdown is an attempt to categorize the information based on the cues given in the text."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Based on the provided page content, here is the structured format identifying its components:",
+        "extracted": {
+          "type": "text",
+          "content": "Based on the provided page content, here is the structured format identifying its components:",
+          "elements": [
+            "Based on the provided page content, here is the structured format identifying its components:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Headers or Titles:",
+        "extracted": {
+          "type": "text",
+          "content": "Headers or Titles:",
+          "elements": [
+            "Headers or Titles:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Stepwise Recommendations for Asthma Management (12+ Years)",
+        "extracted": {
+          "type": "text",
+          "content": "- Stepwise Recommendations for Asthma Management (12+ Years)",
+          "elements": [
+            "- Stepwise Recommendations for Asthma Management (12+ Years)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Abbreviations:",
+        "extracted": {
+          "type": "text",
+          "content": "- Abbreviations:",
+          "elements": [
+            "- Abbreviations:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- PRN SABA",
+        "extracted": {
+          "type": "text",
+          "content": "- PRN SABA",
+          "elements": [
+            "- PRN SABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- PRN Low Dose ICS / LABA",
+        "extracted": {
+          "type": "text",
+          "content": "- PRN Low Dose ICS / LABA",
+          "elements": [
+            "- PRN Low Dose ICS / LABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Low Dose ICS /LABA",
+        "extracted": {
+          "type": "text",
+          "content": "- Low Dose ICS /LABA",
+          "elements": [
+            "- Low Dose ICS /LABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Medium Dose ICS /LABA",
+        "extracted": {
+          "type": "text",
+          "content": "- Medium Dose ICS /LABA",
+          "elements": [
+            "- Medium Dose ICS /LABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- High Dose ICS /LABA",
+        "extracted": {
+          "type": "text",
+          "content": "- High Dose ICS /LABA",
+          "elements": [
+            "- High Dose ICS /LABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Low Dose ICS-formoterol",
+        "extracted": {
+          "type": "text",
+          "content": "- Low Dose ICS-formoterol",
+          "elements": [
+            "- Low Dose ICS-formoterol"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 1",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 1",
+          "elements": [
+            "- Step 1"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 2",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 2",
+          "elements": [
+            "- Step 2"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 3",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 3",
+          "elements": [
+            "- Step 3"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 4",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 4",
+          "elements": [
+            "- Step 4"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 5",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 5",
+          "elements": [
+            "- Step 5"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 6",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 6",
+          "elements": [
+            "- Step 6"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Alternative Controllers",
+        "extracted": {
+          "type": "text",
+          "content": "- Alternative Controllers",
+          "elements": [
+            "- Alternative Controllers"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- RELIEVER",
+        "extracted": {
+          "type": "text",
+          "content": "- RELIEVER",
+          "elements": [
+            "- RELIEVER"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Other Add-On Medications to use in addition to ICS/LABA",
+        "extracted": {
+          "type": "text",
+          "content": "- Other Add-On Medications to use in addition to ICS/LABA",
+          "elements": [
+            "- Other Add-On Medications to use in addition to ICS/LABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- LTRA",
+        "extracted": {
+          "type": "text",
+          "content": "- LTRA",
+          "elements": [
+            "- LTRA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- PRN ICS / SABA",
+        "extracted": {
+          "type": "text",
+          "content": "- PRN ICS / SABA",
+          "elements": [
+            "- PRN ICS / SABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Anti-Inflammatory Relievers (PRN Therapy)",
+        "extracted": {
+          "type": "text",
+          "content": "- Anti-Inflammatory Relievers (PRN Therapy)",
+          "elements": [
+            "- Anti-Inflammatory Relievers (PRN Therapy)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Regular Text Paragraphs:",
+        "extracted": {
+          "type": "text",
+          "content": "Regular Text Paragraphs:",
+          "elements": [
+            "Regular Text Paragraphs:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Guidelines do not recommend high dose ICS without a LABA. Move on to combination medications below or equivalent regimen.",
+        "extracted": {
+          "type": "text",
+          "content": "- Guidelines do not recommend high dose ICS without a LABA. Move on to combination medications below or equivalent regimen.",
+          "elements": [
+            "- Guidelines do not recommend high dose ICS without a LABA. Move on to combination medications below or equivalent regimen."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Monotherapy is not Recommended",
+        "extracted": {
+          "type": "text",
+          "content": "- Monotherapy is not Recommended",
+          "elements": [
+            "- Monotherapy is not Recommended"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Note: Consider laboratory evaluation for asthma endotyping",
+        "extracted": {
+          "type": "text",
+          "content": "- Note: Consider laboratory evaluation for asthma endotyping",
+          "elements": [
+            "- Note: Consider laboratory evaluation for asthma endotyping"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Evaluate asthma endotype and qualification for biologic therapy:",
+        "extracted": {
+          "type": "text",
+          "content": "- Evaluate asthma endotype and qualification for biologic therapy:",
+          "elements": [
+            "- Evaluate asthma endotype and qualification for biologic therapy:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- NOTE: Consider addition of corticosteroids if poorly controlled",
+        "extracted": {
+          "type": "text",
+          "content": "- NOTE: Consider addition of corticosteroids if poorly controlled",
+          "elements": [
+            "- NOTE: Consider addition of corticosteroids if poorly controlled"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Consult with a specialist",
+        "extracted": {
+          "type": "text",
+          "content": "- Consult with a specialist",
+          "elements": [
+            "- Consult with a specialist"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Consult with a specialist",
+        "extracted": {
+          "type": "text",
+          "content": "- Consult with a specialist",
+          "elements": [
+            "- Consult with a specialist"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Anti-inflammatory relievers are preferred: PRN low dose ICS-formoterol when used as same Maintenance And Reliever Therapy (MART). Do not combine two ICS-LABA products for use in the same patient. If not using ICS-formoterol MART approach, AIR therapy can be achieved with PRN budesonide-albuterol instead of SABA-only reliever. Evidence is greatest for PRN ICS-SABA reliever at Step 3+.",
+        "extracted": {
+          "type": "text",
+          "content": "- Anti-inflammatory relievers are preferred: PRN low dose ICS-formoterol when used as same Maintenance And Reliever Therapy (MART). Do not combine two ICS-LABA products for use in the same patient. If not using ICS-formoterol MART approach, AIR therapy can be achieved with PRN budesonide-albuterol instead of SABA-only reliever. Evidence is greatest for PRN ICS-SABA reliever at Step 3+.",
+          "elements": [
+            "- Anti-inflammatory relievers are preferred: PRN low dose ICS-formoterol when used as same Maintenance And Reliever Therapy (MART). Do not combine two ICS-LABA products for use in the same patient. If not using ICS-formoterol MART approach, AIR therapy can be achieved with PRN budesonide-albuterol instead of SABA-only reliever. Evidence is greatest for PRN ICS-SABA reliever at Step 3+."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Alternate reliever: PRN SABA. If using SABA-only reliever therapy (with maintenance ICS), ensure patient adherence to ICS. No patient should be on SABA-only therapy.",
+        "extracted": {
+          "type": "text",
+          "content": "- Alternate reliever: PRN SABA. If using SABA-only reliever therapy (with maintenance ICS), ensure patient adherence to ICS. No patient should be on SABA-only therapy.",
+          "elements": [
+            "- Alternate reliever: PRN SABA. If using SABA-only reliever therapy (with maintenance ICS), ensure patient adherence to ICS. No patient should be on SABA-only therapy."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Copyright notice",
+        "extracted": {
+          "type": "text",
+          "content": "- Copyright notice",
+          "elements": [
+            "- Copyright notice"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Lists or Bullet Points:",
+        "extracted": {
+          "type": "text",
+          "content": "Lists or Bullet Points:",
+          "elements": [
+            "Lists or Bullet Points:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Abbreviations list:",
+        "extracted": {
+          "type": "text",
+          "content": "- Abbreviations list:",
+          "elements": [
+            "- Abbreviations list:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- ICS: inhaled corticosteroid",
+        "extracted": {
+          "type": "text",
+          "content": "- ICS: inhaled corticosteroid",
+          "elements": [
+            "- ICS: inhaled corticosteroid"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- LABA: long-acting beta2-agonist",
+        "extracted": {
+          "type": "text",
+          "content": "- LABA: long-acting beta2-agonist",
+          "elements": [
+            "- LABA: long-acting beta2-agonist"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- LTRA: leukotriene receptor antagonist",
+        "extracted": {
+          "type": "text",
+          "content": "- LTRA: leukotriene receptor antagonist",
+          "elements": [
+            "- LTRA: leukotriene receptor antagonist"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- SABA: short-acting beta2-agonist",
+        "extracted": {
+          "type": "text",
+          "content": "- SABA: short-acting beta2-agonist",
+          "elements": [
+            "- SABA: short-acting beta2-agonist"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Evaluation for asthma endotype and qualification for biologic therapy list:",
+        "extracted": {
+          "type": "text",
+          "content": "- Evaluation for asthma endotype and qualification for biologic therapy list:",
+          "elements": [
+            "- Evaluation for asthma endotype and qualification for biologic therapy list:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- CBC with diff",
+        "extracted": {
+          "type": "text",
+          "content": "- CBC with diff",
+          "elements": [
+            "- CBC with diff"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Total IgE",
+        "extracted": {
+          "type": "text",
+          "content": "- Total IgE",
+          "elements": [
+            "- Total IgE"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Consider evaluation for allergen sensitization by RAST or percutaneous testing",
+        "extracted": {
+          "type": "text",
+          "content": "- Consider evaluation for allergen sensitization by RAST or percutaneous testing",
+          "elements": [
+            "- Consider evaluation for allergen sensitization by RAST or percutaneous testing"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Consult with specialist for step up to biologic therapies",
+        "extracted": {
+          "type": "text",
+          "content": "- Consult with specialist for step up to biologic therapies",
+          "elements": [
+            "- Consult with specialist for step up to biologic therapies"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Tables:",
+        "extracted": {
+          "type": "text",
+          "content": "Tables:",
+          "elements": [
+            "Tables:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- No explicit tables are present, but there is tabular-like data in the form of medication dosages and recommendations. This data is not formatted as a traditional table with rows and columns but could be interpreted as such due to the structured presentation of medication names, patient age groups, dosages, and frequencies.",
+        "extracted": {
+          "type": "text",
+          "content": "- No explicit tables are present, but there is tabular-like data in the form of medication dosages and recommendations. This data is not formatted as a traditional table with rows and columns but could be interpreted as such due to the structured presentation of medication names, patient age groups, dosages, and frequencies.",
+          "elements": [
+            "- No explicit tables are present, but there is tabular-like data in the form of medication dosages and recommendations. This data is not formatted as a traditional table with rows and columns but could be interpreted as such due to the structured presentation of medication names, patient age groups, dosages, and frequencies."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Bullet Points (Medication Dosages and Recommendations):",
+        "extracted": {
+          "type": "text",
+          "content": "Bullet Points (Medication Dosages and Recommendations):",
+          "elements": [
+            "Bullet Points (Medication Dosages and Recommendations):"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Beclomethasone (QVAR)",
+        "extracted": {
+          "type": "text",
+          "content": "- Beclomethasone (QVAR)",
+          "elements": [
+            "- Beclomethasone (QVAR)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Albuterol (ProAir or Ventolin)",
+        "extracted": {
+          "type": "text",
+          "content": "- Albuterol (ProAir or Ventolin)",
+          "elements": [
+            "- Albuterol (ProAir or Ventolin)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Levalbuterol (Xopenex)",
+        "extracted": {
+          "type": "text",
+          "content": "- Levalbuterol (Xopenex)",
+          "elements": [
+            "- Levalbuterol (Xopenex)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Budesonide (Pulmicort)",
+        "extracted": {
+          "type": "text",
+          "content": "- Budesonide (Pulmicort)",
+          "elements": [
+            "- Budesonide (Pulmicort)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Ciclesonide (Alvesco)",
+        "extracted": {
+          "type": "text",
+          "content": "- Ciclesonide (Alvesco)",
+          "elements": [
+            "- Ciclesonide (Alvesco)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Flunisolide (Aerospan)",
+        "extracted": {
+          "type": "text",
+          "content": "- Flunisolide (Aerospan)",
+          "elements": [
+            "- Flunisolide (Aerospan)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Fluticasone",
+        "extracted": {
+          "type": "text",
+          "content": "- Fluticasone",
+          "elements": [
+            "- Fluticasone"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Arnuity Ellipta Powder",
+        "extracted": {
+          "type": "text",
+          "content": "- Arnuity Ellipta Powder",
+          "elements": [
+            "- Arnuity Ellipta Powder"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Mometasone (Asmanex)",
+        "extracted": {
+          "type": "text",
+          "content": "- Mometasone (Asmanex)",
+          "elements": [
+            "- Mometasone (Asmanex)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Budesonide/Formoterol (Symbicort, Breyna)",
+        "extracted": {
+          "type": "text",
+          "content": "- Budesonide/Formoterol (Symbicort, Breyna)",
+          "elements": [
+            "- Budesonide/Formoterol (Symbicort, Breyna)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Fluticasone/Salmeterol (Advair HFA)",
+        "extracted": {
+          "type": "text",
+          "content": "- Fluticasone/Salmeterol (Advair HFA)",
+          "elements": [
+            "- Fluticasone/Salmeterol (Advair HFA)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Fluticasone/Vilanterol (Breo ellipta inhaler)",
+        "extracted": {
+          "type": "text",
+          "content": "- Fluticasone/Vilanterol (Breo ellipta inhaler)",
+          "elements": [
+            "- Fluticasone/Vilanterol (Breo ellipta inhaler)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Mometasone/Formoterol (Dulera pMDI)",
+        "extracted": {
+          "type": "text",
+          "content": "- Mometasone/Formoterol (Dulera pMDI)",
+          "elements": [
+            "- Mometasone/Formoterol (Dulera pMDI)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Budesonide/Albuterol (Airsupra)",
+        "extracted": {
+          "type": "text",
+          "content": "- Budesonide/Albuterol (Airsupra)",
+          "elements": [
+            "- Budesonide/Albuterol (Airsupra)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Zileuton",
+        "extracted": {
+          "type": "text",
+          "content": "- Zileuton",
+          "elements": [
+            "- Zileuton"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Theophylline",
+        "extracted": {
+          "type": "text",
+          "content": "- Theophylline",
+          "elements": [
+            "- Theophylline"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Montelukast (Singulair)",
+        "extracted": {
+          "type": "text",
+          "content": "- Montelukast (Singulair)",
+          "elements": [
+            "- Montelukast (Singulair)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Zafirlukast (Accolate)",
+        "extracted": {
+          "type": "text",
+          "content": "- Zafirlukast (Accolate)",
+          "elements": [
+            "- Zafirlukast (Accolate)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Mometasone/Formoterol (Dulera)\nNote: The asterisks (*, **, ***) mentioned in the document are not explicitly explained within the provided content, but they seem to indicate additional information or footnotes related to specific doses or inhaler requirements.",
+        "extracted": {
+          "type": "text",
+          "content": "- Mometasone/Formoterol (Dulera)\nNote: The asterisks (*, **, ***) mentioned in the document are not explicitly explained within the provided content, but they seem to indicate additional information or footnotes related to specific doses or inhaler requirements.",
+          "elements": [
+            "- Mometasone/Formoterol (Dulera)",
+            "Note: The asterisks (*, **, ***) mentioned in the document are not explicitly explained within the provided content, but they seem to indicate additional information or footnotes related to specific doses or inhaler requirements."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "The structured format of the document page content is as follows:",
+        "extracted": {
+          "type": "text",
+          "content": "The structured format of the document page content is as follows:",
+          "elements": [
+            "The structured format of the document page content is as follows:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Header or Title:",
+        "extracted": {
+          "type": "text",
+          "content": "- Header or Title:",
+          "elements": [
+            "- Header or Title:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- None detected explicitly on the page content provided.",
+        "extracted": {
+          "type": "text",
+          "content": "- None detected explicitly on the page content provided.",
+          "elements": [
+            "- None detected explicitly on the page content provided."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Regular text paragraphs:",
+        "extracted": {
+          "type": "text",
+          "content": "- Regular text paragraphs:",
+          "elements": [
+            "- Regular text paragraphs:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "1. Copyright notice paragraph.",
+        "extracted": {
+          "type": "text",
+          "content": "1. Copyright notice paragraph.",
+          "elements": [
+            "1. Copyright notice paragraph."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "2. Disclaimer paragraph at the end.",
+        "extracted": {
+          "type": "text",
+          "content": "2. Disclaimer paragraph at the end.",
+          "elements": [
+            "2. Disclaimer paragraph at the end."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Tables:",
+        "extracted": {
+          "type": "text",
+          "content": "- Tables:",
+          "elements": [
+            "- Tables:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- No tables detected in the provided content.",
+        "extracted": {
+          "type": "text",
+          "content": "- No tables detected in the provided content.",
+          "elements": [
+            "- No tables detected in the provided content."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Lists or bullet points:",
+        "extracted": {
+          "type": "text",
+          "content": "- Lists or bullet points:",
+          "elements": [
+            "- Lists or bullet points:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- References list:",
+        "extracted": {
+          "type": "text",
+          "content": "- References list:",
+          "elements": [
+            "- References list:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- U.S. Department of Health and Human Services reference.",
+        "extracted": {
+          "type": "text",
+          "content": "- U.S. Department of Health and Human Services reference.",
+          "elements": [
+            "- U.S. Department of Health and Human Services reference."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Global Initiative for Asthma (GINA) reference.",
+        "extracted": {
+          "type": "text",
+          "content": "- Global Initiative for Asthma (GINA) reference.",
+          "elements": [
+            "- Global Initiative for Asthma (GINA) reference."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- OSUWMC Resources list:",
+        "extracted": {
+          "type": "text",
+          "content": "- OSUWMC Resources list:",
+          "elements": [
+            "- OSUWMC Resources list:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- IHIS Order Sets with one item: \"Express Lane: Asthma Visit [7651]\".",
+        "extracted": {
+          "type": "text",
+          "content": "- IHIS Order Sets with one item: \"Express Lane: Asthma Visit [7651]\".",
+          "elements": [
+            "- IHIS Order Sets with one item: \"Express Lane: Asthma Visit [7651]\"."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- IHIS Tip Sheets with one item: \"Ordering Patient Asthma Tracking in OSUMyChart\".",
+        "extracted": {
+          "type": "text",
+          "content": "- IHIS Tip Sheets with one item: \"Ordering Patient Asthma Tracking in OSUMyChart\".",
+          "elements": [
+            "- IHIS Tip Sheets with one item: \"Ordering Patient Asthma Tracking in OSUMyChart\"."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- IHIS SmartPhrases with one item: \"SmartPhrases for outpatient management and documentation\".",
+        "extracted": {
+          "type": "text",
+          "content": "- IHIS SmartPhrases with one item: \"SmartPhrases for outpatient management and documentation\".",
+          "elements": [
+            "- IHIS SmartPhrases with one item: \"SmartPhrases for outpatient management and documentation\"."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Assessment Tools with three items: \"ACT Questionnaire\", \"c-ACT Questionnaire\", \"Asthma Action Plan\".",
+        "extracted": {
+          "type": "text",
+          "content": "- Assessment Tools with three items: \"ACT Questionnaire\", \"c-ACT Questionnaire\", \"Asthma Action Plan\".",
+          "elements": [
+            "- Assessment Tools with three items: \"ACT Questionnaire\", \"c-ACT Questionnaire\", \"Asthma Action Plan\"."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Quality Measures list with four items:",
+        "extracted": {
+          "type": "text",
+          "content": "- Quality Measures list with four items:",
+          "elements": [
+            "- Quality Measures list with four items:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- All patients with asthma assessed for control using validated questionnaire (ACT or c-ACT).",
+        "extracted": {
+          "type": "text",
+          "content": "- All patients with asthma assessed for control using validated questionnaire (ACT or c-ACT).",
+          "elements": [
+            "- All patients with asthma assessed for control using validated questionnaire (ACT or c-ACT)."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- All patients with asthma prescribed only PRN therapy prescribed an inhaled corticosteroid containing regimen.",
+        "extracted": {
+          "type": "text",
+          "content": "- All patients with asthma prescribed only PRN therapy prescribed an inhaled corticosteroid containing regimen.",
+          "elements": [
+            "- All patients with asthma prescribed only PRN therapy prescribed an inhaled corticosteroid containing regimen."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- All patients with persistent asthma prescribed corticosteroid therapy.",
+        "extracted": {
+          "type": "text",
+          "content": "- All patients with persistent asthma prescribed corticosteroid therapy.",
+          "elements": [
+            "- All patients with persistent asthma prescribed corticosteroid therapy."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- No patients with asthma are prescribed SABA-only therapy.",
+        "extracted": {
+          "type": "text",
+          "content": "- No patients with asthma are prescribed SABA-only therapy.",
+          "elements": [
+            "- No patients with asthma are prescribed SABA-only therapy."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Guideline Authors list with four items:",
+        "extracted": {
+          "type": "text",
+          "content": "- Guideline Authors list with four items:",
+          "elements": [
+            "- Guideline Authors list with four items:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Megan Conroy, MD, MAEd, FCCP.",
+        "extracted": {
+          "type": "text",
+          "content": "- Megan Conroy, MD, MAEd, FCCP.",
+          "elements": [
+            "- Megan Conroy, MD, MAEd, FCCP."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Emily Vrontos, PharmD, CDCES.",
+        "extracted": {
+          "type": "text",
+          "content": "- Emily Vrontos, PharmD, CDCES.",
+          "elements": [
+            "- Emily Vrontos, PharmD, CDCES."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Amy James, PharmD, BCACP, BC-ADM.",
+        "extracted": {
+          "type": "text",
+          "content": "- Amy James, PharmD, BCACP, BC-ADM.",
+          "elements": [
+            "- Amy James, PharmD, BCACP, BC-ADM."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Jonathan Parsons, MD, MSc, FCCP.",
+        "extracted": {
+          "type": "text",
+          "content": "- Jonathan Parsons, MD, MSc, FCCP.",
+          "elements": [
+            "- Jonathan Parsons, MD, MSc, FCCP."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Guideline Contributor list with two items:",
+        "extracted": {
+          "type": "text",
+          "content": "- Guideline Contributor list with two items:",
+          "elements": [
+            "- Guideline Contributor list with two items:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Shalina Nair, MD.",
+        "extracted": {
+          "type": "text",
+          "content": "- Shalina Nair, MD.",
+          "elements": [
+            "- Shalina Nair, MD."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Katrina Johnson, MD.",
+        "extracted": {
+          "type": "text",
+          "content": "- Katrina Johnson, MD.",
+          "elements": [
+            "- Katrina Johnson, MD."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Single item: \"Guideline reviewed by: Ambulatory Quality Committee\".",
+        "extracted": {
+          "type": "text",
+          "content": "- Single item: \"Guideline reviewed by: Ambulatory Quality Committee\".",
+          "elements": [
+            "- Single item: \"Guideline reviewed by: Ambulatory Quality Committee\"."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Single item: \"Guideline Approved March 6, 2024. Sixth edition.\"\nPlease note that the actual headers or titles may not be explicitly mentioned in the provided content, but the structure suggests that \"References,\" \"OSUWMC Resources,\" \"Quality Measures,\" \"Guideline Authors,\" \"Guideline Contributor,\" and \"Guideline Approved\" could serve as implied headers for their respective sections.",
+        "extracted": {
+          "type": "text",
+          "content": "- Single item: \"Guideline Approved March 6, 2024. Sixth edition.\"\nPlease note that the actual headers or titles may not be explicitly mentioned in the provided content, but the structure suggests that \"References,\" \"OSUWMC Resources,\" \"Quality Measures,\" \"Guideline Authors,\" \"Guideline Contributor,\" and \"Guideline Approved\" could serve as implied headers for their respective sections.",
+          "elements": [
+            "- Single item: \"Guideline Approved March 6, 2024. Sixth edition.\"",
+            "Please note that the actual headers or titles may not be explicitly mentioned in the provided content, but the structure suggests that \"References,\" \"OSUWMC Resources,\" \"Quality Measures,\" \"Guideline Authors,\" \"Guideline Contributor,\" and \"Guideline Approved\" could serve as implied headers for their respective sections."
+          ]
+        }
+      }
+    ]
+  }
+}

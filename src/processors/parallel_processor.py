@@ -11,26 +11,9 @@ class ParallelDocumentProcessor:
 
     async def process_document(self, file_path: str) -> Dict[str, Any]:
         try:
-            doc = fitz.open(file_path)
-            
-            # Create tasks for parallel processing
-            tasks = []
-            semaphore = asyncio.Semaphore(self.max_workers)
-            
-            async def process_with_semaphore(page):
-                async with semaphore:
-                    return await self.coordinator.process_page(page)
-            
-            # Create tasks for all pages
-            for page in doc:
-                tasks.append(process_with_semaphore(page))
-            
-            # Execute all tasks in parallel
-            results = await asyncio.gather(*tasks)
-            
-            doc.close()
-            return self.coordinator.combine_results(results)
-            
+            # Process the entire document at once instead of page by page
+            result = await self.coordinator.process_document(file_path)
+            return result
         except Exception as e:
             logger.error(f"Error processing document {file_path}: {str(e)}")
-            raise 
+            raise ProcessingError(f"Failed to process document: {str(e)}") 

@@ -1,0 +1,1427 @@
+{
+  "file_path": "uploads/Asthma 1.pdf",
+  "timestamp": "2025-01-15T18:06:04.632209",
+  "results": {
+    "success": true,
+    "total_pages": 4,
+    "processed_pages": 4,
+    "results": [
+      {
+        "type": "text",
+        "content": "Based on the provided page content, here is the structured format identifying its components:",
+        "extracted": {
+          "type": "text",
+          "content": "Based on the provided page content, here is the structured format identifying its components:",
+          "elements": [
+            "Based on the provided page content, here is the structured format identifying its components:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Headers or Titles:",
+        "extracted": {
+          "type": "text",
+          "content": "- Headers or Titles:",
+          "elements": [
+            "- Headers or Titles:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Symptoms\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Symptoms\"",
+          "elements": [
+            "- \"Symptoms\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Recommended Treatment\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Recommended Treatment\"",
+          "elements": [
+            "- \"Recommended Treatment\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Components of Control\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Components of Control\"",
+          "elements": [
+            "- \"Components of Control\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Classification of Asthma Control (> 12 years of age)\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Classification of Asthma Control (> 12 years of age)\"",
+          "elements": [
+            "- \"Classification of Asthma Control (> 12 years of age)\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"RISK\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"RISK\"",
+          "elements": [
+            "- \"RISK\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Notes:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Notes:\"",
+          "elements": [
+            "- \"Notes:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Key Points\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Key Points\"",
+          "elements": [
+            "- \"Key Points\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"OSUWMC Clinical Practice Guideline\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"OSUWMC Clinical Practice Guideline\"",
+          "elements": [
+            "- \"OSUWMC Clinical Practice Guideline\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Outpatient Asthma: Evaluation and Management\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Outpatient Asthma: Evaluation and Management\"",
+          "elements": [
+            "- \"Outpatient Asthma: Evaluation and Management\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"What You Need to Know\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"What You Need to Know\"",
+          "elements": [
+            "- \"What You Need to Know\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Before Step Up in Therapy:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Before Step Up in Therapy:\"",
+          "elements": [
+            "- \"Before Step Up in Therapy:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Assessing Asthma Control and Adjusting Therapy in Youth > 4 Years of Age and Adults\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Assessing Asthma Control and Adjusting Therapy in Youth > 4 Years of Age and Adults\"",
+          "elements": [
+            "- \"Assessing Asthma Control and Adjusting Therapy in Youth > 4 Years of Age and Adults\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Regular Text Paragraphs:",
+        "extracted": {
+          "type": "text",
+          "content": "- Regular Text Paragraphs:",
+          "elements": [
+            "- Regular Text Paragraphs:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph 1: \"Medication side effects can vary in intensity from none to very troublesome and worrisome. The level of intensity does not correlate to specific levels of control, but should be considered in the overall assessment of risk.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph 1: \"Medication side effects can vary in intensity from none to very troublesome and worrisome. The level of intensity does not correlate to specific levels of control, but should be considered in the overall assessment of risk.\"",
+          "elements": [
+            "- Paragraph 1: \"Medication side effects can vary in intensity from none to very troublesome and worrisome. The level of intensity does not correlate to specific levels of control, but should be considered in the overall assessment of risk.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"Notes:\" (bullet points are part of the list)",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"Notes:\" (bullet points are part of the list)",
+          "elements": [
+            "- Paragraph under \"Notes:\" (bullet points are part of the list)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"Key Points\" (bullet points are part of the list)",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"Key Points\" (bullet points are part of the list)",
+          "elements": [
+            "- Paragraph under \"Key Points\" (bullet points are part of the list)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Copyright notice at the bottom of the page.",
+        "extracted": {
+          "type": "text",
+          "content": "- Copyright notice at the bottom of the page.",
+          "elements": [
+            "- Copyright notice at the bottom of the page."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"What You Need to Know\"",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"What You Need to Know\"",
+          "elements": [
+            "- Paragraph under \"What You Need to Know\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"Before Step Up in Therapy:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"Before Step Up in Therapy:\"",
+          "elements": [
+            "- Paragraph under \"Before Step Up in Therapy:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Lists or Bullet Points:",
+        "extracted": {
+          "type": "text",
+          "content": "- Lists or Bullet Points:",
+          "elements": [
+            "- Lists or Bullet Points:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Under \"Recommended Treatment\":",
+        "extracted": {
+          "type": "text",
+          "content": "- Under \"Recommended Treatment\":",
+          "elements": [
+            "- Under \"Recommended Treatment\":"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"MAINTAIN current step\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"MAINTAIN current step\"",
+          "elements": [
+            "- \"MAINTAIN current step\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"STEP UP 1 Step\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"STEP UP 1 Step\"",
+          "elements": [
+            "- \"STEP UP 1 Step\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"STEP UP 1–2 Steps\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"STEP UP 1–2 Steps\"",
+          "elements": [
+            "- \"STEP UP 1–2 Steps\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Under \"Notes:\" (after \"Level of control is based on the most severe impairment or risk category.\")",
+        "extracted": {
+          "type": "text",
+          "content": "- Under \"Notes:\" (after \"Level of control is based on the most severe impairment or risk category.\")",
+          "elements": [
+            "- Under \"Notes:\" (after \"Level of control is based on the most severe impairment or risk category.\")"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Under \"Key Points\"",
+        "extracted": {
+          "type": "text",
+          "content": "- Under \"Key Points\"",
+          "elements": [
+            "- Under \"Key Points\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Under \"Before Step Up in Therapy:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- Under \"Before Step Up in Therapy:\"",
+          "elements": [
+            "- Under \"Before Step Up in Therapy:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Tables or Tabular Data:",
+        "extracted": {
+          "type": "text",
+          "content": "- Tables or Tabular Data:",
+          "elements": [
+            "- Tables or Tabular Data:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- The content under \"Classification of Asthma Control (> 12 years of age)\" appears to be tabular data, but it is not formatted as a traditional table with borders. It includes categories such as \"Well Controlled,\" \"NOT Well Controlled,\" and \"Very Poorly Controlled,\" with corresponding criteria like \"Nighttime awakenings,\" \"Interference with normal activity,\" etc.\nPlease note that the actual visual formatting of the document is not available in this text-based analysis, so the identification of tables or tabular data is based on the content's structure and context.",
+        "extracted": {
+          "type": "text",
+          "content": "- The content under \"Classification of Asthma Control (> 12 years of age)\" appears to be tabular data, but it is not formatted as a traditional table with borders. It includes categories such as \"Well Controlled,\" \"NOT Well Controlled,\" and \"Very Poorly Controlled,\" with corresponding criteria like \"Nighttime awakenings,\" \"Interference with normal activity,\" etc.\nPlease note that the actual visual formatting of the document is not available in this text-based analysis, so the identification of tables or tabular data is based on the content's structure and context.",
+          "elements": [
+            "- The content under \"Classification of Asthma Control (> 12 years of age)\" appears to be tabular data, but it is not formatted as a traditional table with borders. It includes categories such as \"Well Controlled,\" \"NOT Well Controlled,\" and \"Very Poorly Controlled,\" with corresponding criteria like \"Nighttime awakenings,\" \"Interference with normal activity,\" etc.",
+            "Please note that the actual visual formatting of the document is not available in this text-based analysis, so the identification of tables or tabular data is based on the content's structure and context."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "The document page content can be structured as follows:",
+        "extracted": {
+          "type": "text",
+          "content": "The document page content can be structured as follows:",
+          "elements": [
+            "The document page content can be structured as follows:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Headers or Titles:",
+        "extracted": {
+          "type": "text",
+          "content": "Headers or Titles:",
+          "elements": [
+            "Headers or Titles:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Chronic Outpatient Management\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Chronic Outpatient Management\"",
+          "elements": [
+            "- \"Chronic Outpatient Management\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Assess Symptom Control\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Assess Symptom Control\"",
+          "elements": [
+            "- \"Assess Symptom Control\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Manage Medications\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Manage Medications\"",
+          "elements": [
+            "- \"Manage Medications\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Update Asthma Action Plan\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Update Asthma Action Plan\"",
+          "elements": [
+            "- \"Update Asthma Action Plan\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Follow-up\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Follow-up\"",
+          "elements": [
+            "- \"Follow-up\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"PREFERRED Controller\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"PREFERRED Controller\"",
+          "elements": [
+            "- \"PREFERRED Controller\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Alternative Controllers\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Alternative Controllers\"",
+          "elements": [
+            "- \"Alternative Controllers\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Notes:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Notes:\"",
+          "elements": [
+            "- \"Notes:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"RELIEVER\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"RELIEVER\"",
+          "elements": [
+            "- \"RELIEVER\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Before Step Up in Therapy:\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Before Step Up in Therapy:\"",
+          "elements": [
+            "- \"Before Step Up in Therapy:\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- \"Copyright ©1998. The Ohio State University. All rights reserved.\"",
+        "extracted": {
+          "type": "text",
+          "content": "- \"Copyright ©1998. The Ohio State University. All rights reserved.\"",
+          "elements": [
+            "- \"Copyright ©1998. The Ohio State University. All rights reserved.\""
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Regular Text Paragraphs:",
+        "extracted": {
+          "type": "text",
+          "content": "Regular Text Paragraphs:",
+          "elements": [
+            "Regular Text Paragraphs:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph discussing the ACT or c-ACT Score and medication compliance.",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph discussing the ACT or c-ACT Score and medication compliance.",
+          "elements": [
+            "- Paragraph discussing the ACT or c-ACT Score and medication compliance."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"Well Controlled\" describing the steps for managing medications.",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"Well Controlled\" describing the steps for managing medications.",
+          "elements": [
+            "- Paragraph under \"Well Controlled\" describing the steps for managing medications."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"NOT Well Controlled\" and \"VERY Poorly Controlled\" with corresponding ACT scores.",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"NOT Well Controlled\" and \"VERY Poorly Controlled\" with corresponding ACT scores.",
+          "elements": [
+            "- Paragraph under \"NOT Well Controlled\" and \"VERY Poorly Controlled\" with corresponding ACT scores."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"Follow-up\" with time frames for follow-up.",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"Follow-up\" with time frames for follow-up.",
+          "elements": [
+            "- Paragraph under \"Follow-up\" with time frames for follow-up."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraphs under \"PREFERRED Controller\" and \"Alternative Controllers\" describing the steps for asthma management.",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraphs under \"PREFERRED Controller\" and \"Alternative Controllers\" describing the steps for asthma management.",
+          "elements": [
+            "- Paragraphs under \"PREFERRED Controller\" and \"Alternative Controllers\" describing the steps for asthma management."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Multiple paragraphs under \"Notes:\" providing additional information and recommendations.",
+        "extracted": {
+          "type": "text",
+          "content": "- Multiple paragraphs under \"Notes:\" providing additional information and recommendations.",
+          "elements": [
+            "- Multiple paragraphs under \"Notes:\" providing additional information and recommendations."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"RELIEVER\" discussing reliever medication for all patients.",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"RELIEVER\" discussing reliever medication for all patients.",
+          "elements": [
+            "- Paragraph under \"RELIEVER\" discussing reliever medication for all patients."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Paragraph under \"Before Step Up in Therapy:\" with instructions for reviewing patient adherence and treatment response.",
+        "extracted": {
+          "type": "text",
+          "content": "- Paragraph under \"Before Step Up in Therapy:\" with instructions for reviewing patient adherence and treatment response.",
+          "elements": [
+            "- Paragraph under \"Before Step Up in Therapy:\" with instructions for reviewing patient adherence and treatment response."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Lists or Bullet Points:",
+        "extracted": {
+          "type": "text",
+          "content": "Lists or Bullet Points:",
+          "elements": [
+            "Lists or Bullet Points:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Bullet points under \"↑ by 1 – 2 Steps + Burst of Oral Corticosteroids:\" with details about the burst treatment.",
+        "extracted": {
+          "type": "text",
+          "content": "- Bullet points under \"↑ by 1 – 2 Steps + Burst of Oral Corticosteroids:\" with details about the burst treatment.",
+          "elements": [
+            "- Bullet points under \"↑ by 1 – 2 Steps + Burst of Oral Corticosteroids:\" with details about the burst treatment."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Bullet points under \"Evaluate asthma endotype and qualification for biologic therapy:\" listing the tests and considerations for biologic therapies.",
+        "extracted": {
+          "type": "text",
+          "content": "- Bullet points under \"Evaluate asthma endotype and qualification for biologic therapy:\" listing the tests and considerations for biologic therapies.",
+          "elements": [
+            "- Bullet points under \"Evaluate asthma endotype and qualification for biologic therapy:\" listing the tests and considerations for biologic therapies."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Bullet points under \"Notes:\" with stepwise approach details, biologic therapy considerations, and evidence for recommendations.",
+        "extracted": {
+          "type": "text",
+          "content": "- Bullet points under \"Notes:\" with stepwise approach details, biologic therapy considerations, and evidence for recommendations.",
+          "elements": [
+            "- Bullet points under \"Notes:\" with stepwise approach details, biologic therapy considerations, and evidence for recommendations."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Bullet points under \"RELIEVER\" with details about anti-inflammatory reliever therapy and personalized choice between strategies.",
+        "extracted": {
+          "type": "text",
+          "content": "- Bullet points under \"RELIEVER\" with details about anti-inflammatory reliever therapy and personalized choice between strategies.",
+          "elements": [
+            "- Bullet points under \"RELIEVER\" with details about anti-inflammatory reliever therapy and personalized choice between strategies."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Tables:",
+        "extracted": {
+          "type": "text",
+          "content": "Tables:",
+          "elements": [
+            "Tables:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- No explicit tables are detected in the provided content, but there are structured sections that resemble tabular data, such as the steps under \"PREFERRED Controller\" and \"Alternative Controllers.\"\nPlease note that the content provided seems to be a guideline for asthma management, and it includes specific steps, recommendations, and notes that are relevant to healthcare professionals. The structure above organizes the content into identifiable sections for easier understanding and reference.",
+        "extracted": {
+          "type": "text",
+          "content": "- No explicit tables are detected in the provided content, but there are structured sections that resemble tabular data, such as the steps under \"PREFERRED Controller\" and \"Alternative Controllers.\"\nPlease note that the content provided seems to be a guideline for asthma management, and it includes specific steps, recommendations, and notes that are relevant to healthcare professionals. The structure above organizes the content into identifiable sections for easier understanding and reference.",
+          "elements": [
+            "- No explicit tables are detected in the provided content, but there are structured sections that resemble tabular data, such as the steps under \"PREFERRED Controller\" and \"Alternative Controllers.\"",
+            "Please note that the content provided seems to be a guideline for asthma management, and it includes specific steps, recommendations, and notes that are relevant to healthcare professionals. The structure above organizes the content into identifiable sections for easier understanding and reference."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Based on the provided page content, here is the structured format identifying the components:",
+        "extracted": {
+          "type": "text",
+          "content": "Based on the provided page content, here is the structured format identifying the components:",
+          "elements": [
+            "Based on the provided page content, here is the structured format identifying the components:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Headers or Titles:",
+        "extracted": {
+          "type": "text",
+          "content": "Headers or Titles:",
+          "elements": [
+            "Headers or Titles:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Stepwise Recommendations for Asthma Management (12+ Years)",
+        "extracted": {
+          "type": "text",
+          "content": "- Stepwise Recommendations for Asthma Management (12+ Years)",
+          "elements": [
+            "- Stepwise Recommendations for Asthma Management (12+ Years)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Abbreviations",
+        "extracted": {
+          "type": "text",
+          "content": "- Abbreviations",
+          "elements": [
+            "- Abbreviations"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Low Dose ICS",
+        "extracted": {
+          "type": "text",
+          "content": "- Low Dose ICS",
+          "elements": [
+            "- Low Dose ICS"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Medium Dose ICS",
+        "extracted": {
+          "type": "text",
+          "content": "- Medium Dose ICS",
+          "elements": [
+            "- Medium Dose ICS"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- PRN SABA",
+        "extracted": {
+          "type": "text",
+          "content": "- PRN SABA",
+          "elements": [
+            "- PRN SABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Monotherapy is not Recommended",
+        "extracted": {
+          "type": "text",
+          "content": "- Monotherapy is not Recommended",
+          "elements": [
+            "- Monotherapy is not Recommended"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- PRN Low Dose ICS / LABA",
+        "extracted": {
+          "type": "text",
+          "content": "- PRN Low Dose ICS / LABA",
+          "elements": [
+            "- PRN Low Dose ICS / LABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Low Dose ICS /LABA",
+        "extracted": {
+          "type": "text",
+          "content": "- Low Dose ICS /LABA",
+          "elements": [
+            "- Low Dose ICS /LABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Medium Dose ICS /LABA",
+        "extracted": {
+          "type": "text",
+          "content": "- Medium Dose ICS /LABA",
+          "elements": [
+            "- Medium Dose ICS /LABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- High Dose ICS /LABA",
+        "extracted": {
+          "type": "text",
+          "content": "- High Dose ICS /LABA",
+          "elements": [
+            "- High Dose ICS /LABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Low Dose ICS-formoterol",
+        "extracted": {
+          "type": "text",
+          "content": "- Low Dose ICS-formoterol",
+          "elements": [
+            "- Low Dose ICS-formoterol"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 1",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 1",
+          "elements": [
+            "- Step 1"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 2",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 2",
+          "elements": [
+            "- Step 2"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 3",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 3",
+          "elements": [
+            "- Step 3"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 4",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 4",
+          "elements": [
+            "- Step 4"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 5",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 5",
+          "elements": [
+            "- Step 5"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Step 6",
+        "extracted": {
+          "type": "text",
+          "content": "- Step 6",
+          "elements": [
+            "- Step 6"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Alternative Controllers",
+        "extracted": {
+          "type": "text",
+          "content": "- Alternative Controllers",
+          "elements": [
+            "- Alternative Controllers"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- RELIEVER",
+        "extracted": {
+          "type": "text",
+          "content": "- RELIEVER",
+          "elements": [
+            "- RELIEVER"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Other Add-On Medications to use in addition to ICS/LABA",
+        "extracted": {
+          "type": "text",
+          "content": "- Other Add-On Medications to use in addition to ICS/LABA",
+          "elements": [
+            "- Other Add-On Medications to use in addition to ICS/LABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- LTRA",
+        "extracted": {
+          "type": "text",
+          "content": "- LTRA",
+          "elements": [
+            "- LTRA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- PRN ICS / SABA",
+        "extracted": {
+          "type": "text",
+          "content": "- PRN ICS / SABA",
+          "elements": [
+            "- PRN ICS / SABA"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Anti-Inflammatory Relievers (PRN Therapy)",
+        "extracted": {
+          "type": "text",
+          "content": "- Anti-Inflammatory Relievers (PRN Therapy)",
+          "elements": [
+            "- Anti-Inflammatory Relievers (PRN Therapy)"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Regular Text Paragraphs:",
+        "extracted": {
+          "type": "text",
+          "content": "Regular Text Paragraphs:",
+          "elements": [
+            "Regular Text Paragraphs:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Guidelines do not recommend high dose ICS without a LABA. Move on to combination medications below or equivalent regimen.",
+        "extracted": {
+          "type": "text",
+          "content": "- Guidelines do not recommend high dose ICS without a LABA. Move on to combination medications below or equivalent regimen.",
+          "elements": [
+            "- Guidelines do not recommend high dose ICS without a LABA. Move on to combination medications below or equivalent regimen."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Note: Consider laboratory evaluation for asthma endotyping",
+        "extracted": {
+          "type": "text",
+          "content": "- Note: Consider laboratory evaluation for asthma endotyping",
+          "elements": [
+            "- Note: Consider laboratory evaluation for asthma endotyping"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Evaluate asthma endotype and qualification for biologic therapy:",
+        "extracted": {
+          "type": "text",
+          "content": "- Evaluate asthma endotype and qualification for biologic therapy:",
+          "elements": [
+            "- Evaluate asthma endotype and qualification for biologic therapy:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- NOTE: Consider addition of corticosteroids if poorly controlled",
+        "extracted": {
+          "type": "text",
+          "content": "- NOTE: Consider addition of corticosteroids if poorly controlled",
+          "elements": [
+            "- NOTE: Consider addition of corticosteroids if poorly controlled"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Consult with a specialist",
+        "extracted": {
+          "type": "text",
+          "content": "- Consult with a specialist",
+          "elements": [
+            "- Consult with a specialist"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- *, **, *** - the number of stars indicates how many extra inhalers a specific dose would require for a month",
+        "extracted": {
+          "type": "text",
+          "content": "- *, **, *** - the number of stars indicates how many extra inhalers a specific dose would require for a month",
+          "elements": [
+            "- *, **, *** - the number of stars indicates how many extra inhalers a specific dose would require for a month"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Anti-inflammatory relievers are preferred: PRN low dose ICS-formoterol when used as same Maintenance And Reliever Therapy (MART). Do not combine two ICS-LABA products for use in the same patient. If not using ICS-formoterol MART approach, AIR therapy can be achieved with PRN budesonide-albuterol instead of SABA-only reliever. Evidence is greatest for PRN ICS-SABA reliever at Step 3+.",
+        "extracted": {
+          "type": "text",
+          "content": "- Anti-inflammatory relievers are preferred: PRN low dose ICS-formoterol when used as same Maintenance And Reliever Therapy (MART). Do not combine two ICS-LABA products for use in the same patient. If not using ICS-formoterol MART approach, AIR therapy can be achieved with PRN budesonide-albuterol instead of SABA-only reliever. Evidence is greatest for PRN ICS-SABA reliever at Step 3+.",
+          "elements": [
+            "- Anti-inflammatory relievers are preferred: PRN low dose ICS-formoterol when used as same Maintenance And Reliever Therapy (MART). Do not combine two ICS-LABA products for use in the same patient. If not using ICS-formoterol MART approach, AIR therapy can be achieved with PRN budesonide-albuterol instead of SABA-only reliever. Evidence is greatest for PRN ICS-SABA reliever at Step 3+."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Alternate reliever: PRN SABA. If using SABA-only reliever therapy (with maintenance ICS), ensure patient adherence to ICS. No patient should be on SABA-only therapy.",
+        "extracted": {
+          "type": "text",
+          "content": "- Alternate reliever: PRN SABA. If using SABA-only reliever therapy (with maintenance ICS), ensure patient adherence to ICS. No patient should be on SABA-only therapy.",
+          "elements": [
+            "- Alternate reliever: PRN SABA. If using SABA-only reliever therapy (with maintenance ICS), ensure patient adherence to ICS. No patient should be on SABA-only therapy."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Copyright notice",
+        "extracted": {
+          "type": "text",
+          "content": "- Copyright notice",
+          "elements": [
+            "- Copyright notice"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Lists or Bullet Points:",
+        "extracted": {
+          "type": "text",
+          "content": "Lists or Bullet Points:",
+          "elements": [
+            "Lists or Bullet Points:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Abbreviations list:\n▪ ICS: inhaled corticosteroid\n▪ LABA: long-acting beta2-agonist\n▪ LTRA: leukotriene receptor antagonist\n▪ SABA: short-acting beta2-agonist",
+        "extracted": {
+          "type": "text",
+          "content": "- Abbreviations list:\n▪ ICS: inhaled corticosteroid\n▪ LABA: long-acting beta2-agonist\n▪ LTRA: leukotriene receptor antagonist\n▪ SABA: short-acting beta2-agonist",
+          "elements": [
+            "- Abbreviations list:",
+            "▪ ICS: inhaled corticosteroid",
+            "▪ LABA: long-acting beta2-agonist",
+            "▪ LTRA: leukotriene receptor antagonist",
+            "▪ SABA: short-acting beta2-agonist"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Evaluation for biologic therapy list:\n▪ CBC with diff\n▪ Total IgE\n▪ Consider evaluation for allergen sensitization by RAST or percutaneous testing\n▪ Consult with specialist for step up to biologic therapies",
+        "extracted": {
+          "type": "text",
+          "content": "- Evaluation for biologic therapy list:\n▪ CBC with diff\n▪ Total IgE\n▪ Consider evaluation for allergen sensitization by RAST or percutaneous testing\n▪ Consult with specialist for step up to biologic therapies",
+          "elements": [
+            "- Evaluation for biologic therapy list:",
+            "▪ CBC with diff",
+            "▪ Total IgE",
+            "▪ Consider evaluation for allergen sensitization by RAST or percutaneous testing",
+            "▪ Consult with specialist for step up to biologic therapies"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Tables (Tabular Data):\nNo explicit tables are present, but there is structured information that resembles tabular data, such as medication names with corresponding dosages and age recommendations. This information is formatted as a list rather than a traditional table with rows and columns.",
+        "extracted": {
+          "type": "text",
+          "content": "Tables (Tabular Data):\nNo explicit tables are present, but there is structured information that resembles tabular data, such as medication names with corresponding dosages and age recommendations. This information is formatted as a list rather than a traditional table with rows and columns.",
+          "elements": [
+            "Tables (Tabular Data):",
+            "No explicit tables are present, but there is structured information that resembles tabular data, such as medication names with corresponding dosages and age recommendations. This information is formatted as a list rather than a traditional table with rows and columns."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "Bullet Points:",
+        "extracted": {
+          "type": "text",
+          "content": "Bullet Points:",
+          "elements": [
+            "Bullet Points:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- The document does not contain traditional bullet points, but it uses a bullet symbol (▪) to list abbreviations and components of the evaluation for biologic therapy.\nPlease note that the content includes specific medication names, dosages, and age recommendations, which are formatted in a way that could be considered as list items or part of a structured table, but they are not explicitly organized within a table with visible borders or gridlines.",
+        "extracted": {
+          "type": "text",
+          "content": "- The document does not contain traditional bullet points, but it uses a bullet symbol (▪) to list abbreviations and components of the evaluation for biologic therapy.\nPlease note that the content includes specific medication names, dosages, and age recommendations, which are formatted in a way that could be considered as list items or part of a structured table, but they are not explicitly organized within a table with visible borders or gridlines.",
+          "elements": [
+            "- The document does not contain traditional bullet points, but it uses a bullet symbol (▪) to list abbreviations and components of the evaluation for biologic therapy.",
+            "Please note that the content includes specific medication names, dosages, and age recommendations, which are formatted in a way that could be considered as list items or part of a structured table, but they are not explicitly organized within a table with visible borders or gridlines."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "The structured format of the document page content is as follows:",
+        "extracted": {
+          "type": "text",
+          "content": "The structured format of the document page content is as follows:",
+          "elements": [
+            "The structured format of the document page content is as follows:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Header or Title:",
+        "extracted": {
+          "type": "text",
+          "content": "- Header or Title:",
+          "elements": [
+            "- Header or Title:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- None explicitly provided in the content provided.",
+        "extracted": {
+          "type": "text",
+          "content": "- None explicitly provided in the content provided.",
+          "elements": [
+            "- None explicitly provided in the content provided."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Regular text paragraphs:",
+        "extracted": {
+          "type": "text",
+          "content": "- Regular text paragraphs:",
+          "elements": [
+            "- Regular text paragraphs:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Copyright notice paragraph",
+        "extracted": {
+          "type": "text",
+          "content": "- Copyright notice paragraph",
+          "elements": [
+            "- Copyright notice paragraph"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Disclaimer paragraph",
+        "extracted": {
+          "type": "text",
+          "content": "- Disclaimer paragraph",
+          "elements": [
+            "- Disclaimer paragraph"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Guideline approval date and edition statement",
+        "extracted": {
+          "type": "text",
+          "content": "- Guideline approval date and edition statement",
+          "elements": [
+            "- Guideline approval date and edition statement"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Lists or bullet points:",
+        "extracted": {
+          "type": "text",
+          "content": "- Lists or bullet points:",
+          "elements": [
+            "- Lists or bullet points:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- References list",
+        "extracted": {
+          "type": "text",
+          "content": "- References list",
+          "elements": [
+            "- References list"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- U.S. Department of Health and Human Services reference",
+        "extracted": {
+          "type": "text",
+          "content": "- U.S. Department of Health and Human Services reference",
+          "elements": [
+            "- U.S. Department of Health and Human Services reference"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Global Initiative for Asthma (GINA) reference",
+        "extracted": {
+          "type": "text",
+          "content": "- Global Initiative for Asthma (GINA) reference",
+          "elements": [
+            "- Global Initiative for Asthma (GINA) reference"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- OSUWMC Resources list",
+        "extracted": {
+          "type": "text",
+          "content": "- OSUWMC Resources list",
+          "elements": [
+            "- OSUWMC Resources list"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- IHIS Order Sets",
+        "extracted": {
+          "type": "text",
+          "content": "- IHIS Order Sets",
+          "elements": [
+            "- IHIS Order Sets"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- IHIS Tip Sheets",
+        "extracted": {
+          "type": "text",
+          "content": "- IHIS Tip Sheets",
+          "elements": [
+            "- IHIS Tip Sheets"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- IHIS SmartPhrases",
+        "extracted": {
+          "type": "text",
+          "content": "- IHIS SmartPhrases",
+          "elements": [
+            "- IHIS SmartPhrases"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Assessment Tools",
+        "extracted": {
+          "type": "text",
+          "content": "- Assessment Tools",
+          "elements": [
+            "- Assessment Tools"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Quality Measures list",
+        "extracted": {
+          "type": "text",
+          "content": "- Quality Measures list",
+          "elements": [
+            "- Quality Measures list"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Guideline Authors list",
+        "extracted": {
+          "type": "text",
+          "content": "- Guideline Authors list",
+          "elements": [
+            "- Guideline Authors list"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Guideline Contributor list",
+        "extracted": {
+          "type": "text",
+          "content": "- Guideline Contributor list",
+          "elements": [
+            "- Guideline Contributor list"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Guideline reviewed by statement",
+        "extracted": {
+          "type": "text",
+          "content": "- Guideline reviewed by statement",
+          "elements": [
+            "- Guideline reviewed by statement"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- Tables:",
+        "extracted": {
+          "type": "text",
+          "content": "- Tables:",
+          "elements": [
+            "- Tables:"
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "- No tables detected in the content provided.",
+        "extracted": {
+          "type": "text",
+          "content": "- No tables detected in the content provided.",
+          "elements": [
+            "- No tables detected in the content provided."
+          ]
+        }
+      },
+      {
+        "type": "text",
+        "content": "The structured components can be represented as follows:\n```json\n{\n\"headers_titles\": [],\n\"regular_text_paragraphs\": [\n\"Copyright ©1998. The Ohio State University. All rights reserved. This document may be used for noncommercial educational and noncommercial (NOT funded by a commercial entity) research use only. OSUWMC Clinical Practice Guidelines may not be reproduced, displayed, modified, or distributed in any form without a written agreement with The Ohio State University Technology Commercialization Office. Requests can be directed to Technology Commercialization Office (TCO) or email innovate@osu.edu.\",\n\"Disclaimer: Clinical practice guidelines and algorithms at The Ohio State University Wexner Medical Center (OSUWMC) are standards that are intended to provide general guidance to clinicians. Patient choice and clinician judgment must remain central to the selection of diagnostic tests and therapy. OSUWMC’s guidelines and algorithms are reviewed periodically for consistency with new evidence; however, new developments may not be represented.\",\n\"Guideline Approved March 6, 2024. Sixth edition.\"\n],\n\"lists_bullet_points\": {\n\"references\": [\n\"U.S. Department of Health and Human Services, National Institute of Health, National Heart, Lung, and Blood Institute. (2007). National Asthma Education and Prevention Program Expert Panel Report 3: Guidelines for the Diagnosis and Management of Asthma, Summary Report.\",\n\"Global Initiative for Asthma (GINA). Global Strategy for Asthma Management and Prevention 2023.\"\n],\n\"osuwm_resources\": [\n\"IHIS Order Sets: Express Lane: Asthma Visit [7651]\",\n\"IHIS Tip Sheets: Ordering Patient Asthma Tracking in OSUMyChart\",\n\"IHIS SmartPhrases: SmartPhrases for outpatient management and documentation\",\n\"Assessment Tools: ACT Questionnaire, c-ACT Questionnaire, Asthma Action Plan\"\n],\n\"quality_measures\": [\n\"All patients with asthma assessed for control using validated questionnaire (ACT or c-ACT)\",\n\"All patients with asthma prescribed only PRN therapy prescribed an inhaled corticosteroid containing regimen\",\n\"All patients with persistent asthma prescribed corticosteroid therapy\",\n\"No patients with asthma are prescribed SABA-only therapy\"\n],\n\"guideline_authors\": [\n\"Megan Conroy, MD, MAEd, FCCP\",\n\"Emily Vrontos, PharmD, CDCES\",\n\"Amy James, PharmD, BCACP, BC-ADM\",\n\"Jonathan Parsons, MD, MSc, FCCP\"\n],\n\"guideline_contributor\": [\n\"Shalina Nair, MD\",\n\"Katrina Johnson, MD\"\n],\n\"guideline_reviewed_by\": \"Ambulatory Quality Committee\"\n},\n\"tables\": []\n}\n```",
+        "extracted": {
+          "type": "text",
+          "content": "The structured components can be represented as follows:\n```json\n{\n\"headers_titles\": [],\n\"regular_text_paragraphs\": [\n\"Copyright ©1998. The Ohio State University. All rights reserved. This document may be used for noncommercial educational and noncommercial (NOT funded by a commercial entity) research use only. OSUWMC Clinical Practice Guidelines may not be reproduced, displayed, modified, or distributed in any form without a written agreement with The Ohio State University Technology Commercialization Office. Requests can be directed to Technology Commercialization Office (TCO) or email innovate@osu.edu.\",\n\"Disclaimer: Clinical practice guidelines and algorithms at The Ohio State University Wexner Medical Center (OSUWMC) are standards that are intended to provide general guidance to clinicians. Patient choice and clinician judgment must remain central to the selection of diagnostic tests and therapy. OSUWMC’s guidelines and algorithms are reviewed periodically for consistency with new evidence; however, new developments may not be represented.\",\n\"Guideline Approved March 6, 2024. Sixth edition.\"\n],\n\"lists_bullet_points\": {\n\"references\": [\n\"U.S. Department of Health and Human Services, National Institute of Health, National Heart, Lung, and Blood Institute. (2007). National Asthma Education and Prevention Program Expert Panel Report 3: Guidelines for the Diagnosis and Management of Asthma, Summary Report.\",\n\"Global Initiative for Asthma (GINA). Global Strategy for Asthma Management and Prevention 2023.\"\n],\n\"osuwm_resources\": [\n\"IHIS Order Sets: Express Lane: Asthma Visit [7651]\",\n\"IHIS Tip Sheets: Ordering Patient Asthma Tracking in OSUMyChart\",\n\"IHIS SmartPhrases: SmartPhrases for outpatient management and documentation\",\n\"Assessment Tools: ACT Questionnaire, c-ACT Questionnaire, Asthma Action Plan\"\n],\n\"quality_measures\": [\n\"All patients with asthma assessed for control using validated questionnaire (ACT or c-ACT)\",\n\"All patients with asthma prescribed only PRN therapy prescribed an inhaled corticosteroid containing regimen\",\n\"All patients with persistent asthma prescribed corticosteroid therapy\",\n\"No patients with asthma are prescribed SABA-only therapy\"\n],\n\"guideline_authors\": [\n\"Megan Conroy, MD, MAEd, FCCP\",\n\"Emily Vrontos, PharmD, CDCES\",\n\"Amy James, PharmD, BCACP, BC-ADM\",\n\"Jonathan Parsons, MD, MSc, FCCP\"\n],\n\"guideline_contributor\": [\n\"Shalina Nair, MD\",\n\"Katrina Johnson, MD\"\n],\n\"guideline_reviewed_by\": \"Ambulatory Quality Committee\"\n},\n\"tables\": []\n}\n```",
+          "elements": [
+            "The structured components can be represented as follows:",
+            "```json",
+            "{",
+            "\"headers_titles\": [],",
+            "\"regular_text_paragraphs\": [",
+            "\"Copyright ©1998. The Ohio State University. All rights reserved. This document may be used for noncommercial educational and noncommercial (NOT funded by a commercial entity) research use only. OSUWMC Clinical Practice Guidelines may not be reproduced, displayed, modified, or distributed in any form without a written agreement with The Ohio State University Technology Commercialization Office. Requests can be directed to Technology Commercialization Office (TCO) or email innovate@osu.edu.\",",
+            "\"Disclaimer: Clinical practice guidelines and algorithms at The Ohio State University Wexner Medical Center (OSUWMC) are standards that are intended to provide general guidance to clinicians. Patient choice and clinician judgment must remain central to the selection of diagnostic tests and therapy. OSUWMC’s guidelines and algorithms are reviewed periodically for consistency with new evidence; however, new developments may not be represented.\",",
+            "\"Guideline Approved March 6, 2024. Sixth edition.\"",
+            "],",
+            "\"lists_bullet_points\": {",
+            "\"references\": [",
+            "\"U.S. Department of Health and Human Services, National Institute of Health, National Heart, Lung, and Blood Institute. (2007). National Asthma Education and Prevention Program Expert Panel Report 3: Guidelines for the Diagnosis and Management of Asthma, Summary Report.\",",
+            "\"Global Initiative for Asthma (GINA). Global Strategy for Asthma Management and Prevention 2023.\"",
+            "],",
+            "\"osuwm_resources\": [",
+            "\"IHIS Order Sets: Express Lane: Asthma Visit [7651]\",",
+            "\"IHIS Tip Sheets: Ordering Patient Asthma Tracking in OSUMyChart\",",
+            "\"IHIS SmartPhrases: SmartPhrases for outpatient management and documentation\",",
+            "\"Assessment Tools: ACT Questionnaire, c-ACT Questionnaire, Asthma Action Plan\"",
+            "],",
+            "\"quality_measures\": [",
+            "\"All patients with asthma assessed for control using validated questionnaire (ACT or c-ACT)\",",
+            "\"All patients with asthma prescribed only PRN therapy prescribed an inhaled corticosteroid containing regimen\",",
+            "\"All patients with persistent asthma prescribed corticosteroid therapy\",",
+            "\"No patients with asthma are prescribed SABA-only therapy\"",
+            "],",
+            "\"guideline_authors\": [",
+            "\"Megan Conroy, MD, MAEd, FCCP\",",
+            "\"Emily Vrontos, PharmD, CDCES\",",
+            "\"Amy James, PharmD, BCACP, BC-ADM\",",
+            "\"Jonathan Parsons, MD, MSc, FCCP\"",
+            "],",
+            "\"guideline_contributor\": [",
+            "\"Shalina Nair, MD\",",
+            "\"Katrina Johnson, MD\"",
+            "],",
+            "\"guideline_reviewed_by\": \"Ambulatory Quality Committee\"",
+            "},",
+            "\"tables\": []",
+            "}",
+            "```"
+          ]
+        }
+      }
+    ]
+  }
+}

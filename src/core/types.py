@@ -26,7 +26,7 @@ class DocumentProcessor(Protocol):
         """
         ...
     
-    def combine_results(self, results: List[PageResult]) -> CombinedResult:
+    async def combine_results(self, results: List[PageResult]) -> CombinedResult:
         """Combine results from multiple pages
         
         Args:

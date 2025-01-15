@@ -10,6 +10,7 @@ from typing import List, Dict, Any, Tuple
 import io
 import json
 import pytesseract
+import time
 
 class TableExtractor:
     def __init__(self):
@@ -37,28 +38,36 @@ class TableExtractor:
             if hasattr(image, 'tobytes'):
                 logger.debug("Converting Pixmap to PIL Image")
                 try:
-                    # First try PPM format conversion
-                    img_data = image.tobytes("ppm")
-                    image = Image.open(io.BytesIO(img_data))
+                    # Convert Pixmap to numpy array directly
+                    img_array = np.frombuffer(image.samples, dtype=np.uint8).reshape(
+                        image.height, image.width, image.n
+                    )
+                    # Convert to RGB if needed
+                    if image.n == 4:  # RGBA
+                        img_array = img_array[:, :, :3]
+                    image = Image.fromarray(img_array)
+                    
                 except Exception as e:
-                    logger.debug(f"PPM conversion failed, trying raw samples: {str(e)}")
-                    # Fallback to raw samples method
-                    samples = image.samples
-                    mode = {
-                        1: "L",
-                        3: "RGB",
-                        4: "RGBA"
-                    }.get(image.n, "RGB")
-                    image = Image.frombytes(mode, [image.width, image.height], samples)
-                
-                logger.bind(table_extraction=True).info(
-                    f"Successfully converted image to PIL Image with size {image.size}"
-                )
+                    logger.error(f"Direct conversion failed: {str(e)}")
+                    # Fallback to raw pixel data
+                    try:
+                        raw_data = image.tobytes("raw")
+                        if image.n == 4:  # RGBA
+                            mode = "RGBA"
+                        else:
+                            mode = "RGB"
+                        image = Image.frombytes(mode, (image.width, image.height), raw_data)
+                    except Exception as e2:
+                        logger.error(f"Fallback conversion failed: {str(e2)}")
+                        return None
+                    
+                logger.info(f"Successfully converted image to PIL Image with size {image.size}")
 
                 # Save original image for debugging
                 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                os.makedirs("logs/table_detections/originals", exist_ok=True)
                 original_path = f"logs/table_detections/originals/original_{timestamp}.png"
-                image.save(original_path)
+                image.save(original_path, format='JPEG')  # Use JPEG instead of PNG
                 logger.debug(f"Saved original image to {original_path}")
 
             # Prepare image for detection
@@ -74,67 +83,80 @@ class TableExtractor:
             results = self.processor.post_process_object_detection(
                 outputs,
                 target_sizes=target_sizes,
-                threshold=self.threshold
+                threshold=0.7
             )[0]
 
-            # Process detected tables
-            tables = []
-            vis_image = np.array(image.copy())
+            # Extract table regions and process with OCR
+            cells = []
+            table_image = np.array(image)
+            
+            # Convert to grayscale if needed
+            if len(table_image.shape) == 3:
+                table_image = cv2.cvtColor(table_image, cv2.COLOR_RGB2GRAY)
 
-            for idx, (score, label, box) in enumerate(zip(results["scores"], results["labels"], results["boxes"])):
-                score_val = score.item()
-                if score_val > self.threshold and label.item() == 0:  # Table class
-                    bbox = box.cpu().tolist()
-                    x0, y0, x1, y1 = [int(coord) for coord in bbox]
-                    
-                    # Draw rectangle for visualization
-                    cv2.rectangle(vis_image, (x0, y0), (x1, y1), (0, 255, 0), 2)
-                    cv2.putText(vis_image, f"Table {idx}: {score_val:.2f}", 
-                              (x0, y0-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                    
-                    # Extract table region
-                    table_region = image.crop((x0, y0, x1, y1))
-                    structure = self._analyze_table_structure(table_region)
-                    
-                    if structure:
-                        table_data = {
-                            "bbox": bbox,
-                            "confidence": score_val,
-                            "structure": structure
-                        }
-                        tables.append(table_data)
-                        # Log each detected table's data
-                        logger.bind(table_extraction=True).info(
-                            f"Detected table {idx}:\n{json.dumps(table_data, indent=2)}"
-                        )
+            for score, label, box in zip(results["scores"], results["labels"], results["boxes"]):
+                box = [round(i) for i in box.tolist()]
+                x, y, w, h = box[0], box[1], box[2] - box[0], box[3] - box[1]
 
-            # Save visualization if tables were found
-            if tables:
-                vis_path = f"logs/table_detections/visualizations/detection_{timestamp}.png"
-                cv2.imwrite(vis_path, cv2.cvtColor(vis_image, cv2.COLOR_RGB2BGR))
-                logger.info(f"Saved table detection visualization to {vis_path}")
+                # Extract cell region
+                cell = table_image[y:y+h, x:x+w]
+                
+                if cell.size == 0:
+                    continue
 
+                # Preprocess cell image
+                cell_scaled = cv2.resize(cell, None, fx=2, fy=2)
+                _, cell_scaled = cv2.threshold(cell_scaled, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+                
+                try:
+                    # Optimize OCR settings for table text
+                    custom_config = r'--oem 3 --psm 6'
+                    text = pytesseract.image_to_string(
+                        cell_scaled,
+                        config=custom_config,
+                        lang='eng'
+                    ).strip()
+                    
+                    if text:
+                        cells.append({
+                            "bbox": [x, y, w, h],
+                            "text": text,
+                            "confidence": float(score),
+                            "is_header": y < table_image.shape[0] * 0.2
+                        })
+                        
+                        # Save cell image for debugging
+                        os.makedirs("logs/table_detections/cells", exist_ok=True)
+                        debug_path = f"logs/table_detections/cells/cell_{len(cells)}_{timestamp}.png"
+                        cv2.imwrite(debug_path, cell_scaled)
+                        logger.debug(f"Saved cell image to {debug_path}")
+                        
+                except Exception as e:
+                    logger.error(f"OCR error: {str(e)}")
+                    continue
+
+            if cells:
                 result = {
-                    "table_data": [t["structure"] for t in tables],
+                    "table_data": {
+                        "cells": cells,
+                        "num_rows": len(set(c["bbox"][1] for c in cells)),
+                        "num_cols": len(set(c["bbox"][0] for c in cells)),
+                        "headers": [c["text"] for c in cells if c["is_header"]]
+                    },
                     "metadata": {
-                        "num_tables": len(tables),
-                        "confidences": [t["confidence"] for t in tables],
-                        "processing_time": datetime.datetime.now().isoformat(),
-                        "visualization_path": vis_path
+                        "confidence_scores": [float(score) for score in results["scores"]],
+                        "processing_time": time.time() - start_time if 'start_time' in locals() else None
                     }
                 }
-                # Log final extracted data
-                logger.bind(table_extraction=True).info(
-                    f"Final extracted table data:\n{json.dumps(result, indent=2)}"
-                )
+                logger.info(f"Successfully extracted table with {len(cells)} cells")
                 return result
-
-            logger.bind(table_extraction=True).info("No tables detected in image")
-            return {"table_data": [], "metadata": {"num_tables": 0}}
-
+            
+            logger.warning("No table cells detected in the image")
+            return None
+            
         except Exception as e:
             logger.error(f"Error in table extraction: {str(e)}")
-            return {"error": str(e)}
+            return None
 
     def _analyze_table_structure(self, table_image: Image.Image) -> Dict[str, Any]:
         try:

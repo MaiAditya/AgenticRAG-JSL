@@ -51,9 +51,20 @@ async def upload_document(
             document_cache=document_cache
         )
         
-        # Process document
-        result = await coordinator.process_document(file_path)
-        return result
+        # Initialize parallel processor with coordinator
+        parallel_processor = ParallelDocumentProcessor(coordinator, max_workers=4)
+        
+        # Process document in parallel
+        result = await parallel_processor.process_document(file_path)
+        
+        # Cache the results using the correct method
+        document_cache.add_document(file_path, result)
+        
+        return {
+            "document_id": file.filename,
+            "status": "processed",
+            "result": result
+        }
         
     except ProcessingError as e:
         logger.error(f"Processing error: {str(e)}")

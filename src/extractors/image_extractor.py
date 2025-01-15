@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import cv2
+from typing import Dict, Any, Union
 
 class ImageExtractor(BaseExtractor):
     def __init__(self):
@@ -25,9 +26,17 @@ class ImageExtractor(BaseExtractor):
             self.caption_model.to(settings.DEVICE)
             self.device = torch.device(settings.DEVICE)
             
-            # Create output directories for debugging
-            os.makedirs("logs/image_extractions/originals", exist_ok=True)
-            os.makedirs("logs/image_extractions/visualizations", exist_ok=True)
+            # Create output directories for logging
+            self.log_dirs = {
+                'originals': "logs/image_extractions/originals",
+                'visualizations': "logs/image_extractions/visualizations",
+                'captions': "logs/image_extractions/captions"
+            }
+            
+            for dir_path in self.log_dirs.values():
+                os.makedirs(dir_path, exist_ok=True)
+            
+            logger.info("ImageExtractor initialized with logging directories")
             
         except Exception as e:
             logger.error(f"Error initializing models: {str(e)}")
@@ -38,7 +47,7 @@ class ImageExtractor(BaseExtractor):
         Implement the abstract preprocess method from BaseExtractor
         """
         try:
-            # Basic image preprocessing
+            # Basic image preprocessings 
             image_info = {
                 "size": image.size,
                 "mode": image.mode,
@@ -60,88 +69,117 @@ class ImageExtractor(BaseExtractor):
             logger.error(f"Error in preprocessing: {str(e)}")
             raise
 
-    async def extract(self, image) -> dict:
+    async def extract(self, image_input: Union[Dict, Image.Image, bytes]) -> Dict[str, Any]:
         try:
-            if isinstance(image, dict) and 'image' in image:
-                image = image['image']
-                metadata = image.get('metadata', {})
-            else:
-                metadata = {}
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             
-            if hasattr(image, 'tobytes'):
-                logger.debug("Converting Pixmap to PIL Image")
-                img_data = image.tobytes("png")
-                image = Image.open(io.BytesIO(img_data))
-                
-                # Save original image
-                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                original_path = f"logs/image_extractions/originals/original_{timestamp}.png"
-                image.save(original_path)
-                logger.debug(f"Saved original image to {original_path}")
-                
-                # Enhanced image analysis
-                image_info = {
+            # Handle different input types
+            if isinstance(image_input, dict):
+                image = image_input['image']
+                metadata = image_input.get('metadata', {})
+                page_number = metadata.get('page_number', 'unknown')
+            elif isinstance(image_input, Image.Image):
+                image = image_input
+                metadata = {}
+                page_number = 'unknown'
+            elif isinstance(image_input, bytes):
+                image = Image.open(io.BytesIO(image_input))
+                metadata = {}
+                page_number = 'unknown'
+            else:
+                raise ValueError(f"Unsupported image input type: {type(image_input)}")
+
+            # Save original image
+            original_path = os.path.join(
+                self.log_dirs['originals'], 
+                f"original_page{page_number}_{timestamp}.png"
+            )
+            image.save(original_path)
+            logger.info(f"Saved original image to {original_path}")
+
+            # Process the image
+            logger.info("Processing image for caption generation")
+            inputs = self.caption_processor(images=image, return_tensors="pt").to(self.device)
+            outputs = self.caption_model.generate(**inputs)
+            caption = self.caption_processor.decode(outputs[0], skip_special_tokens=True)
+
+            # Create visualization with caption
+            vis_image = np.array(image)
+            if vis_image.ndim == 2:  # Convert grayscale to RGB
+                vis_image = cv2.cvtColor(vis_image, cv2.COLOR_GRAY2RGB)
+            
+            # Add caption text to visualization
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            font_scale = 1
+            font_thickness = 2
+            text_color = (0, 255, 0)  # Green color
+            
+            # Calculate text size and position
+            text_size = cv2.getTextSize(caption, font, font_scale, font_thickness)[0]
+            text_x = 10
+            text_y = vis_image.shape[0] - 20  # 20 pixels from bottom
+            
+            # Add semi-transparent background for text
+            overlay = vis_image.copy()
+            cv2.rectangle(
+                overlay,
+                (text_x - 5, text_y - text_size[1] - 5),
+                (text_x + text_size[0] + 5, text_y + 5),
+                (0, 0, 0),
+                -1
+            )
+            vis_image = cv2.addWeighted(overlay, 0.6, vis_image, 0.4, 0)
+            
+            # Add caption text
+            cv2.putText(
+                vis_image,
+                caption,
+                (text_x, text_y),
+                font,
+                font_scale,
+                text_color,
+                font_thickness
+            )
+            
+            # Save visualization
+            vis_path = os.path.join(
+                self.log_dirs['visualizations'],
+                f"visualization_page{page_number}_{timestamp}.png"
+            )
+            cv2.imwrite(vis_path, cv2.cvtColor(vis_image, cv2.COLOR_RGB2BGR))
+            logger.info(f"Saved visualization with caption to {vis_path}")
+            
+            # Save caption to text file
+            caption_path = os.path.join(
+                self.log_dirs['captions'],
+                f"caption_page{page_number}_{timestamp}.txt"
+            )
+            with open(caption_path, 'w') as f:
+                json.dump({
+                    'page_number': page_number,
+                    'timestamp': timestamp,
+                    'caption': caption,
+                    'metadata': metadata
+                }, f, indent=2)
+            logger.info(f"Saved caption data to {caption_path}")
+
+            result = {
+                "caption": caption,
+                "metadata": {
+                    **metadata,
                     "size": image.size,
                     "mode": image.mode,
                     "format": image.format,
-                    "aspect_ratio": round(image.size[0] / image.size[1], 2),
-                    "resolution": f"{image.size[0]}x{image.size[1]}",
-                    "color_space": image.mode,
-                    "page_number": metadata.get("page_number"),
-                    "location": metadata.get("location")
-                }
-                
-                # Generate enhanced caption
-                inputs = self.caption_processor(images=image, return_tensors="pt").to(self.device)
-                with torch.no_grad():
-                    outputs = self.caption_model.generate(
-                        **inputs,
-                        max_length=100,
-                        num_beams=5,
-                        length_penalty=1.5,
-                        num_return_sequences=1,
-                        temperature=0.7
-                    )
-                caption = self.caption_processor.decode(outputs[0], skip_special_tokens=True)
-                
-                # Create visualization with caption
-                vis_image = np.array(image)
-                # Add caption as text on the image
-                cv2.putText(
-                    vis_image,
-                    f"Caption: {caption[:100]}",  # Truncate long captions
-                    (10, 30),  # Position
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.7,  # Font scale
-                    (0, 255, 0),  # Color (BGR)
-                    2  # Thickness
-                )
-                
-                # Save visualization
-                vis_path = f"logs/image_extractions/visualizations/vis_{timestamp}.png"
-                cv2.imwrite(vis_path, cv2.cvtColor(vis_image, cv2.COLOR_RGB2BGR))
-                
-                # Log comprehensive information
-                logger.bind(image_extraction=True).info(
-                    f"Image Analysis:\n"
-                    f"Original Image: {original_path}\n"
-                    f"Visualization: {vis_path}\n"
-                    f"Resolution: {image_info['resolution']}\n"
-                    f"Aspect Ratio: {image_info['aspect_ratio']}\n"
-                    f"Color Space: {image_info['color_space']}\n"
-                    f"Generated Caption: {caption}"
-                )
-                
-                return {
-                    "type": "image",
-                    "caption": caption,
-                    "image_details": image_info,
-                    "metadata": metadata,
-                    "debug_paths": {
-                        "original": original_path,
-                        "visualization": vis_path
+                    "logs": {
+                        "original_image": original_path,
+                        "visualization": vis_path,
+                        "caption_file": caption_path
                     }
                 }
+            }
+            
+            logger.info(f"Successfully generated caption: {caption}")
+            return result
             
         except Exception as e:
             logger.error(f"Error in image extraction: {str(e)}")

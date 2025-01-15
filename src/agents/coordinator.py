@@ -36,55 +36,68 @@ class CoordinatorAgent(DocumentProcessor):
 
     async def process_document(self, file_path: str) -> Dict[str, Any]:
         try:
+            logger.info(f"Starting document processing for: {file_path}")
             results = []
             
             # Detect content type and structure
             structure_tool = StructureDetectionTool()
-            document_structure = await structure_tool.analyze(file_path)
+            document_structure = await structure_tool._run(file_path)
+            
+            logger.info(f"Found {len(document_structure['components'])} components to process")
             
             for component in document_structure['components']:
                 try:
                     if component['type'] == 'table':
-                        logger.info("Processing table component")
-                        # Convert pixmap to PIL Image
-                        pix = component['image']
-                        try:
-                            # Send the pixmap directly to the table extractor
-                            extracted = await self.table_extractor.extract(pix)
-                            if extracted and 'table_data' in extracted and extracted['table_data']:
+                        logger.info(f"Processing table component from page {component.get('page_number')}")
+                        if self.table_extractor and component.get('raw_image'):
+                            # Convert raw image bytes to format expected by table extractor
+                            table_image = Image.open(io.BytesIO(component['raw_image']))
+                            extracted = await self.table_extractor.extract(table_image)
+                            
+                            if extracted and 'table_data' in extracted:
                                 results.append({
                                     'type': 'table',
                                     'page_number': component.get('page_number'),
-                                    'extracted': extracted
+                                    'extracted': extracted,
+                                    'metadata': extracted.get('metadata', {})
                                 })
                                 logger.info(f"Successfully extracted table from page {component.get('page_number')}")
-                        except Exception as img_error:
-                            logger.error(f"Error converting image for table extraction: {str(img_error)}")
-                            continue
+                    
                     elif component['type'] == 'text':
-                        extracted = await self.text_extractor.extract(component['content'])
-                        if extracted:  # Only append if we got valid extracted text
-                            results.append({
-                                'type': 'text',
-                                'content': component['content'],
-                                'extracted': extracted
-                            })
-                            logger.info(f"Successfully extracted text content")
+                        logger.info(f"Processing text component from page {component.get('page_number')}")
+                        if self.text_extractor:
+                            extracted = await self.text_extractor.extract(component['content'])
+                            if extracted and 'content' in extracted:
+                                results.append({
+                                    'type': 'text',
+                                    'content': extracted['content'],
+                                    'elements': extracted.get('elements', []),
+                                    'page_number': component.get('page_number')
+                                })
+                                logger.info("Successfully extracted text content")
+                    
                     elif component['type'] == 'image':
-                        extracted = await self.image_extractor.extract(component['image'])
-                        if 'error' in extracted:
-                            logger.warning(f"Image extraction warning: {extracted['error']}")
-                            continue
-                        results.append({
-                            'type': 'image',
-                            'location': component['location'],
-                            'extracted': extracted
-                        })
+                        logger.info(f"Processing image component from page {component.get('metadata', {}).get('page_number')}")
+                        if self.image_extractor and component.get('image'):
+                            image_data = component['image']
+                            extracted = await self.image_extractor.extract({
+                                'image': Image.open(io.BytesIO(image_data)),
+                                'metadata': component.get('metadata', {})
+                            })
+                            
+                            if extracted and 'error' not in extracted:
+                                results.append({
+                                    'type': 'image',
+                                    'page_number': component.get('metadata', {}).get('page_number'),
+                                    'extracted': extracted
+                                })
+                                logger.info(f"Successfully extracted image content")
+                    
                 except Exception as component_error:
                     logger.error(f"Error processing component: {str(component_error)}")
                     continue
-            
-            # Explicitly integrate knowledge after processing all components
+
+            # Integrate knowledge after processing all components
             if results:
                 try:
                     logger.info("Integrating extracted knowledge into vector store")
@@ -92,11 +105,23 @@ class CoordinatorAgent(DocumentProcessor):
                 except Exception as e:
                     logger.error(f"Error during knowledge integration: {str(e)}")
             
-            return {
+            final_result = {
                 'success': True,
-                'processed_pages': document_structure['processed_pages'],
-                'results': results
+                'processed_pages': document_structure.get('processed_pages', 0),
+                'results': results,
+                'statistics': {
+                    'total_components': len(document_structure['components']),
+                    'processed_components': len(results),
+                    'component_types': {
+                        'text': len([r for r in results if r['type'] == 'text']),
+                        'table': len([r for r in results if r['type'] == 'table']),
+                        'image': len([r for r in results if r['type'] == 'image'])
+                    }
+                }
             }
+            
+            logger.info(f"Document processing completed with statistics: {final_result['statistics']}")
+            return final_result
             
         except Exception as e:
             logger.error(f"Error in document processing: {str(e)}")
@@ -145,7 +170,7 @@ class CoordinatorAgent(DocumentProcessor):
                 "page_number": page.number
             }
 
-    def combine_results(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    async def combine_results(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Combine results from multiple pages"""
         combined = {
             "success": all(r.get("success", False) for r in results),
@@ -161,7 +186,7 @@ class CoordinatorAgent(DocumentProcessor):
         # Integrate knowledge if results are successful
         if combined["success"] and combined["results"]:
             try:
-                self.knowledge_integrator.integrate_knowledge(combined["results"])
+                await self.knowledge_integrator.integrate_knowledge(combined["results"])
             except Exception as e:
                 logger.error(f"Error integrating knowledge: {str(e)}")
         
