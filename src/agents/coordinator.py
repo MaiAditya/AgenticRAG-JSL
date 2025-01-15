@@ -19,6 +19,7 @@ from src.core.error_handling import ProcessingError
 import io
 from PIL import Image
 import fitz
+import concurrent.futures
 
 class CoordinatorAgent(DocumentProcessor):
     def __init__(self, extractors: Dict[str, Any], tools: List[BaseTool], 
@@ -41,15 +42,17 @@ class CoordinatorAgent(DocumentProcessor):
             doc = fitz.open(file_path)
             total_pages = len(doc)
             
-            # Create tasks for parallel processing
-            tasks = []
+            # Create semaphore for controlling concurrent processing
             semaphore = asyncio.Semaphore(self.parallel_processor.max_workers)
             
             async def process_page_with_semaphore(page_num):
                 async with semaphore:
+                    # Get the page
                     page = doc[page_num]
-                    # Detect content type and structure for this page
+                    
+                    # Create structure detection tool and analyze page
                     structure_tool = StructureDetectionTool()
+                    # Since analyze_page is async, we need to await it
                     page_structure = await structure_tool.analyze_page(page)
                     
                     if "error" in page_structure:
@@ -60,65 +63,44 @@ class CoordinatorAgent(DocumentProcessor):
                         }
                     
                     page_results = []
+                    tasks = []
+                    
+                    # Create extraction tasks for each component
                     for component in page_structure['components']:
-                        try:
-                            if component['type'] == 'table':
-                                logger.info(f"Processing table component on page {page_num}")
-                                pix = component['image']
-                                try:
-                                    extracted = await self.table_extractor.extract(pix)
-                                    if extracted and 'table_data' in extracted and extracted['table_data']:
-                                        page_results.append({
-                                            'type': 'table',
-                                            'page_number': page_num,
-                                            'extracted': extracted
-                                        })
-                                        logger.info(f"Successfully extracted table from page {page_num}")
-                                except Exception as img_error:
-                                    logger.error(f"Error converting image for table extraction: {str(img_error)}")
-                                    continue
-                            elif component['type'] == 'text':
-                                extracted = await self.text_extractor.extract(component['content'])
-                                if extracted:
-                                    page_results.append({
-                                        'type': 'text',
-                                        'content': component['content'],
-                                        'extracted': extracted
-                                    })
-                                    logger.info(f"Successfully extracted text content from page {page_num}")
-                            elif component['type'] == 'image':
-                                extracted = await self.image_extractor.extract(component['image'])
-                                if 'error' in extracted:
-                                    logger.warning(f"Image extraction warning on page {page_num}: {extracted['error']}")
-                                    continue
-                                page_results.append({
-                                    'type': 'image',
-                                    'location': component['location'],
-                                    'extracted': extracted
-                                })
-                        except Exception as component_error:
-                            logger.error(f"Error processing component on page {page_num}: {str(component_error)}")
-                            continue
+                        if component['type'] == 'table':
+                            tasks.append(self._extract_table(component, page_num))
+                        elif component['type'] == 'text':
+                            tasks.append(self._extract_text(component))
+                        elif component['type'] == 'image':
+                            tasks.append(self._extract_image(component))
+                    
+                    # Process all components concurrently
+                    component_results = await asyncio.gather(*tasks, return_exceptions=True)
+                    
+                    # Filter out errors and add successful results
+                    for result in component_results:
+                        if isinstance(result, dict) and not result.get('error'):
+                            page_results.append(result)
                     
                     return {
                         'page_number': page_num,
                         'results': page_results
                     }
-
+            
             # Create tasks for all pages
             tasks = [
-                asyncio.create_task(process_page_with_semaphore(page_num))
+                process_page_with_semaphore(page_num)
                 for page_num in range(total_pages)
             ]
             
-            # Wait for all tasks to complete
+            # Process all pages concurrently
             all_results = await asyncio.gather(*tasks)
             
             # Combine results from all pages
             combined_results = []
             for page_result in all_results:
                 combined_results.extend(page_result['results'])
-                
+            
             # Integrate knowledge after processing all pages
             if combined_results:
                 try:
@@ -128,6 +110,7 @@ class CoordinatorAgent(DocumentProcessor):
                     logger.error(f"Error during knowledge integration: {str(e)}")
             
             doc.close()
+            
             return {
                 'success': True,
                 'processed_pages': total_pages,
@@ -137,6 +120,46 @@ class CoordinatorAgent(DocumentProcessor):
         except Exception as e:
             logger.error(f"Error in document processing: {str(e)}")
             raise ProcessingError(f"Failed to process document: {str(e)}")
+
+    async def _extract_table(self, component, page_num):
+        try:
+            pix = component['image']
+            extracted = await self.table_extractor.extract(pix)
+            if extracted and 'table_data' in extracted and extracted['table_data']:
+                return {
+                    'type': 'table',
+                    'page_number': page_num,
+                    'extracted': extracted
+                }
+        except Exception as e:
+            logger.error(f"Error extracting table: {str(e)}")
+            return {'error': str(e)}
+
+    async def _extract_text(self, component):
+        try:
+            extracted = await self.text_extractor.extract(component['content'])
+            if extracted:
+                return {
+                    'type': 'text',
+                    'content': component['content'],
+                    'extracted': extracted
+                }
+        except Exception as e:
+            logger.error(f"Error extracting text: {str(e)}")
+            return {'error': str(e)}
+
+    async def _extract_image(self, component):
+        try:
+            extracted = await self.image_extractor.extract(component['image'])
+            if not 'error' in extracted:
+                return {
+                    'type': 'image',
+                    'location': component['location'],
+                    'extracted': extracted
+                }
+        except Exception as e:
+            logger.error(f"Error extracting image: {str(e)}")
+            return {'error': str(e)}
 
     async def process_page(self, page) -> Dict[str, Any]:
         """Process a single page of the document"""
