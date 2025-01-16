@@ -1,10 +1,10 @@
-from typing import Protocol, Dict, Any, List, TypedDict
+from typing import Protocol, Dict, Any, List, TypedDict, Union
 
 class PageResult(TypedDict):
     success: bool
     page_number: int
     results: List[Dict[str, Any]]
-    error: str | None
+    error: Union[str, None]
 
 class CombinedResult(TypedDict):
     success: bool
