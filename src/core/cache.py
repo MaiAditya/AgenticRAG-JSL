@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional, Union
 from loguru import logger
 import json
 from datetime import datetime
@@ -42,7 +42,7 @@ class DocumentCache:
             logger.error(f"Error caching document {file_path}: {str(e)}")
             raise
 
-    def get_document(self, file_path: str) -> Dict[str, Any] | None:
+    def get_document(self, file_path: str) -> Union[Dict[str, Any], None]:
         """Retrieve cached results for a document
         
         Args:
