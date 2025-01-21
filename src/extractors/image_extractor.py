@@ -17,29 +17,36 @@ class ImageExtractor(BaseExtractor):
     def __init__(self):
         super().__init__()
         try:
+            logger.info("Initializing ImageExtractor...")
+            
             # Initialize BLIP-2 model for detailed image captioning
+            logger.info("Loading BLIP-2 model...")
             self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
             self.blip_model = Blip2ForConditionalGeneration.from_pretrained(
                 "Salesforce/blip2-opt-2.7b",
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
             )
+            logger.info("BLIP-2 model loaded successfully")
             
-            # Initialize PaddleOCR for text extraction
+            # Initialize PaddleOCR
+            logger.info("Initializing PaddleOCR...")
             self.ocr = PaddleOCR(use_angle_cls=True, lang='en')
+            logger.info("PaddleOCR initialized successfully")
             
             # Move models to device
             self.device = torch.device(settings.DEVICE)
             self.blip_model.to(self.device)
+            logger.info(f"Models moved to device: {self.device}")
             
             # Create output directories
+            logger.info("Creating output directories...")
             os.makedirs("logs/image_extractions/originals", exist_ok=True)
             os.makedirs("logs/image_extractions/visualizations", exist_ok=True)
             os.makedirs("logs/image_extractions/elements", exist_ok=True)
-            
-            logger.info("ImageExtractor initialized successfully")
+            logger.info("Output directories created successfully")
             
         except Exception as e:
-            logger.error(f"Error initializing models: {str(e)}")
+            logger.error(f"Error initializing ImageExtractor: {str(e)}")
             raise
 
     async def preprocess(self, image) -> Image.Image:
@@ -87,13 +94,18 @@ class ImageExtractor(BaseExtractor):
 
     async def extract(self, image) -> dict:
         try:
+            logger.info("Starting image extraction process...")
+            
             if isinstance(image, dict) and 'image' in image:
+                logger.debug("Image provided as dictionary with metadata")
                 image = image['image']
                 metadata = image.get('metadata', {})
             else:
+                logger.debug("Image provided directly without metadata")
                 metadata = {}
             
             if hasattr(image, 'tobytes'):
+                logger.debug("Converting image to PIL format")
                 img_data = image.tobytes("png")
                 image = Image.open(io.BytesIO(img_data))
                 
@@ -101,29 +113,26 @@ class ImageExtractor(BaseExtractor):
                 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 original_path = f"logs/image_extractions/originals/original_{timestamp}.png"
                 image.save(original_path)
+                logger.info(f"Original image saved to: {original_path}")
                 
                 # Detect visual type
+                logger.info("Detecting visual type...")
                 visual_type = self._detect_visual_type(image)
+                logger.info(f"Detected visual type: {visual_type}")
                 
-                # Extract information based on visual type
+                # Extract information
+                logger.info("Extracting visual information...")
                 visual_info = await self._extract_visual_info(image, visual_type)
+                logger.info(f"Extracted {len(visual_info.get('elements', []))} elements")
                 
-                # Create structured metadata
-                metadata = {
-                    "type": visual_type,
-                    "timestamp": timestamp,
-                    "size": image.size,
-                    "format": image.format,
-                    "mode": image.mode,
-                    **visual_info.get("metadata", {})
-                }
-                
-                # Generate visualization
+                # Create visualization
+                logger.info("Creating visualization...")
                 vis_image = self._create_visualization(image, visual_info)
                 vis_path = f"logs/image_extractions/visualizations/vis_{timestamp}.png"
                 cv2.imwrite(vis_path, cv2.cvtColor(vis_image, cv2.COLOR_RGB2BGR))
+                logger.info(f"Visualization saved to: {vis_path}")
                 
-                return {
+                result = {
                     "type": "visual_element",
                     "visual_type": visual_type,
                     "description": visual_info["description"],
@@ -135,9 +144,11 @@ class ImageExtractor(BaseExtractor):
                         "visualization": vis_path
                     }
                 }
+                logger.info("Image extraction completed successfully")
+                return result
                 
         except Exception as e:
-            logger.error(f"Error in image extraction: {str(e)}")
+            logger.error(f"Error in image extraction: {str(e)}", exc_info=True)
             return {"error": str(e)}
 
     async def _extract_visual_info(self, image: Image.Image, visual_type: str) -> dict:
