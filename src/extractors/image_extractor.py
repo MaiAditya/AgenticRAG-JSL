@@ -24,22 +24,19 @@ class ImageExtractor(BaseExtractor):
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
             )
             
-            # Initialize CogVLM for detailed visual understanding
-            self.cogvlm_processor = AutoProcessor.from_pretrained("THUDM/cogvlm-chat-hf")
-            self.cogvlm_model = AutoModelForVision2Seq.from_pretrained("THUDM/cogvlm-chat-hf")
-            
             # Initialize PaddleOCR for text extraction
             self.ocr = PaddleOCR(use_angle_cls=True, lang='en')
             
             # Move models to device
             self.device = torch.device(settings.DEVICE)
             self.blip_model.to(self.device)
-            self.cogvlm_model.to(self.device)
             
             # Create output directories
             os.makedirs("logs/image_extractions/originals", exist_ok=True)
             os.makedirs("logs/image_extractions/visualizations", exist_ok=True)
             os.makedirs("logs/image_extractions/elements", exist_ok=True)
+            
+            logger.info("ImageExtractor initialized successfully")
             
         except Exception as e:
             logger.error(f"Error initializing models: {str(e)}")
@@ -145,38 +142,42 @@ class ImageExtractor(BaseExtractor):
 
     async def _extract_visual_info(self, image: Image.Image, visual_type: str) -> dict:
         """Extract detailed information based on visual type"""
-        # Get detailed caption from BLIP-2
-        inputs = self.blip_processor(images=image, return_tensors="pt").to(self.device)
-        outputs = self.blip_model.generate(**inputs, max_length=100)
-        caption = self.blip_processor.decode(outputs[0], skip_special_tokens=True)
-        
-        # Get detailed analysis from CogVLM
-        cogvlm_inputs = self.cogvlm_processor(images=image, return_tensors="pt").to(self.device)
-        cogvlm_outputs = self.cogvlm_model.generate(**cogvlm_inputs, max_length=200)
-        detailed_analysis = self.cogvlm_processor.decode(cogvlm_outputs[0], skip_special_tokens=True)
-        
-        # Extract text using PaddleOCR
-        ocr_result = self.ocr.ocr(np.array(image))
-        extracted_text = [line[1][0] for line in ocr_result[0]] if ocr_result[0] else []
-        
-        # Combine information based on visual type
-        if visual_type == "flowchart":
-            elements = self._process_flowchart(image, ocr_result)
-        elif visual_type == "diagram":
-            elements = self._process_diagram(image, ocr_result)
-        else:
-            elements = []
-        
-        return {
-            "description": f"{caption}\n\nDetailed Analysis: {detailed_analysis}",
-            "metadata": {
-                "extracted_text": extracted_text,
-                "element_count": len(elements),
-                "text_density": len(extracted_text)
-            },
-            "elements": elements,
-            "extracted_text": extracted_text
-        }
+        try:
+            # Get detailed caption from BLIP-2
+            inputs = self.blip_processor(images=image, return_tensors="pt").to(self.device)
+            outputs = self.blip_model.generate(**inputs, max_length=100)
+            caption = self.blip_processor.decode(outputs[0], skip_special_tokens=True)
+            
+            # Extract text using PaddleOCR
+            ocr_result = self.ocr.ocr(np.array(image))
+            extracted_text = [line[1][0] for line in ocr_result[0]] if ocr_result[0] else []
+            
+            # Combine information based on visual type
+            if visual_type == "flowchart":
+                elements = self._process_flowchart(image, ocr_result)
+            elif visual_type == "diagram":
+                elements = self._process_diagram(image, ocr_result)
+            else:
+                elements = []
+            
+            return {
+                "description": caption,
+                "metadata": {
+                    "extracted_text": extracted_text,
+                    "element_count": len(elements),
+                    "text_density": len(extracted_text)
+                },
+                "elements": elements,
+                "extracted_text": extracted_text
+            }
+        except Exception as e:
+            logger.error(f"Error in visual info extraction: {str(e)}")
+            return {
+                "description": "Error extracting visual information",
+                "metadata": {},
+                "elements": [],
+                "extracted_text": []
+            }
 
     def _process_flowchart(self, image: Image.Image, ocr_result) -> list:
         """Process flowchart-specific elements"""
