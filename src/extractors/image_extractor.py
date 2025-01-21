@@ -286,3 +286,17 @@ class ImageExtractor(BaseExtractor):
                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
         
         return vis_image
+
+    def _is_point_inside(self, point: tuple, bbox: tuple) -> bool:
+        """Check if a point is inside a bounding box
+        
+        Args:
+            point (tuple): (x, y) coordinates of the point
+            bbox (tuple): (x, y, width, height) of the bounding box
+        
+        Returns:
+            bool: True if point is inside bbox, False otherwise
+        """
+        px, py = point
+        x, y, w, h = bbox
+        return (x <= px <= x + w) and (y <= py <= y + h)
