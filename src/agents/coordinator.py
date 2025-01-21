@@ -191,10 +191,23 @@ class CoordinatorAgent(DocumentProcessor):
         try:
             extracted = await self.image_extractor.extract(component['image'])
             if not 'error' in extracted:
+                # Prepare text representation for vector storage
+                text_representation = f"""
+                Visual Element Type: {extracted['visual_type']}
+                Description: {extracted['description']}
+                Extracted Text: {', '.join(extracted['extracted_text'])}
+                """
+                
+                # Store both text and structured data
                 return {
-                    'type': 'image',
-                    'location': component['location'],
-                    'extracted': extracted
+                    'type': 'visual_element',
+                    'text_content': text_representation,
+                    'structured_data': extracted,
+                    'metadata': {
+                        'visual_type': extracted['visual_type'],
+                        'element_count': len(extracted.get('elements', [])),
+                        'has_text': bool(extracted.get('extracted_text'))
+                    }
                 }
         except Exception as e:
             logger.error(f"Error extracting image: {str(e)}")
