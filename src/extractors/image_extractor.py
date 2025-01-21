@@ -240,3 +240,49 @@ class ImageExtractor(BaseExtractor):
                 })
         
         return elements
+
+    def _classify_shape(self, contour) -> str:
+        """Classify the type of shape based on contour properties"""
+        approx = cv2.approxPolyDP(contour, 0.04 * cv2.arcLength(contour, True), True)
+        num_vertices = len(approx)
+        
+        if num_vertices == 4:
+            x, y, w, h = cv2.boundingRect(approx)
+            aspect_ratio = float(w)/h
+            if 0.95 <= aspect_ratio <= 1.05:
+                return "rectangle"
+            else:
+                return "rectangle"
+        elif num_vertices == 3:
+            return "triangle"
+        elif num_vertices > 4:
+            return "ellipse"
+        else:
+            return "unknown"
+
+    def _create_visualization(self, image: Image.Image, visual_info: dict) -> np.ndarray:
+        """Create a visualization of detected elements"""
+        img_np = np.array(image)
+        vis_image = img_np.copy()
+        
+        # Draw bounding boxes for detected elements
+        for element in visual_info.get("elements", []):
+            if "bbox" in element:
+                x, y, w, h = element["bbox"]
+                color = {
+                    "rectangle": (0, 255, 0),
+                    "triangle": (0, 0, 255),
+                    "ellipse": (255, 0, 0),
+                    "unknown": (128, 128, 128)
+                }.get(element.get("shape", "unknown"), (128, 128, 128))
+                
+                cv2.rectangle(vis_image, (int(x), int(y)), 
+                             (int(x + w), int(y + h)), color, 2)
+                
+                # Add text label if available
+                if "text" in element and element["text"]:
+                    cv2.putText(vis_image, element["text"][:20], 
+                               (int(x), int(y - 5)),
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+        
+        return vis_image
