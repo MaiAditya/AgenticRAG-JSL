@@ -45,6 +45,32 @@ class ImageExtractor(BaseExtractor):
             logger.error(f"Error initializing models: {str(e)}")
             raise
 
+    async def preprocess(self, image) -> Image.Image:
+        """Preprocess the image before extraction"""
+        try:
+            if isinstance(image, dict) and 'image' in image:
+                image = image['image']
+            
+            if isinstance(image, bytes):
+                image = Image.open(io.BytesIO(image))
+            elif isinstance(image, str):
+                image = Image.open(image)
+            elif hasattr(image, 'tobytes'):
+                img_data = image.tobytes("png")
+                image = Image.open(io.BytesIO(img_data))
+            elif not isinstance(image, Image.Image):
+                raise ValueError("Unsupported image format")
+            
+            # Convert to RGB if needed
+            if image.mode != 'RGB':
+                image = image.convert('RGB')
+            
+            return image
+            
+        except Exception as e:
+            logger.error(f"Error in image preprocessing: {str(e)}")
+            raise
+
     def _detect_visual_type(self, image: Image.Image) -> str:
         """Detect the type of visual element (flowchart, diagram, regular image, etc.)"""
         # Convert to numpy array for OpenCV processing
