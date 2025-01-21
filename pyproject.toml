@@ -35,6 +35,7 @@ accelerate = "^0.26.1"
 streamlit = "^1.32.0"
 onnxruntime = "1.19.2"
 onnxruntime-gpu = { version = "^1.19.2", optional = true }
+paddlepaddle = "^2.5.2"
 paddleocr = "^2.7.0"
 opencv-python-headless = "^4.10.0.84"
 easyocr = "^1.7.1"
