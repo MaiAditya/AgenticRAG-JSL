@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from langchain_openai import ChatOpenAI
+from langchain.chat_models import ChatOpenAI
 from .specialized_agents import DocumentAnalysisAgent, ExtractionAgent, KnowledgeIntegrationAgent
 from loguru import logger
 from src.core.config import settings
