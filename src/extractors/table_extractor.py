@@ -266,9 +266,8 @@ class TableExtractor:
         return dilated 
 
     async def _generate_table_description(self, table_image: Image.Image) -> str:
-        """Generate a description of the table using BLIP-2"""
+        """Generate a detailed description of the table using BLIP-2"""
         try:
-            # Ensure we have a PIL Image
             if not isinstance(table_image, Image.Image):
                 logger.error(f"Invalid image type: {type(table_image)}")
                 return "Error: Invalid image format"
@@ -276,24 +275,66 @@ class TableExtractor:
             # Prepare image for BLIP-2
             inputs = self.blip_processor(images=table_image, return_tensors="pt").to(self.device)
             
-            # Generate description with specific prompt
-            prompt = "Describe this table's content and structure in detail, including its columns and purpose if apparent."
+            # Enhanced prompt for more detailed description
+            prompt = """Analyze this table in detail and describe:
+            1. The overall purpose and type of the table
+            2. The column headers and their meaning
+            3. The type of data in each column
+            4. Any notable patterns or key information
+            5. The relationship between different columns
+            6. Any medical or technical terminology present
+            7. The format and structure of the table"""
+            
             text_inputs = self.blip_processor(text=prompt, return_tensors="pt").to(self.device)
             
             with torch.no_grad():
                 outputs = self.blip_model.generate(
                     **inputs,
-                    max_length=150,
+                    max_length=300,  # Increased for more detailed description
                     num_beams=5,
-                    min_length=30,
+                    min_length=100,  # Increased minimum length
                     top_p=0.9,
-                    repetition_penalty=1.5
+                    repetition_penalty=1.5,
+                    length_penalty=1.0  # Encourage longer generations
                 )
             
             description = self.blip_processor.decode(outputs[0], skip_special_tokens=True)
-            logger.debug(f"Generated table description: {description}")
-            return description
+            
+            # Add structural information to description
+            structure_info = self._get_structure_description(table_image)
+            full_description = f"{description}\n\nStructural Details:\n{structure_info}"
+            
+            logger.debug(f"Generated detailed table description: {full_description}")
+            return full_description
             
         except Exception as e:
             logger.error(f"Error generating table description: {str(e)}")
-            return "Error generating table description" 
+            return "Error generating table description"
+
+    def _get_structure_description(self, table_image: Image.Image) -> str:
+        """Generate description of table structure"""
+        try:
+            # Get basic dimensions
+            width, height = table_image.size
+            
+            # Convert to grayscale for analysis
+            gray_image = np.array(table_image.convert('L'))
+            
+            # Detect lines
+            horizontal_lines = self._detect_lines(gray_image, "horizontal", width // 30)
+            vertical_lines = self._detect_lines(gray_image, "vertical", height // 30)
+            
+            # Count approximate rows and columns
+            row_positions = np.where(np.sum(horizontal_lines, axis=1) > width * 0.5)[0]
+            col_positions = np.where(np.sum(vertical_lines, axis=0) > height * 0.5)[0]
+            
+            return f"""
+            Table Dimensions: {width}x{height} pixels
+            Estimated Rows: {len(row_positions) - 1}
+            Estimated Columns: {len(col_positions) - 1}
+            Grid Structure: {'Regular grid detected' if len(row_positions) > 1 and len(col_positions) > 1 else 'Irregular structure'}
+            Border Style: {'Bordered' if np.sum(horizontal_lines) > 0 and np.sum(vertical_lines) > 0 else 'Borderless'}
+            """
+        except Exception as e:
+            logger.error(f"Error in structure description: {str(e)}")
+            return "Unable to analyze table structure" 

@@ -180,14 +180,37 @@ class CoordinatorAgent(DocumentProcessor):
             description = component.get('description', '')
             metadata = component.get('metadata', {})
             
-            # Prepare text representation for vector storage
+            # Enhanced text representation for vector storage
             text_representation = f"""
-            Table Description: {description}
-            Number of Rows: {metadata.get('num_rows', 'Unknown')}
-            Number of Columns: {metadata.get('num_cols', 'Unknown')}
-            Confidence: {metadata.get('confidence', 'Unknown')}
-            Table Content: {json.dumps(table_data, indent=2)}
+            Table Description:
+            {description}
+
+            Table Structure:
+            - Number of Rows: {metadata.get('num_rows', 'Unknown')}
+            - Number of Columns: {metadata.get('num_cols', 'Unknown')}
+            - Headers: {', '.join(table_data.get('headers', ['Unknown']))}
+            - Confidence Score: {metadata.get('confidence', 'Unknown')}
+
+            Content Summary:
+            {self._generate_content_summary(table_data)}
+
+            Raw Table Data:
+            {json.dumps(table_data, indent=2)}
             """
+            
+            # Enhanced metadata for better searchability
+            enhanced_metadata = {
+                'type': 'table',
+                'page_number': page_num,
+                'confidence': metadata.get('confidence'),
+                'num_rows': metadata.get('num_rows'),
+                'num_cols': metadata.get('num_cols'),
+                'has_headers': bool(table_data.get('headers')),
+                'content_type': self._detect_content_type(table_data),
+                'processing_timestamp': datetime.now().isoformat(),
+                'table_location': metadata.get('bbox', []),
+                'data_density': len(str(table_data)) / (metadata.get('num_rows', 1) * metadata.get('num_cols', 1))
+            }
             
             return {
                 'type': 'table',
@@ -195,11 +218,48 @@ class CoordinatorAgent(DocumentProcessor):
                 'text_content': text_representation,
                 'structured_data': table_data,
                 'description': description,
-                'metadata': metadata
+                'metadata': enhanced_metadata
             }
         except Exception as e:
             logger.error(f"Error extracting table: {str(e)}")
             return {'error': str(e)}
+
+    def _generate_content_summary(self, table_data: Dict) -> str:
+        """Generate a summary of table content"""
+        try:
+            cells = table_data.get('cells', [])
+            headers = [cell['text'] for cell in cells if cell.get('is_header')]
+            
+            summary = []
+            if headers:
+                summary.append(f"Column Headers: {', '.join(headers)}")
+            
+            # Analyze content types
+            numeric_count = sum(1 for cell in cells if cell.get('text', '').replace('.', '').isdigit())
+            text_count = sum(1 for cell in cells if not cell.get('text', '').replace('.', '').isdigit())
+            
+            summary.append(f"Content Distribution: {numeric_count} numeric cells, {text_count} text cells")
+            
+            return '\n'.join(summary)
+        except Exception as e:
+            logger.error(f"Error generating content summary: {str(e)}")
+            return "Unable to generate content summary"
+
+    def _detect_content_type(self, table_data: Dict) -> str:
+        """Detect the primary type of content in the table"""
+        try:
+            cells = table_data.get('cells', [])
+            numeric_count = sum(1 for cell in cells if cell.get('text', '').replace('.', '').isdigit())
+            total_cells = len(cells)
+            
+            if numeric_count / total_cells > 0.7:
+                return 'numeric'
+            elif numeric_count / total_cells > 0.3:
+                return 'mixed'
+            else:
+                return 'textual'
+        except Exception:
+            return 'unknown'
 
     async def _extract_text(self, component):
         try:
