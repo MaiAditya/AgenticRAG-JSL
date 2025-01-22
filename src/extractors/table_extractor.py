@@ -26,12 +26,13 @@ class TableExtractor:
         self.model = TableTransformerForObjectDetection.from_pretrained(model_name).to(self.device)
         self.threshold = 0.5
 
-        # Initialize BLIP-2 for table description
+        # Initialize BLIP-2 with larger model for better descriptions
         logger.info("Loading BLIP-2 model for table description...")
-        self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
+        self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-6.7b")
         self.blip_model = Blip2ForConditionalGeneration.from_pretrained(
-            "Salesforce/blip2-opt-2.7b",
-            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
+            "Salesforce/blip2-opt-6.7b",
+            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+            device_map="auto"
         ).to(self.device)
         logger.info("BLIP-2 model loaded successfully")
 
@@ -275,34 +276,52 @@ class TableExtractor:
             # Prepare image for BLIP-2
             inputs = self.blip_processor(images=table_image, return_tensors="pt").to(self.device)
             
-            # Enhanced prompt for more detailed description
-            prompt = """Analyze this table in detail and describe:
-            1. The overall purpose and type of the table
-            2. The column headers and their meaning
-            3. The type of data in each column
-            4. Any notable patterns or key information
-            5. The relationship between different columns
-            6. Any medical or technical terminology present
-            7. The format and structure of the table"""
+            # Carefully crafted prompt for medical table analysis
+            prompt = """You are a medical document analyzer. Examine this table carefully and provide a detailed description including:
+
+            1. Purpose: What is the main purpose or topic of this table?
+            2. Structure: How is the information organized (columns, sections, hierarchy)?
+            3. Content: What specific medical information, measurements, or categories are presented?
+            4. Key Findings: What are the most important data points or patterns?
+            5. Medical Context: How does this information relate to clinical practice or medical knowledge?
+            6. Special Notes: Are there any warnings, contraindications, or critical values highlighted?
+
+            Focus on medical terminology and clinical relevance. Be precise and concise."""
             
             text_inputs = self.blip_processor(text=prompt, return_tensors="pt").to(self.device)
             
             with torch.no_grad():
                 outputs = self.blip_model.generate(
                     **inputs,
-                    max_length=300,  # Increased for more detailed description
+                    max_length=500,  # Allow for longer, more detailed descriptions
+                    min_length=200,  # Ensure comprehensive description
                     num_beams=5,
-                    min_length=100,  # Increased minimum length
+                    temperature=0.7,  # Slightly increase creativity while maintaining accuracy
                     top_p=0.9,
-                    repetition_penalty=1.5,
-                    length_penalty=1.0  # Encourage longer generations
+                    repetition_penalty=2.0,  # Increased to avoid repetition
+                    length_penalty=1.5,  # Encourage detailed descriptions
+                    do_sample=True  # Enable sampling for more natural text
                 )
             
             description = self.blip_processor.decode(outputs[0], skip_special_tokens=True)
             
-            # Add structural information to description
-            structure_info = self._get_structure_description(table_image)
-            full_description = f"{description}\n\nStructural Details:\n{structure_info}"
+            # Add structural analysis
+            structure_info = self._analyze_table_structure(table_image)
+            content_summary = self._summarize_table_content(table_image)
+            
+            full_description = f"""
+            Medical Table Analysis:
+            ----------------------
+            {description}
+
+            Technical Details:
+            ----------------
+            {structure_info}
+
+            Content Overview:
+            ---------------
+            {content_summary}
+            """
             
             logger.debug(f"Generated detailed table description: {full_description}")
             return full_description
@@ -310,6 +329,58 @@ class TableExtractor:
         except Exception as e:
             logger.error(f"Error generating table description: {str(e)}")
             return "Error generating table description"
+
+    def _summarize_table_content(self, table_image: Image.Image) -> str:
+        """Analyze and summarize table content patterns"""
+        try:
+            # Convert to numpy array for analysis
+            table_np = np.array(table_image)
+            
+            # Basic image analysis for content patterns
+            gray = cv2.cvtColor(table_np, cv2.COLOR_RGB2GRAY)
+            text_density = np.mean(gray < 128)  # Estimate text density
+            
+            # Detect if table has header row
+            top_region = gray[:int(gray.shape[0] * 0.2), :]
+            has_header = np.mean(top_region < 128) > text_density
+            
+            # Analyze cell density and distribution
+            cell_analysis = self._analyze_cell_distribution(gray)
+            
+            return f"""
+            Content Density: {'High' if text_density > 0.3 else 'Medium' if text_density > 0.1 else 'Low'}
+            Header Present: {'Yes' if has_header else 'No'}
+            Cell Distribution: {cell_analysis}
+            """
+        except Exception as e:
+            logger.error(f"Error in content summary: {str(e)}")
+            return "Unable to analyze content"
+
+    def _analyze_cell_distribution(self, gray_image: np.ndarray) -> str:
+        """Analyze the distribution of cells in the table"""
+        try:
+            # Use adaptive thresholding to detect cells
+            binary = cv2.adaptiveThreshold(
+                gray_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                cv2.THRESH_BINARY_INV, 21, 10
+            )
+            
+            # Analyze row and column patterns
+            row_density = np.mean(binary, axis=1)
+            col_density = np.mean(binary, axis=0)
+            
+            # Determine table characteristics
+            regular_rows = np.std(row_density) < np.mean(row_density) * 0.5
+            regular_cols = np.std(col_density) < np.mean(col_density) * 0.5
+            
+            return f"""
+            Pattern: {'Regular grid' if regular_rows and regular_cols else 'Irregular layout'}
+            Row Consistency: {'Uniform' if regular_rows else 'Variable'}
+            Column Consistency: {'Uniform' if regular_cols else 'Variable'}
+            """
+        except Exception as e:
+            logger.error(f"Error in cell distribution analysis: {str(e)}")
+            return "Unable to analyze cell distribution"
 
     def _get_structure_description(self, table_image: Image.Image) -> str:
         """Generate description of table structure"""
