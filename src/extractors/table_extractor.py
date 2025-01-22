@@ -115,6 +115,49 @@ class TableExtractor:
             logger.error(f"Error in table extraction: {str(e)}", exc_info=True)
             return {"error": str(e)}
 
+    async def _process_input_image(self, image: Any) -> Image.Image:
+        """Process input image to PIL format"""
+        try:
+            logger.debug(f"Processing input image of type: {type(image)}")
+            
+            # Handle Pixmap
+            if hasattr(image, 'tobytes'):
+                logger.debug(f"Converting Pixmap with {image.n} channels")
+                
+                # Determine color mode
+                if image.n == 1:
+                    mode = "L"
+                elif image.n == 3:
+                    mode = "RGB"
+                elif image.n == 4:
+                    mode = "RGBA"
+                else:
+                    raise ValueError(f"Unsupported number of channels: {image.n}")
+                
+                # Create PIL Image with proper stride
+                pil_image = Image.frombuffer(
+                    mode,
+                    (image.width, image.height),
+                    image.samples,
+                    "raw",
+                    mode,
+                    image.stride,
+                    1
+                )
+                logger.debug("Successfully converted Pixmap to PIL Image")
+                
+            elif isinstance(image, Image.Image):
+                logger.debug("Image is already in PIL format")
+                pil_image = image
+            else:
+                raise ValueError(f"Unsupported image type: {type(image)}")
+            
+            return pil_image
+            
+        except Exception as e:
+            logger.error(f"Error processing input image: {str(e)}")
+            raise
+
     async def _generate_vision_description(self, table_image: Image.Image) -> str:
         """Generate detailed description using OpenAI's GPT-4 Vision"""
         try:
