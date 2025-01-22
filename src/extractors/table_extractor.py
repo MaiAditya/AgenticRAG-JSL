@@ -12,6 +12,7 @@ import pytesseract
 import re
 import base64
 from openai import OpenAI
+import time
 
 class TableExtractor:
     def __init__(self):
@@ -41,15 +42,35 @@ class TableExtractor:
         try:
             # Convert pymupdf.Pixmap to PIL Image if needed
             if hasattr(image, 'tobytes'):  # Check if it's a Pixmap
-                pil_image = Image.frombytes(
-                    "RGB" if image.n == 3 else "RGBA",
+                # Get the correct color mode
+                if image.n == 1:
+                    mode = "L"
+                elif image.n == 3:
+                    mode = "RGB"
+                elif image.n == 4:
+                    mode = "RGBA"
+                else:
+                    raise ValueError(f"Unsupported number of channels: {image.n}")
+                
+                # Create PIL Image with proper stride
+                pil_image = Image.frombuffer(
+                    mode,
                     (image.width, image.height),
-                    image.tobytes()
+                    image.samples,
+                    "raw",
+                    mode,
+                    image.stride,
+                    1
                 )
             elif isinstance(image, Image.Image):
                 pil_image = image
             else:
                 raise ValueError(f"Unsupported image type: {type(image)}")
+
+            # Save for debugging
+            debug_path = os.path.join("logs/table_detections/originals", f"table_{int(time.time())}.png")
+            pil_image.save(debug_path)
+            logger.debug(f"Saved debug image to: {debug_path}")
 
             # Detect tables
             inputs = self.detector_processor(images=pil_image, return_tensors="pt")
