@@ -36,11 +36,23 @@ class TableExtractor:
         os.makedirs("logs/table_detections/visualizations", exist_ok=True)
         os.makedirs("logs/table_detections/cells", exist_ok=True)
 
-    async def extract(self, image: Image.Image) -> Dict[str, Any]:
+    async def extract(self, image: Any) -> Dict[str, Any]:
         """Extract tables, generate descriptions, and metadata"""
         try:
+            # Convert pymupdf.Pixmap to PIL Image if needed
+            if hasattr(image, 'tobytes'):  # Check if it's a Pixmap
+                pil_image = Image.frombytes(
+                    "RGB" if image.n == 3 else "RGBA",
+                    (image.width, image.height),
+                    image.tobytes()
+                )
+            elif isinstance(image, Image.Image):
+                pil_image = image
+            else:
+                raise ValueError(f"Unsupported image type: {type(image)}")
+
             # Detect tables
-            inputs = self.detector_processor(images=image, return_tensors="pt")
+            inputs = self.detector_processor(images=pil_image, return_tensors="pt")
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
             
             with torch.no_grad():
@@ -48,7 +60,7 @@ class TableExtractor:
             
             results = self.detector_processor.post_process_object_detection(
                 outputs, 
-                target_sizes=torch.tensor([image.size[::-1]]).to(self.device),
+                target_sizes=torch.tensor([pil_image.size[::-1]]).to(self.device),
                 threshold=0.5
             )[0]
 
@@ -57,7 +69,7 @@ class TableExtractor:
                 if score.item() > 0.5 and label.item() == 0:
                     bbox = box.cpu().tolist()
                     x0, y0, x1, y1 = [int(coord) for coord in bbox]
-                    table_image = image.crop((x0, y0, x1, y1))
+                    table_image = pil_image.crop((x0, y0, x1, y1))
                     
                     # Get description using Llama Vision
                     description = await self._generate_vision_description(table_image)
