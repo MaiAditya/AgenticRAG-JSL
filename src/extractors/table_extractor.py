@@ -1,21 +1,14 @@
-from transformers import (
-    DetrImageProcessor, 
-    TableTransformerForObjectDetection, 
-    AutoProcessor, 
-    MllamaForConditionalGeneration
-)
+from transformers import DetrImageProcessor, TableTransformerForObjectDetection
 from PIL import Image
 import torch
 import numpy as np
 from loguru import logger
-import datetime
 import os
 import cv2
 from typing import List, Dict, Any, Tuple
 import io
 import json
 import pytesseract
-from transformers import BitsAndBytesConfig
 import re
 import base64
 from openai import OpenAI
@@ -35,20 +28,9 @@ class TableExtractor:
             "microsoft/table-transformer-detection"
         ).to(self.device)
         
-        # Initialize Llama 3.2 Vision
-        logger.info("Loading Llama 3.2 Vision model...")
-        self.vision_processor = AutoProcessor.from_pretrained(
-            "meta-llama/Llama-3.2-11B-Vision-Instruct"
-        )
-        self.vision_model = MllamaForConditionalGeneration.from_pretrained(
-            "meta-llama/Llama-3.2-11B-Vision-Instruct",
-            torch_dtype=torch.float16,
-            device_map="auto"
-        )
-
         # Initialize OpenAI client
         self.client = OpenAI()
-
+        
         # Create output directories for debugging
         os.makedirs("logs/table_detections/originals", exist_ok=True)
         os.makedirs("logs/table_detections/visualizations", exist_ok=True)
