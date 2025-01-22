@@ -17,6 +17,8 @@ import json
 import pytesseract
 from transformers import BitsAndBytesConfig
 import re
+import base64
+from openai import OpenAI
 
 class TableExtractor:
     def __init__(self):
@@ -43,6 +45,9 @@ class TableExtractor:
             torch_dtype=torch.float16,
             device_map="auto"
         )
+
+        # Initialize OpenAI client
+        self.client = OpenAI()
 
         # Create output directories for debugging
         os.makedirs("logs/table_detections/originals", exist_ok=True)
@@ -92,37 +97,42 @@ class TableExtractor:
             return {"error": str(e)}
 
     async def _generate_vision_description(self, table_image: Image.Image) -> str:
-        """Generate detailed description using Llama 3.2 Vision"""
+        """Generate detailed description using OpenAI's GPT-4 Vision"""
         try:
-            messages = [
-                {"role": "user", "content": [
-                    {"type": "image", "image": table_image},
-                    {"type": "text", "text": """As a medical professional, analyze this table in detail. Provide:
-                    1. Main medical topic/condition
-                    2. Key data points and their clinical significance
-                    3. Table organization and structure
-                    4. Critical medical implications or warnings
-                    5. Relevance for healthcare providers
-                    Be specific and thorough in your medical analysis."""}
-                ]}
-            ]
+            # Convert image to base64
+            buffered = io.BytesIO()
+            table_image.save(buffered, format="PNG")
+            img_str = base64.b64encode(buffered.getvalue()).decode()
             
-            inputs = self.vision_processor.apply_chat_template(
-                messages, 
-                add_generation_prompt=True,
-                return_tensors="pt"
-            ).to(self.device)
-
-            outputs = self.vision_model.generate(
-                inputs,
-                max_new_tokens=500,
-                min_new_tokens=200,
-                temperature=0.7,
-                num_beams=3,
-                repetition_penalty=1.2
+            response = self.client.chat.completions.create(
+                model="gpt-4-vision-preview",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": """As a medical professional, analyze this table in detail. Provide:
+                                1. Main medical topic/condition
+                                2. Key data points and clinical significance
+                                3. Table organization and structure
+                                4. Critical medical implications or warnings
+                                5. Relevance for healthcare providers
+                                Be specific and thorough in your medical analysis."""
+                            },
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/png;base64,{img_str}"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                max_tokens=500
             )
             
-            return self.vision_processor.decode(outputs[0], skip_special_tokens=True)
+            return response.choices[0].message.content
 
         except Exception as e:
             logger.error(f"Error generating vision description: {str(e)}")
