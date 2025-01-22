@@ -120,7 +120,7 @@ class TableExtractor:
             img_str = base64.b64encode(buffered.getvalue()).decode()
             
             response = self.client.chat.completions.create(
-                model="gpt-4-vision-preview",
+                model="gpt-4-vision-preview-v2",
                 messages=[
                     {
                         "role": "user",
@@ -158,16 +158,25 @@ class TableExtractor:
         try:
             # Convert and preprocess
             table_np = np.array(table_image)
-            gray = cv2.cvtColor(table_np, cv2.COLOR_RGB2GRAY)
+            if len(table_np.shape) == 3:
+                gray = cv2.cvtColor(table_np, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = table_np
             
-            # Enhanced binary image
+            # Check minimum size and adjust kernel size accordingly
+            min_dim = min(gray.shape)
+            kernel_size = max(3, min(21, min_dim // 40))
+            if kernel_size % 2 == 0:
+                kernel_size += 1  # Ensure odd kernel size
+            
+            # Enhanced binary image with safe kernel size
             binary = cv2.adaptiveThreshold(
                 gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                cv2.THRESH_BINARY_INV, 21, 10
+                cv2.THRESH_BINARY_INV, kernel_size, 10
             )
             
             # Improved line detection
-            scale_factor = min(table_np.shape) // 40
+            scale_factor = max(1, min_dim // 40)
             ver_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, scale_factor))
             hor_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (scale_factor, 1))
             
