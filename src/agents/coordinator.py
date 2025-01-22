@@ -172,57 +172,68 @@ class CoordinatorAgent(DocumentProcessor):
 
     async def _extract_table(self, component, page_num):
         try:
+            logger.info(f"Starting table extraction for page {page_num}")
+            
             if 'content' not in component:
                 logger.error("Table component missing content")
                 return {'error': 'Missing table content'}
             
             table_data = component['content']
+            logger.debug(f"Raw table data received: {json.dumps(table_data, indent=2)}")
+            
+            # Validate and extract key components
             description = component.get('description', '')
             metadata = component.get('metadata', {})
+            logger.info(f"Table metadata keys: {list(metadata.keys())}")
             
             # Enhanced text representation for vector storage
-            text_representation = f"""
-            Table Description:
-            {description}
-
-            Table Structure:
-            - Number of Rows: {metadata.get('num_rows', 'Unknown')}
-            - Number of Columns: {metadata.get('num_cols', 'Unknown')}
-            - Headers: {', '.join(table_data.get('headers', ['Unknown']))}
-            - Confidence Score: {metadata.get('confidence', 'Unknown')}
-
-            Content Summary:
-            {self._generate_content_summary(table_data)}
-
-            Raw Table Data:
-            {json.dumps(table_data, indent=2)}
-            """
+            text_representation = self._generate_vector_text(table_data, description, metadata)
+            logger.debug(f"Generated vector text representation ({len(text_representation)} chars)")
             
             # Enhanced metadata for better searchability
-            enhanced_metadata = {
-                'type': 'table',
-                'page_number': page_num,
-                'confidence': metadata.get('confidence'),
-                'num_rows': metadata.get('num_rows'),
-                'num_cols': metadata.get('num_cols'),
-                'has_headers': bool(table_data.get('headers')),
-                'content_type': self._detect_content_type(table_data),
-                'processing_timestamp': datetime.now().isoformat(),
-                'table_location': metadata.get('bbox', []),
-                'data_density': len(str(table_data)) / (metadata.get('num_rows', 1) * metadata.get('num_cols', 1))
-            }
+            enhanced_metadata = self._enhance_metadata(table_data, metadata, page_num)
+            logger.info("Enhanced metadata created successfully")
+            logger.debug(f"Enhanced metadata: {json.dumps(enhanced_metadata, indent=2)}")
             
-            return {
+            result = {
                 'type': 'table',
                 'page_number': page_num,
                 'text_content': text_representation,
                 'structured_data': table_data,
                 'description': description,
-                'metadata': enhanced_metadata
+                'metadata': enhanced_metadata,
+                'vector_ready': True
             }
+            
+            logger.info(f"Table extraction completed for page {page_num}")
+            logger.debug(f"Final result keys: {list(result.keys())}")
+            
+            return result
+            
         except Exception as e:
-            logger.error(f"Error extracting table: {str(e)}")
+            logger.error(f"Error extracting table: {str(e)}", exc_info=True)
             return {'error': str(e)}
+
+    def _generate_vector_text(self, table_data: Dict, description: str, metadata: Dict) -> str:
+        """Generate enhanced text representation for vector storage"""
+        logger.debug("Generating vector text representation")
+        
+        text_parts = [
+            f"Table Description:\n{description}",
+            f"\nTable Structure:",
+            f"- Number of Rows: {metadata.get('num_rows', 'Unknown')}",
+            f"- Number of Columns: {metadata.get('num_cols', 'Unknown')}",
+            f"- Headers: {', '.join(table_data.get('headers', ['Unknown']))}",
+            f"- Confidence Score: {metadata.get('confidence', 'Unknown')}",
+            f"\nContent Summary:",
+            self._generate_content_summary(table_data),
+            f"\nRaw Table Data:",
+            json.dumps(table_data, indent=2)
+        ]
+        
+        text_representation = "\n".join(text_parts)
+        logger.debug(f"Generated text representation with {len(text_representation)} characters")
+        return text_representation
 
     def _generate_content_summary(self, table_data: Dict) -> str:
         """Generate a summary of table content"""

@@ -48,111 +48,65 @@ class TableExtractor:
             
             # Image conversion logging
             logger.debug(f"Input image type: {type(image)}")
-            if hasattr(image, 'tobytes'):
-                logger.debug(f"Converting Pixmap with {image.n} channels")
             
-            # Convert pymupdf.Pixmap to PIL Image if needed
-            if hasattr(image, 'tobytes'):  # Check if it's a Pixmap
-                # Get the correct color mode
-                if image.n == 1:
-                    mode = "L"
-                elif image.n == 3:
-                    mode = "RGB"
-                elif image.n == 4:
-                    mode = "RGBA"
-                else:
-                    raise ValueError(f"Unsupported number of channels: {image.n}")
-                
-                # Create PIL Image with proper stride
-                pil_image = Image.frombuffer(
-                    mode,
-                    (image.width, image.height),
-                    image.samples,
-                    "raw",
-                    mode,
-                    image.stride,
-                    1
-                )
-            elif isinstance(image, Image.Image):
-                pil_image = image
-            else:
-                raise ValueError(f"Unsupported image type: {type(image)}")
-
-            # Save for debugging
+            # Process image and get PIL format
+            pil_image = await self._process_input_image(image)
+            
+            # Save for debugging with detailed logging
             timestamp = int(time.time())
             debug_path = os.path.join("logs/table_detections/originals", f"table_{timestamp}.png")
             pil_image.save(debug_path)
             logger.debug(f"Saved original image to: {debug_path}")
             
-            # Table detection logging
+            # Table detection with enhanced logging
             logger.info("Running table detection model")
-            inputs = self.detector_processor(images=pil_image, return_tensors="pt")
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
-            
-            with torch.no_grad():
-                outputs = self.detector(**inputs)
-            
-            results = self.detector_processor.post_process_object_detection(
-                outputs, 
-                target_sizes=torch.tensor([pil_image.size[::-1]]).to(self.device),
-                threshold=0.5
-            )[0]
-            
-            # Log detection results
-            logger.info(f"Detected {len(results['scores'])} potential tables")
+            detection_result = await self._detect_tables(pil_image)
+            logger.info(f"Table detection completed. Found {len(detection_result['tables'])} tables")
             
             tables = []
-            for idx, (score, label, box) in enumerate(zip(results["scores"], results["labels"], results["boxes"])):
-                if score.item() > 0.5 and label.item() == 0:
-                    bbox = box.cpu().tolist()
-                    x0, y0, x1, y1 = [int(coord) for coord in bbox]
-                    logger.debug(f"Processing table {idx+1} at coordinates: {[x0, y0, x1, y1]}")
-                    
-                    table_image = pil_image.crop((x0, y0, x1, y1))
-                    
-                    # Save individual table image
-                    table_path = os.path.join("logs/table_detections/cells", f"table_{timestamp}_{idx}.png")
-                    table_image.save(table_path)
-                    logger.debug(f"Saved table crop to: {table_path}")
-                    
-                    # Get description and metadata with logging
-                    logger.info(f"Generating vision description for table {idx+1}")
-                    description = await self._generate_vision_description(table_image)
-                    logger.info("Vision Description:")
-                    logger.info(json.dumps({
-                        "table_id": f"table_{timestamp}_{idx}",
-                        "description": description
-                    }, indent=2))
-                    
-                    logger.info(f"Extracting metadata for table {idx+1}")
-                    metadata = await self._extract_table_metadata(table_image)
-                    logger.info("Table Metadata:")
-                    logger.info(json.dumps({
-                        "table_id": f"table_{timestamp}_{idx}",
-                        "metadata": metadata
-                    }, indent=2))
-                    
-                    # Create JSON output
-                    table_data = {
-                        "table_id": f"table_{timestamp}_{idx}",
-                        "bbox": [x0, y0, x1, y1],
-                        "confidence": score.item(),
-                        "description": description,
-                        "metadata": metadata,
-                        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
-                    }
-                    
-                    # Log complete table analysis
-                    logger.info("Complete Table Analysis:")
-                    logger.info(json.dumps(table_data, indent=2))
-                    
-                    # Save JSON log
-                    json_path = os.path.join(json_log_dir, f"table_{timestamp}_{idx}.json")
-                    with open(json_path, 'w', encoding='utf-8') as f:
-                        json.dump(table_data, f, indent=2, ensure_ascii=False)
-                    logger.info(f"Saved table analysis to: {json_path}")
-                    
-                    tables.append(table_data)
+            for idx, table_data in enumerate(detection_result['tables']):
+                logger.info(f"Processing table {idx+1}/{len(detection_result['tables'])}")
+                
+                # Generate description with detailed logging
+                logger.info(f"Generating vision description for table {idx+1}")
+                description = await self._generate_vision_description(table_data['image'])
+                logger.info("Vision Description generated successfully")
+                logger.debug(f"Description length: {len(description)} characters")
+                
+                # Extract metadata with enhanced logging
+                logger.info(f"Extracting metadata for table {idx+1}")
+                metadata = await self._extract_table_metadata(table_data['image'])
+                logger.info("Metadata extraction completed")
+                logger.debug(f"Metadata keys: {list(metadata.keys())}")
+                
+                # Create comprehensive table record
+                table_record = {
+                    "table_id": f"table_{timestamp}_{idx}",
+                    "bbox": table_data['bbox'],
+                    "confidence": table_data['confidence'],
+                    "description": description,
+                    "metadata": metadata,
+                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "vector_ready": True  # Flag for vector storage
+                }
+                
+                # Log complete table analysis
+                logger.info(f"Table {idx+1} Analysis Summary:")
+                logger.info(json.dumps({
+                    "table_id": table_record["table_id"],
+                    "bbox_size": [b[1] - b[0] for b in zip(table_record["bbox"][:2], table_record["bbox"][2:])],
+                    "confidence": table_record["confidence"],
+                    "description_length": len(description),
+                    "metadata_keys": list(metadata.keys())
+                }, indent=2))
+                
+                # Save detailed JSON log
+                json_path = os.path.join(json_log_dir, f"table_{timestamp}_{idx}.json")
+                with open(json_path, 'w', encoding='utf-8') as f:
+                    json.dump(table_record, f, indent=2, ensure_ascii=False)
+                logger.info(f"Saved detailed table analysis to: {json_path}")
+                
+                tables.append(table_record)
             
             logger.info(f"Successfully processed {len(tables)} tables")
             return {"tables": tables}

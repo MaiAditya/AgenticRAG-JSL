@@ -50,15 +50,24 @@ class ChromaStore:
                 logger.warning("No texts provided to add to collection")
                 return
             
-            logger.debug(f"Adding {len(texts)} texts to collection")
-            logger.debug(f"First text sample: {texts[0][:100]}...")  # Log first 100 chars of first text
+            logger.info(f"Adding {len(texts)} texts to collection")
+            
+            # Validate and log text content
+            for idx, text in enumerate(texts):
+                logger.debug(f"Text {idx+1} length: {len(text)} characters")
+                logger.debug(f"Text {idx+1} sample: {text[:100]}...")
+                
+                if metadatas and idx < len(metadatas):
+                    logger.debug(f"Metadata {idx+1} keys: {list(metadatas[idx].keys())}")
             
             # Ensure we have metadata for each text
             if not metadatas:
+                logger.warning("No metadata provided, creating empty metadata")
                 metadatas = [{} for _ in texts]
             
             # Generate IDs for new documents
-            ids = [f"doc_{i}_{datetime.now().timestamp()}" for i in range(len(texts))]
+            timestamp = datetime.now().timestamp()
+            ids = [f"doc_{i}_{timestamp}" for i in range(len(texts))]
             
             # Add documents to the collection
             self.collection.add(
@@ -67,10 +76,12 @@ class ChromaStore:
                 ids=ids
             )
             
-            logger.info(f"Successfully added {len(texts)} documents to collection. New collection count: {self.collection.count()}")
+            logger.info(f"Successfully added {len(texts)} documents to collection")
+            logger.info(f"New collection count: {self.collection.count()}")
+            logger.debug(f"Added document IDs: {ids}")
             
         except Exception as e:
-            logger.error(f"Error adding texts to collection: {str(e)}")
+            logger.error(f"Error adding texts to collection: {str(e)}", exc_info=True)
             raise
 
     async def similarity_search(self, query: str, k: int = 10):
