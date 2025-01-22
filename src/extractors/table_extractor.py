@@ -40,6 +40,17 @@ class TableExtractor:
     async def extract(self, image: Any) -> Dict[str, Any]:
         """Extract tables, generate descriptions, and metadata"""
         try:
+            logger.info("Starting table extraction process")
+            
+            # Create log directories
+            json_log_dir = "logs/table_detections/json"
+            os.makedirs(json_log_dir, exist_ok=True)
+            
+            # Image conversion logging
+            logger.debug(f"Input image type: {type(image)}")
+            if hasattr(image, 'tobytes'):
+                logger.debug(f"Converting Pixmap with {image.n} channels")
+            
             # Convert pymupdf.Pixmap to PIL Image if needed
             if hasattr(image, 'tobytes'):  # Check if it's a Pixmap
                 # Get the correct color mode
@@ -68,11 +79,13 @@ class TableExtractor:
                 raise ValueError(f"Unsupported image type: {type(image)}")
 
             # Save for debugging
-            debug_path = os.path.join("logs/table_detections/originals", f"table_{int(time.time())}.png")
+            timestamp = int(time.time())
+            debug_path = os.path.join("logs/table_detections/originals", f"table_{timestamp}.png")
             pil_image.save(debug_path)
-            logger.debug(f"Saved debug image to: {debug_path}")
-
-            # Detect tables
+            logger.debug(f"Saved original image to: {debug_path}")
+            
+            # Table detection logging
+            logger.info("Running table detection model")
             inputs = self.detector_processor(images=pil_image, return_tensors="pt")
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
             
@@ -84,40 +97,91 @@ class TableExtractor:
                 target_sizes=torch.tensor([pil_image.size[::-1]]).to(self.device),
                 threshold=0.5
             )[0]
-
+            
+            # Log detection results
+            logger.info(f"Detected {len(results['scores'])} potential tables")
+            
             tables = []
-            for score, label, box in zip(results["scores"], results["labels"], results["boxes"]):
+            for idx, (score, label, box) in enumerate(zip(results["scores"], results["labels"], results["boxes"])):
                 if score.item() > 0.5 and label.item() == 0:
                     bbox = box.cpu().tolist()
                     x0, y0, x1, y1 = [int(coord) for coord in bbox]
+                    logger.debug(f"Processing table {idx+1} at coordinates: {[x0, y0, x1, y1]}")
+                    
                     table_image = pil_image.crop((x0, y0, x1, y1))
                     
-                    # Get description using Llama Vision
+                    # Save individual table image
+                    table_path = os.path.join("logs/table_detections/cells", f"table_{timestamp}_{idx}.png")
+                    table_image.save(table_path)
+                    logger.debug(f"Saved table crop to: {table_path}")
+                    
+                    # Get description and metadata with logging
+                    logger.info(f"Generating vision description for table {idx+1}")
                     description = await self._generate_vision_description(table_image)
+                    logger.info("Vision Description:")
+                    logger.info(json.dumps({
+                        "table_id": f"table_{timestamp}_{idx}",
+                        "description": description
+                    }, indent=2))
                     
-                    # Get enhanced metadata
+                    logger.info(f"Extracting metadata for table {idx+1}")
                     metadata = await self._extract_table_metadata(table_image)
+                    logger.info("Table Metadata:")
+                    logger.info(json.dumps({
+                        "table_id": f"table_{timestamp}_{idx}",
+                        "metadata": metadata
+                    }, indent=2))
                     
-                    tables.append({
+                    # Create JSON output
+                    table_data = {
+                        "table_id": f"table_{timestamp}_{idx}",
                         "bbox": [x0, y0, x1, y1],
                         "confidence": score.item(),
                         "description": description,
-                        "metadata": metadata
-                    })
-
+                        "metadata": metadata,
+                        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                    
+                    # Log complete table analysis
+                    logger.info("Complete Table Analysis:")
+                    logger.info(json.dumps(table_data, indent=2))
+                    
+                    # Save JSON log
+                    json_path = os.path.join(json_log_dir, f"table_{timestamp}_{idx}.json")
+                    with open(json_path, 'w', encoding='utf-8') as f:
+                        json.dump(table_data, indent=2, ensure_ascii=False)
+                    logger.info(f"Saved table analysis to: {json_path}")
+                    
+                    tables.append(table_data)
+            
+            logger.info(f"Successfully processed {len(tables)} tables")
             return {"tables": tables}
 
         except Exception as e:
-            logger.error(f"Error in table extraction: {str(e)}")
+            logger.error(f"Error in table extraction: {str(e)}", exc_info=True)
             return {"error": str(e)}
 
     async def _generate_vision_description(self, table_image: Image.Image) -> str:
         """Generate detailed description using OpenAI's GPT-4 Vision"""
         try:
+            logger.info("Starting vision description generation")
+            
             # Convert image to base64
             buffered = io.BytesIO()
             table_image.save(buffered, format="PNG")
             img_str = base64.b64encode(buffered.getvalue()).decode()
+            
+            # Log the prompt being sent
+            prompt = """As a medical professional, analyze this table in detail. Provide:
+            1. Main medical topic/condition
+            2. Key data points and clinical significance
+            3. Table organization and structure
+            4. Critical medical implications or warnings
+            5. Relevance for healthcare providers
+            Be specific and thorough in your medical analysis."""
+            
+            logger.info("Sending prompt to vision model:")
+            logger.info(prompt)
             
             response = self.client.chat.completions.create(
                 model="gpt-4o-mini",
@@ -125,16 +189,7 @@ class TableExtractor:
                     {
                         "role": "user",
                         "content": [
-                            {
-                                "type": "text",
-                                "text": """As a medical professional, analyze this table in detail. Provide:
-                                1. Main medical topic/condition
-                                2. Key data points and clinical significance
-                                3. Table organization and structure
-                                4. Critical medical implications or warnings
-                                5. Relevance for healthcare providers
-                                Be specific and thorough in your medical analysis."""
-                            },
+                            {"type": "text", "text": prompt},
                             {
                                 "type": "image_url",
                                 "image_url": {
@@ -148,65 +203,85 @@ class TableExtractor:
                 max_tokens=500
             )
             
-            return response.choices[0].message.content
+            description = response.choices[0].message.content
+            
+            # Log the full description with proper formatting
+            logger.info("=== Vision Analysis Results ===")
+            logger.info("Raw Description:")
+            for line in description.split('\n'):
+                logger.info(line.strip())
+            
+            # Parse and log structured sections
+            sections = {
+                "Medical Topic": "",
+                "Key Data Points": "",
+                "Table Structure": "",
+                "Medical Implications": "",
+                "Healthcare Relevance": ""
+            }
+            
+            current_section = None
+            for line in description.split('\n'):
+                line = line.strip()
+                if "topic" in line.lower() or "condition" in line.lower():
+                    current_section = "Medical Topic"
+                elif "data point" in line.lower() or "significance" in line.lower():
+                    current_section = "Key Data Points"
+                elif "structure" in line.lower() or "organization" in line.lower():
+                    current_section = "Table Structure"
+                elif "warning" in line.lower() or "implication" in line.lower():
+                    current_section = "Medical Implications"
+                elif "relevance" in line.lower() or "provider" in line.lower():
+                    current_section = "Healthcare Relevance"
+                
+                if current_section and line:
+                    sections[current_section] += line + "\n"
+            
+            # Log structured sections
+            logger.info("\n=== Structured Analysis ===")
+            for section, content in sections.items():
+                if content.strip():
+                    logger.info(f"\n{section}:")
+                    logger.info(content.strip())
+            
+            return description
 
         except Exception as e:
-            logger.error(f"Error generating vision description: {str(e)}")
+            logger.error(f"Error generating vision description: {str(e)}", exc_info=True)
             return "Error generating description"
 
     async def _extract_table_metadata(self, table_image: Image.Image) -> Dict[str, Any]:
         """Enhanced metadata extraction with improved cell detection and OCR"""
         try:
+            logger.debug("Starting metadata extraction")
+            
             # Convert and preprocess
             table_np = np.array(table_image)
-            if len(table_np.shape) == 3:
-                gray = cv2.cvtColor(table_np, cv2.COLOR_RGB2GRAY)
-            else:
-                gray = table_np
+            gray = cv2.cvtColor(table_np, cv2.COLOR_RGB2GRAY)
+            logger.debug(f"Image converted to grayscale: {gray.shape}")
             
-            # Check minimum size and adjust kernel size accordingly
-            min_dim = min(gray.shape)
-            kernel_size = max(3, min(21, min_dim // 40))
-            if kernel_size % 2 == 0:
-                kernel_size += 1  # Ensure odd kernel size
+            # Get structure description
+            logger.debug("Analyzing table structure")
+            structure_desc = self._get_structure_description(table_image)
+            logger.debug(f"Structure analysis complete: {structure_desc}")
             
-            # Enhanced binary image with safe kernel size
-            binary = cv2.adaptiveThreshold(
-                gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                cv2.THRESH_BINARY_INV, kernel_size, 10
-            )
+            # Get content summary
+            logger.debug("Analyzing content patterns")
+            content_summary = self._summarize_table_content(table_image)
+            logger.debug(f"Content analysis complete: {content_summary}")
             
-            # Improved line detection
-            scale_factor = max(1, min_dim // 40)
-            ver_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, scale_factor))
-            hor_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (scale_factor, 1))
-            
-            vertical = cv2.morphologyEx(binary, cv2.MORPH_OPEN, ver_kernel, iterations=3)
-            horizontal = cv2.morphologyEx(binary, cv2.MORPH_OPEN, hor_kernel, iterations=3)
-            
-            # Improved grid detection
-            grid = cv2.addWeighted(vertical, 1, horizontal, 1, 0)
-            
-            # Enhanced cell detection
-            cells = self._detect_cells(grid, table_np)
-            
-            # Structure analysis
-            structure = self._analyze_table_structure(cells, table_image.size)
-            
-            return {
-                "cells": cells,
-                "structure": structure,
-                "statistics": {
-                    "num_rows": structure["num_rows"],
-                    "num_cols": structure["num_cols"],
-                    "headers": structure["headers"],
-                    "data_types": self._analyze_data_types(cells),
-                    "table_type": self._determine_table_type(cells, structure)
-                }
+            # Combine metadata
+            metadata = {
+                "structure": structure_desc,
+                "content": content_summary,
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
             }
+            
+            logger.info("Metadata extraction completed successfully")
+            return metadata
 
         except Exception as e:
-            logger.error(f"Error extracting metadata: {str(e)}")
+            logger.error(f"Error in metadata extraction: {str(e)}", exc_info=True)
             return None
 
     def _detect_cells(self, grid: np.ndarray, table_np: np.ndarray) -> List[Dict[str, Any]]:
