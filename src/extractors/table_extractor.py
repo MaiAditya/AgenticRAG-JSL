@@ -86,7 +86,7 @@ class TableExtractor:
                 threshold=self.threshold
             )[0]
 
-            # Process detected tables with descriptions
+            # Process detected tables
             tables = []
             vis_image = np.array(image.copy())
 
@@ -96,21 +96,16 @@ class TableExtractor:
                     bbox = box.cpu().tolist()
                     x0, y0, x1, y1 = [int(coord) for coord in bbox]
                     
-                    # Draw rectangle for visualization
-                    cv2.rectangle(vis_image, (x0, y0), (x1, y1), (0, 255, 0), 2)
-                    cv2.putText(vis_image, f"Table {idx}: {score_val:.2f}", 
-                              (x0, y0-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                    
                     # Extract table region
                     table_region = image.crop((x0, y0, x1, y1))
                     
-                    # Generate table description
-                    description = await self._generate_table_description(table_region)
-                    
-                    # Extract table structure
+                    # First analyze table structure
                     structure = self._analyze_table_structure(table_region)
                     
                     if structure:
+                        # Generate description only if structure is valid
+                        description = await self._generate_table_description(table_region)
+                        
                         table_data = {
                             "bbox": bbox,
                             "confidence": score_val,
@@ -119,38 +114,24 @@ class TableExtractor:
                         }
                         tables.append(table_data)
                         
-                        # Prepare data for vector store
-                        vector_store_entry = {
-                            "content": f"Table Description: {description}\n\nTable Content: {json.dumps(structure, indent=2)}",
-                            "metadata": {
-                                "type": "table",
-                                "confidence": score_val,
-                                "num_rows": structure["num_rows"],
-                                "num_cols": structure["num_cols"],
-                                "headers": structure["headers"]
-                            }
-                        }
+                        # Draw visualization
+                        cv2.rectangle(vis_image, (x0, y0), (x1, y1), (0, 255, 0), 2)
+                        cv2.putText(vis_image, f"Table {idx}: {score_val:.2f}", 
+                                  (x0, y0-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                         
-                        # Add to vector store through the coordinator
-                        if hasattr(self, 'vector_store'):
-                            await self.vector_store.add_texts(
-                                texts=[vector_store_entry["content"]],
-                                metadatas=[vector_store_entry["metadata"]]
-                            )
-                        
-                        # Log each detected table's data
+                        # Log detection
                         logger.bind(table_extraction=True).info(
                             f"Detected table {idx}:\n{json.dumps(table_data, indent=2)}"
                         )
 
-            # Save visualization if tables were found
+            # Save visualization and return results
             if tables:
+                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 vis_path = f"logs/table_detections/visualizations/detection_{timestamp}.png"
                 cv2.imwrite(vis_path, cv2.cvtColor(vis_image, cv2.COLOR_RGB2BGR))
-                logger.info(f"Saved table detection visualization to {vis_path}")
-
+                
                 result = {
-                    "table_data": [t["structure"] for t in tables],
+                    "table_data": tables,  # Return full table data including descriptions
                     "metadata": {
                         "num_tables": len(tables),
                         "confidences": [t["confidence"] for t in tables],
@@ -158,10 +139,6 @@ class TableExtractor:
                         "visualization_path": vis_path
                     }
                 }
-                # Log final extracted data
-                logger.bind(table_extraction=True).info(
-                    f"Final extracted table data:\n{json.dumps(result, indent=2)}"
-                )
                 return result
 
             logger.bind(table_extraction=True).info("No tables detected in image")
@@ -291,23 +268,30 @@ class TableExtractor:
     async def _generate_table_description(self, table_image: Image.Image) -> str:
         """Generate a description of the table using BLIP-2"""
         try:
+            # Ensure we have a PIL Image
+            if not isinstance(table_image, Image.Image):
+                logger.error(f"Invalid image type: {type(table_image)}")
+                return "Error: Invalid image format"
+
             # Prepare image for BLIP-2
             inputs = self.blip_processor(images=table_image, return_tensors="pt").to(self.device)
             
             # Generate description with specific prompt
             prompt = "Describe this table's content and structure in detail, including its columns and purpose if apparent."
-            inputs['text'] = self.blip_processor(prompt, return_tensors="pt").to(self.device)
+            text_inputs = self.blip_processor(text=prompt, return_tensors="pt").to(self.device)
             
-            outputs = self.blip_model.generate(
-                **inputs,
-                max_length=150,
-                num_beams=5,
-                min_length=30,
-                top_p=0.9,
-                repetition_penalty=1.5
-            )
+            with torch.no_grad():
+                outputs = self.blip_model.generate(
+                    **inputs,
+                    max_length=150,
+                    num_beams=5,
+                    min_length=30,
+                    top_p=0.9,
+                    repetition_penalty=1.5
+                )
             
             description = self.blip_processor.decode(outputs[0], skip_special_tokens=True)
+            logger.debug(f"Generated table description: {description}")
             return description
             
         except Exception as e:

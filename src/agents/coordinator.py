@@ -172,14 +172,31 @@ class CoordinatorAgent(DocumentProcessor):
 
     async def _extract_table(self, component, page_num):
         try:
-            pix = component['image']
-            extracted = await self.table_extractor.extract(pix)
-            if extracted and 'table_data' in extracted and extracted['table_data']:
-                return {
-                    'type': 'table',
-                    'page_number': page_num,
-                    'extracted': extracted
-                }
+            if 'content' not in component:
+                logger.error("Table component missing content")
+                return {'error': 'Missing table content'}
+            
+            table_data = component['content']
+            description = component.get('description', '')
+            metadata = component.get('metadata', {})
+            
+            # Prepare text representation for vector storage
+            text_representation = f"""
+            Table Description: {description}
+            Number of Rows: {metadata.get('num_rows', 'Unknown')}
+            Number of Columns: {metadata.get('num_cols', 'Unknown')}
+            Confidence: {metadata.get('confidence', 'Unknown')}
+            Table Content: {json.dumps(table_data, indent=2)}
+            """
+            
+            return {
+                'type': 'table',
+                'page_number': page_num,
+                'text_content': text_representation,
+                'structured_data': table_data,
+                'description': description,
+                'metadata': metadata
+            }
         except Exception as e:
             logger.error(f"Error extracting table: {str(e)}")
             return {'error': str(e)}
