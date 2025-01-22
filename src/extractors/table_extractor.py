@@ -149,7 +149,7 @@ class TableExtractor:
                     # Save JSON log
                     json_path = os.path.join(json_log_dir, f"table_{timestamp}_{idx}.json")
                     with open(json_path, 'w', encoding='utf-8') as f:
-                        json.dump(table_data, indent=2, ensure_ascii=False)
+                        json.dump(table_data, f, indent=2, ensure_ascii=False)
                     logger.info(f"Saved table analysis to: {json_path}")
                     
                     tables.append(table_data)
