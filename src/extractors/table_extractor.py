@@ -28,13 +28,32 @@ class TableExtractor:
 
         # Initialize BLIP-2 with smaller model for descriptions
         logger.info("Loading BLIP-2 model for table description...")
-        self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
-        self.blip_model = Blip2ForConditionalGeneration.from_pretrained(
-            "Salesforce/blip2-opt-2.7b",
-            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            device_map="auto",
-            load_in_8bit=True  # Enable 8-bit quantization to reduce memory usage
-        )
+        try:
+            from transformers import BitsAndBytesConfig
+            
+            # Configure quantization
+            quantization_config = BitsAndBytesConfig(
+                load_in_8bit=True,
+                llm_int8_threshold=6.0,
+                llm_int8_has_fp16_weight=False
+            )
+            
+            self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
+            self.blip_model = Blip2ForConditionalGeneration.from_pretrained(
+                "Salesforce/blip2-opt-2.7b",
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                device_map="auto",
+                quantization_config=quantization_config
+            )
+        except ImportError:
+            logger.warning("Quantization not available, falling back to full precision")
+            self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
+            self.blip_model = Blip2ForConditionalGeneration.from_pretrained(
+                "Salesforce/blip2-opt-2.7b",
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                device_map="auto"
+            )
+        
         logger.info("BLIP-2 model loaded successfully")
 
         # Create output directories for debugging
