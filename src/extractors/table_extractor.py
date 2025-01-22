@@ -26,14 +26,15 @@ class TableExtractor:
         self.model = TableTransformerForObjectDetection.from_pretrained(model_name).to(self.device)
         self.threshold = 0.5
 
-        # Initialize BLIP-2 with larger model for better descriptions
+        # Initialize BLIP-2 with smaller model for descriptions
         logger.info("Loading BLIP-2 model for table description...")
-        self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-6.7b")
+        self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
         self.blip_model = Blip2ForConditionalGeneration.from_pretrained(
-            "Salesforce/blip2-opt-6.7b",
+            "Salesforce/blip2-opt-2.7b",
             torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            device_map="auto"
-        ).to(self.device)
+            device_map="auto",
+            load_in_8bit=True  # Enable 8-bit quantization to reduce memory usage
+        )
         logger.info("BLIP-2 model loaded successfully")
 
         # Create output directories for debugging
