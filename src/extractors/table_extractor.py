@@ -248,38 +248,43 @@ class TableExtractor:
             return "Error generating description"
 
     async def _extract_table_metadata(self, table_image: Image.Image) -> Dict[str, Any]:
-        """Enhanced metadata extraction with improved cell detection and OCR"""
+        """Extract metadata from table image including structure and content analysis"""
         try:
-            logger.debug("Starting metadata extraction")
+            logger.info("Starting table metadata extraction")
             
-            # Convert and preprocess
-            table_np = np.array(table_image)
-            gray = cv2.cvtColor(table_np, cv2.COLOR_RGB2GRAY)
-            logger.debug(f"Image converted to grayscale: {gray.shape}")
-            
-            # Get structure description
-            logger.debug("Analyzing table structure")
+            # Get structural information
             structure_desc = self._get_structure_description(table_image)
-            logger.debug(f"Structure analysis complete: {structure_desc}")
+            logger.debug("Generated structure description")
             
             # Get content summary
-            logger.debug("Analyzing content patterns")
             content_summary = self._summarize_table_content(table_image)
-            logger.debug(f"Content analysis complete: {content_summary}")
+            logger.debug("Generated content summary")
             
-            # Combine metadata
+            # Extract text for analysis
+            text = pytesseract.image_to_string(table_image)
+            
+            # Analyze text patterns
+            numeric_count = len(re.findall(r'\d+', text))
+            word_count = len(text.split())
+            
             metadata = {
                 "structure": structure_desc,
-                "content": content_summary,
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+                "content_summary": content_summary,
+                "dimensions": table_image.size,
+                "text_stats": {
+                    "numeric_count": numeric_count,
+                    "word_count": word_count,
+                    "text_density": word_count / (table_image.size[0] * table_image.size[1])
+                },
+                "extraction_timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
             }
             
             logger.info("Metadata extraction completed successfully")
             return metadata
-
+            
         except Exception as e:
-            logger.error(f"Error in metadata extraction: {str(e)}", exc_info=True)
-            return None
+            logger.error(f"Error extracting table metadata: {str(e)}")
+            return {"error": str(e)}
 
     def _detect_cells(self, grid: np.ndarray, table_np: np.ndarray) -> List[Dict[str, Any]]:
         """Detect and extract cells from table grid"""
@@ -453,19 +458,24 @@ class TableExtractor:
             logger.error(f"Error determining layout type: {str(e)}")
             return "unknown"
 
-    def _detect_lines(self, img: np.ndarray, direction: str, size: int) -> np.ndarray:
-        """Detect horizontal or vertical lines in the image with improved parameters."""
-        # Create structure element
-        if direction == "horizontal":
-            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (size, 1))
-        else:
-            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, size))
-        
-        # Apply morphology operations
-        eroded = cv2.erode(img, kernel, iterations=1)
-        dilated = cv2.dilate(eroded, kernel, iterations=1)
-        
-        return dilated 
+    def _detect_lines(self, gray_image: np.ndarray, direction: str, min_length: int) -> np.ndarray:
+        """Detect lines in the image in specified direction"""
+        try:
+            # Create structural element for morphological operations
+            if direction == "horizontal":
+                kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (min_length, 1))
+            else:  # vertical
+                kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, min_length))
+            
+            # Apply morphological operations
+            eroded = cv2.erode(gray_image, kernel, iterations=1)
+            dilated = cv2.dilate(eroded, kernel, iterations=1)
+            
+            return dilated
+            
+        except Exception as e:
+            logger.error(f"Error detecting {direction} lines: {str(e)}")
+            return np.zeros_like(gray_image)
 
     async def _generate_table_description(self, table_image: Image.Image) -> str:
         """Generate a detailed description of the table using both BLIP-2 and LLaMA-2"""
@@ -644,4 +654,60 @@ class TableExtractor:
             """
         except Exception as e:
             logger.error(f"Error in structure description: {str(e)}")
-            return "Unable to analyze table structure" 
+            return "Unable to analyze table structure"
+
+    async def _detect_tables(self, image: Image.Image) -> Dict[str, Any]:
+        """Detect tables in the image using Table Transformer"""
+        try:
+            logger.debug("Processing image for table detection")
+            
+            # Prepare image for model
+            inputs = self.detector_processor(images=image, return_tensors="pt")
+            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            
+            # Run detection
+            with torch.no_grad():
+                outputs = self.detector(**inputs)
+            
+            # Post-process results
+            results = self.detector_processor.post_process_object_detection(
+                outputs, 
+                target_sizes=torch.tensor([image.size[::-1]]).to(self.device),
+                threshold=0.5
+            )[0]
+            
+            logger.info(f"Detected {len(results['scores'])} potential tables")
+            
+            # Process detected tables
+            tables = []
+            for idx, (score, label, box) in enumerate(zip(results["scores"], results["labels"], results["boxes"])):
+                if score.item() > 0.5 and label.item() == 0:  # Label 0 is table
+                    bbox = box.cpu().tolist()
+                    x0, y0, x1, y1 = [int(coord) for coord in bbox]
+                    
+                    # Crop table from image
+                    table_image = image.crop((x0, y0, x1, y1))
+                    
+                    # Save individual table image for debugging
+                    table_path = os.path.join(
+                        "logs/table_detections/cells", 
+                        f"table_{int(time.time())}_{idx}.png"
+                    )
+                    table_image.save(table_path)
+                    logger.debug(f"Saved detected table to: {table_path}")
+                    
+                    tables.append({
+                        'image': table_image,
+                        'bbox': [x0, y0, x1, y1],
+                        'confidence': score.item(),
+                        'path': table_path
+                    })
+            
+            return {
+                'tables': tables,
+                'count': len(tables)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in table detection: {str(e)}", exc_info=True)
+            return {'tables': [], 'count': 0} 
