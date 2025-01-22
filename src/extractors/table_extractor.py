@@ -299,16 +299,28 @@ class TableExtractor:
             # Get structural analysis
             structure_desc = self._get_structure_description(table_image)
             
-            # Initialize LLaMA model for better descriptions
+            # Initialize LLaMA model with better memory handling
             from transformers import AutoModelForCausalLM, AutoTokenizer
+            from transformers import BitsAndBytesConfig
             
-            model_name = "meta-llama/Llama-2-70b-chat-hf"
+            # Configure quantization for memory efficiency
+            quantization_config = BitsAndBytesConfig(
+                load_in_8bit=True,
+                llm_int8_threshold=6.0,
+                llm_int8_has_fp16_weight=False,
+                llm_int8_enable_fp32_cpu_offload=True
+            )
+            
+            # Use smaller 7B model instead of 70B
+            model_name = "meta-llama/Llama-2-7b-chat-hf"
+            
+            # Initialize tokenizer and model with proper device mapping
             tokenizer = AutoTokenizer.from_pretrained(model_name)
             model = AutoModelForCausalLM.from_pretrained(
                 model_name,
                 torch_dtype=torch.float16,
                 device_map="auto",
-                load_in_8bit=True
+                quantization_config=quantization_config
             )
 
             # Craft a detailed prompt
@@ -327,17 +339,26 @@ class TableExtractor:
 
             Focus on accuracy and clinical relevance. Be concise but thorough."""
 
-            # Generate description with LLaMA
-            inputs = tokenizer(prompt, return_tensors="pt").to(self.device)
-            outputs = model.generate(
-                inputs.input_ids,
-                max_length=500,
-                temperature=0.7,
-                top_p=0.9,
-                num_return_sequences=1
-            )
+            # Generate description with better memory management
+            inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024)
+            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            
+            with torch.inference_mode():
+                outputs = model.generate(
+                    inputs.input_ids,
+                    max_length=500,
+                    temperature=0.7,
+                    top_p=0.9,
+                    num_return_sequences=1,
+                    pad_token_id=tokenizer.eos_token_id
+                )
             
             description = tokenizer.decode(outputs[0], skip_special_tokens=True)
+            
+            # Clean up memory
+            del model
+            del tokenizer
+            torch.cuda.empty_cache()
             
             logger.debug(f"Generated detailed table description: {description}")
             
