@@ -120,7 +120,7 @@ class TableExtractor:
             img_str = base64.b64encode(buffered.getvalue()).decode()
             
             response = self.client.chat.completions.create(
-                model="gpt-4-vision-preview-v2",
+                model="gpt-4o-mini",
                 messages=[
                     {
                         "role": "user",
@@ -138,7 +138,8 @@ class TableExtractor:
                             {
                                 "type": "image_url",
                                 "image_url": {
-                                    "url": f"data:image/png;base64,{img_str}"
+                                    "url": f"data:image/png;base64,{img_str}",
+                                    "detail": "low"
                                 }
                             }
                         ]
