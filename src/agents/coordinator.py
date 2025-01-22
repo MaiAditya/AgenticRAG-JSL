@@ -81,11 +81,21 @@ class CoordinatorAgent(DocumentProcessor):
                     )
                     
                     if pix:
-                        components.append({
-                            "type": "table",
-                            "image": pix,
-                            "page_number": page_num
-                        })
+                        # Process tables with descriptions
+                        if self.table_extractor:
+                            table_result = await self.table_extractor.extract(pix)
+                            if table_result and "table_data" in table_result:
+                                for table in table_result["table_data"]:
+                                    components.append({
+                                        "type": "table",
+                                        "content": table["structure"],
+                                        "description": table.get("description", ""),
+                                        "metadata": {
+                                            "confidence": table["confidence"],
+                                            "num_rows": table["structure"]["num_rows"],
+                                            "num_cols": table["structure"]["num_cols"]
+                                        }
+                                    })
                     
                     # Get images in parallel
                     image_list = await loop.run_in_executor(

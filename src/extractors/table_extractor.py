@@ -1,4 +1,4 @@
-from transformers import DetrImageProcessor, TableTransformerForObjectDetection
+from transformers import DetrImageProcessor, TableTransformerForObjectDetection, Blip2Processor, Blip2ForConditionalGeneration
 from PIL import Image
 import torch
 import numpy as np
@@ -25,6 +25,15 @@ class TableExtractor:
         )
         self.model = TableTransformerForObjectDetection.from_pretrained(model_name).to(self.device)
         self.threshold = 0.5
+
+        # Initialize BLIP-2 for table description
+        logger.info("Loading BLIP-2 model for table description...")
+        self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
+        self.blip_model = Blip2ForConditionalGeneration.from_pretrained(
+            "Salesforce/blip2-opt-2.7b",
+            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
+        ).to(self.device)
+        logger.info("BLIP-2 model loaded successfully")
 
         # Create output directories for debugging
         os.makedirs("logs/table_detections/originals", exist_ok=True)
@@ -77,7 +86,7 @@ class TableExtractor:
                 threshold=self.threshold
             )[0]
 
-            # Process detected tables
+            # Process detected tables with descriptions
             tables = []
             vis_image = np.array(image.copy())
 
@@ -94,15 +103,41 @@ class TableExtractor:
                     
                     # Extract table region
                     table_region = image.crop((x0, y0, x1, y1))
+                    
+                    # Generate table description
+                    description = await self._generate_table_description(table_region)
+                    
+                    # Extract table structure
                     structure = self._analyze_table_structure(table_region)
                     
                     if structure:
                         table_data = {
                             "bbox": bbox,
                             "confidence": score_val,
+                            "description": description,
                             "structure": structure
                         }
                         tables.append(table_data)
+                        
+                        # Prepare data for vector store
+                        vector_store_entry = {
+                            "content": f"Table Description: {description}\n\nTable Content: {json.dumps(structure, indent=2)}",
+                            "metadata": {
+                                "type": "table",
+                                "confidence": score_val,
+                                "num_rows": structure["num_rows"],
+                                "num_cols": structure["num_cols"],
+                                "headers": structure["headers"]
+                            }
+                        }
+                        
+                        # Add to vector store through the coordinator
+                        if hasattr(self, 'vector_store'):
+                            await self.vector_store.add_texts(
+                                texts=[vector_store_entry["content"]],
+                                metadatas=[vector_store_entry["metadata"]]
+                            )
+                        
                         # Log each detected table's data
                         logger.bind(table_extraction=True).info(
                             f"Detected table {idx}:\n{json.dumps(table_data, indent=2)}"
@@ -252,3 +287,29 @@ class TableExtractor:
         dilated = cv2.dilate(eroded, kernel, iterations=1)
         
         return dilated 
+
+    async def _generate_table_description(self, table_image: Image.Image) -> str:
+        """Generate a description of the table using BLIP-2"""
+        try:
+            # Prepare image for BLIP-2
+            inputs = self.blip_processor(images=table_image, return_tensors="pt").to(self.device)
+            
+            # Generate description with specific prompt
+            prompt = "Describe this table's content and structure in detail, including its columns and purpose if apparent."
+            inputs['text'] = self.blip_processor(prompt, return_tensors="pt").to(self.device)
+            
+            outputs = self.blip_model.generate(
+                **inputs,
+                max_length=150,
+                num_beams=5,
+                min_length=30,
+                top_p=0.9,
+                repetition_penalty=1.5
+            )
+            
+            description = self.blip_processor.decode(outputs[0], skip_special_tokens=True)
+            return description
+            
+        except Exception as e:
+            logger.error(f"Error generating table description: {str(e)}")
+            return "Error generating table description" 
