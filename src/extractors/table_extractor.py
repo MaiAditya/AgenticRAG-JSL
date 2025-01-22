@@ -287,68 +287,65 @@ class TableExtractor:
         return dilated 
 
     async def _generate_table_description(self, table_image: Image.Image) -> str:
-        """Generate a detailed description of the table using BLIP-2"""
+        """Generate a detailed description of the table using LLaMA-2"""
         try:
             if not isinstance(table_image, Image.Image):
                 logger.error(f"Invalid image type: {type(table_image)}")
                 return "Error: Invalid image format"
 
-            # Prepare image for BLIP-2
-            inputs = self.blip_processor(images=table_image, return_tensors="pt").to(self.device)
+            # Get OCR text from the table for context
+            ocr_text = pytesseract.image_to_string(table_image)
             
-            # Carefully crafted prompt for medical table analysis
-            prompt = """You are a medical document analyzer. Examine this table carefully and provide a detailed description including:
+            # Get structural analysis
+            structure_desc = self._get_structure_description(table_image)
+            
+            # Initialize LLaMA model for better descriptions
+            from transformers import AutoModelForCausalLM, AutoTokenizer
+            
+            model_name = "meta-llama/Llama-2-70b-chat-hf"
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
+            model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                torch_dtype=torch.float16,
+                device_map="auto",
+                load_in_8bit=True
+            )
 
-            1. Purpose: What is the main purpose or topic of this table?
-            2. Structure: How is the information organized (columns, sections, hierarchy)?
-            3. Content: What specific medical information, measurements, or categories are presented?
-            4. Key Findings: What are the most important data points or patterns?
-            5. Medical Context: How does this information relate to clinical practice or medical knowledge?
-            6. Special Notes: Are there any warnings, contraindications, or critical values highlighted?
+            # Craft a detailed prompt
+            prompt = f"""Analyze this medical table and provide a detailed description. Here is the context:
 
-            Focus on medical terminology and clinical relevance. Be precise and concise."""
+            OCR Text: {ocr_text[:500]}...
             
-            text_inputs = self.blip_processor(text=prompt, return_tensors="pt").to(self.device)
-            
-            with torch.no_grad():
-                outputs = self.blip_model.generate(
-                    **inputs,
-                    max_length=500,  # Allow for longer, more detailed descriptions
-                    min_length=200,  # Ensure comprehensive description
-                    num_beams=5,
-                    temperature=0.7,  # Slightly increase creativity while maintaining accuracy
-                    top_p=0.9,
-                    repetition_penalty=2.0,  # Increased to avoid repetition
-                    length_penalty=1.5,  # Encourage detailed descriptions
-                    do_sample=True  # Enable sampling for more natural text
-                )
-            
-            description = self.blip_processor.decode(outputs[0], skip_special_tokens=True)
-            
-            # Add structural analysis
-            structure_info = self._analyze_table_structure(table_image)
-            content_summary = self._summarize_table_content(table_image)
-            
-            full_description = f"""
-            Medical Table Analysis:
-            ----------------------
-            {description}
+            Structure: {structure_desc}
 
-            Technical Details:
-            ----------------
-            {structure_info}
+            Please provide:
+            1. Table Purpose: What medical information is being presented?
+            2. Column Analysis: What are the main columns and their relationships?
+            3. Key Medical Data: What critical medical information, dosages, or guidelines are shown?
+            4. Clinical Relevance: How might healthcare providers use this information?
+            5. Important Warnings: Are there any critical warnings or contraindications?
 
-            Content Overview:
-            ---------------
-            {content_summary}
-            """
+            Focus on accuracy and clinical relevance. Be concise but thorough."""
+
+            # Generate description with LLaMA
+            inputs = tokenizer(prompt, return_tensors="pt").to(self.device)
+            outputs = model.generate(
+                inputs.input_ids,
+                max_length=500,
+                temperature=0.7,
+                top_p=0.9,
+                num_return_sequences=1
+            )
             
-            logger.debug(f"Generated detailed table description: {full_description}")
-            return full_description
+            description = tokenizer.decode(outputs[0], skip_special_tokens=True)
             
+            logger.debug(f"Generated detailed table description: {description}")
+            
+            return description
+
         except Exception as e:
             logger.error(f"Error generating table description: {str(e)}")
-            return "Error generating table description"
+            return "Error generating description"
 
     def _summarize_table_content(self, table_image: Image.Image) -> str:
         """Analyze and summarize table content patterns"""
