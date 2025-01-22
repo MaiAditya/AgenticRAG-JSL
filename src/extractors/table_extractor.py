@@ -340,12 +340,13 @@ class TableExtractor:
             Focus on accuracy and clinical relevance. Be concise but thorough."""
 
             # Generate description with better memory management
-            inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024)
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            # Fix: Properly handle tokenizer output and input to model
+            encoded_input = tokenizer.encode(prompt, return_tensors="pt", truncation=True, max_length=1024)
+            encoded_input = encoded_input.to(self.device)
             
             with torch.inference_mode():
                 outputs = model.generate(
-                    inputs.input_ids,
+                    encoded_input,
                     max_length=500,
                     temperature=0.7,
                     top_p=0.9,
