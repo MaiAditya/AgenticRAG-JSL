@@ -12,6 +12,10 @@ import json
 import os
 import datetime
 import cv2
+from openai import OpenAI
+import base64
+from typing import Dict, Any
+import time
 
 class ImageExtractor(BaseExtractor):
     def __init__(self):
@@ -19,7 +23,10 @@ class ImageExtractor(BaseExtractor):
         try:
             logger.info("Initializing ImageExtractor...")
             
-            # Initialize BLIP-2 model for detailed image captioning
+            # Initialize OpenAI client for vision analysis
+            self.client = OpenAI()
+            
+            # Initialize BLIP-2 model for backup/supplementary analysis
             logger.info("Loading BLIP-2 model...")
             self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
             self.blip_model = Blip2ForConditionalGeneration.from_pretrained(
@@ -96,57 +103,50 @@ class ImageExtractor(BaseExtractor):
         try:
             logger.info("Starting image extraction process...")
             
-            if isinstance(image, dict) and 'image' in image:
-                logger.debug("Image provided as dictionary with metadata")
-                image = image['image']
-                metadata = image.get('metadata', {})
-            else:
-                logger.debug("Image provided directly without metadata")
-                metadata = {}
+            # Process image (existing preprocessing code)
+            processed_image = await self.preprocess(image)
             
-            if hasattr(image, 'tobytes'):
-                logger.debug("Converting image to PIL format")
-                img_data = image.tobytes("png")
-                image = Image.open(io.BytesIO(img_data))
-                
-                # Save original image
-                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                original_path = f"logs/image_extractions/originals/original_{timestamp}.png"
-                image.save(original_path)
-                logger.info(f"Original image saved to: {original_path}")
-                
-                # Detect visual type
-                logger.info("Detecting visual type...")
-                visual_type = self._detect_visual_type(image)
-                logger.info(f"Detected visual type: {visual_type}")
-                
-                # Extract information
-                logger.info("Extracting visual information...")
-                visual_info = await self._extract_visual_info(image, visual_type)
-                logger.info(f"Extracted {len(visual_info.get('elements', []))} elements")
-                
-                # Create visualization
-                logger.info("Creating visualization...")
-                vis_image = self._create_visualization(image, visual_info)
-                vis_path = f"logs/image_extractions/visualizations/vis_{timestamp}.png"
-                cv2.imwrite(vis_path, cv2.cvtColor(vis_image, cv2.COLOR_RGB2BGR))
-                logger.info(f"Visualization saved to: {vis_path}")
-                
-                result = {
-                    "type": "visual_element",
-                    "visual_type": visual_type,
-                    "description": visual_info["description"],
-                    "metadata": metadata,
-                    "extracted_text": visual_info.get("extracted_text", []),
-                    "elements": visual_info.get("elements", []),
-                    "debug_paths": {
-                        "original": original_path,
-                        "visualization": vis_path
-                    }
-                }
-                logger.info("Image extraction completed successfully")
-                return result
-                
+            # Detect visual type
+            visual_type = self._detect_visual_type(processed_image)
+            logger.info(f"Detected visual type: {visual_type}")
+            
+            # Get GPT-4 Vision analysis
+            vision_analysis = await self._generate_vision_analysis(processed_image, visual_type)
+            
+            # Extract OCR text
+            ocr_result = self.ocr.ocr(np.array(processed_image))
+            extracted_text = [line[1][0] for line in ocr_result[0]] if ocr_result[0] else []
+            
+            # Process specific elements based on type
+            elements = []
+            if visual_type == "flowchart":
+                elements = self._process_flowchart(processed_image, ocr_result)
+            elif visual_type == "diagram":
+                elements = self._process_diagram(processed_image, ocr_result)
+            
+            # Create comprehensive result
+            result = {
+                "type": "visual_element",
+                "visual_type": visual_type,
+                "description": vision_analysis["raw_analysis"],
+                "structured_analysis": vision_analysis["structured_analysis"],
+                "metadata": {
+                    "extracted_text": extracted_text,
+                    "element_count": len(elements),
+                    "dimensions": processed_image.size,
+                    "analysis_timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+                },
+                "elements": elements,
+                "vector_ready": True
+            }
+            
+            # Save debug information
+            timestamp = int(time.time())
+            debug_path = f"logs/image_extractions/originals/image_{timestamp}.png"
+            processed_image.save(debug_path)
+            
+            return result
+            
         except Exception as e:
             logger.error(f"Error in image extraction: {str(e)}", exc_info=True)
             return {"error": str(e)}
@@ -311,3 +311,95 @@ class ImageExtractor(BaseExtractor):
         px, py = point
         x, y, w, h = bbox
         return (x <= px <= x + w) and (y <= py <= y + h)
+
+    async def _generate_vision_analysis(self, image: Image.Image, visual_type: str) -> Dict[str, Any]:
+        """Generate detailed analysis using GPT-4 Vision based on visual type"""
+        try:
+            # Convert image to base64
+            buffered = io.BytesIO()
+            image.save(buffered, format="PNG")
+            img_str = base64.b64encode(buffered.getvalue()).decode()
+            
+            # Create type-specific prompt
+            prompts = {
+                "flowchart": """Analyze this medical flowchart in detail. Provide:
+                    1. Main clinical process/pathway being illustrated
+                    2. Key decision points and their criteria
+                    3. Important clinical steps and their sequence
+                    4. Critical medical considerations or warnings
+                    5. Relevance for healthcare workflow
+                    Be specific and thorough in your medical analysis.""",
+                
+                "diagram": """Analyze this medical diagram in detail. Provide:
+                    1. Main anatomical/clinical concept illustrated
+                    2. Key components and their relationships
+                    3. Important medical details shown
+                    4. Clinical significance and applications
+                    5. Relevant medical implications
+                    Be specific and thorough in your medical analysis.""",
+                
+                "image": """Analyze this medical image in detail. Provide:
+                    1. Type of medical imaging/visualization shown
+                    2. Key anatomical/clinical features visible
+                    3. Notable findings or patterns
+                    4. Clinical significance
+                    5. Relevant diagnostic implications
+                    Be specific and thorough in your medical analysis."""
+            }
+            
+            prompt = prompts.get(visual_type, prompts["image"])
+            
+            response = self.client.chat.completions.create(
+                model="gpt-4-vision-preview",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/png;base64,{img_str}",
+                                    "detail": "high"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                max_tokens=1000
+            )
+            
+            analysis = response.choices[0].message.content
+            
+            # Structure the analysis
+            sections = {
+                "Main Topic": "",
+                "Key Components": "",
+                "Clinical Details": "",
+                "Medical Implications": "",
+                "Healthcare Relevance": ""
+            }
+            
+            # Parse sections from the response
+            current_section = None
+            for line in analysis.split('\n'):
+                line = line.strip()
+                for section in sections.keys():
+                    if section.lower() in line.lower():
+                        current_section = section
+                        break
+                if current_section and line:
+                    sections[current_section] += line + "\n"
+            
+            return {
+                "raw_analysis": analysis,
+                "structured_analysis": sections,
+                "visual_type": visual_type
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in vision analysis: {str(e)}")
+            return {
+                "error": str(e),
+                "visual_type": visual_type
+            }
