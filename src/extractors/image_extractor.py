@@ -16,6 +16,7 @@ from openai import OpenAI
 import base64
 from typing import Dict, Any
 import time
+import fitz
 
 class ImageExtractor(BaseExtractor):
     def __init__(self):
@@ -57,26 +58,34 @@ class ImageExtractor(BaseExtractor):
             raise
 
     async def preprocess(self, image) -> Image.Image:
-        """Preprocess the image before extraction"""
         try:
-            if isinstance(image, dict) and 'image' in image:
-                image = image['image']
+            logger.info("Starting image preprocessing")
             
-            if isinstance(image, bytes):
-                image = Image.open(io.BytesIO(image))
-            elif isinstance(image, str):
-                image = Image.open(image)
-            elif hasattr(image, 'tobytes'):
-                img_data = image.tobytes("png")
-                image = Image.open(io.BytesIO(img_data))
-            elif not isinstance(image, Image.Image):
-                raise ValueError("Unsupported image format")
+            if isinstance(image, Image.Image):
+                return image
             
-            # Convert to RGB if needed
-            if image.mode != 'RGB':
-                image = image.convert('RGB')
+            if isinstance(image, fitz.Pixmap):
+                # Convert Pixmap to PIL Image
+                img_data = image.samples
+                if image.n >= 4:  # RGBA or CMYK
+                    # Convert to RGB
+                    pix = fitz.Pixmap(fitz.csRGB, image)
+                    img_data = pix.samples
+                    pix = None
+                
+                return Image.frombytes(
+                    "RGB", 
+                    [image.width, image.height], 
+                    img_data
+                )
             
-            return image
+            # Handle bytes or BytesIO input
+            if isinstance(image, (bytes, io.BytesIO)):
+                if isinstance(image, bytes):
+                    image = io.BytesIO(image)
+                return Image.open(image).convert('RGB')
+            
+            raise ValueError(f"Unsupported image type: {type(image)}")
             
         except Exception as e:
             logger.error(f"Error in image preprocessing: {str(e)}")
@@ -103,7 +112,7 @@ class ImageExtractor(BaseExtractor):
         try:
             logger.info("Starting image extraction process...")
             
-            # Process image (existing preprocessing code)
+            # Process image
             processed_image = await self.preprocess(image)
             
             # Detect visual type
@@ -115,16 +124,14 @@ class ImageExtractor(BaseExtractor):
             
             # Extract OCR text
             ocr_result = self.ocr.ocr(np.array(processed_image))
-            extracted_text = [line[1][0] for line in ocr_result[0]] if ocr_result[0] else []
+            extracted_text = [line[1][0] for line in ocr_result[0]] if ocr_result and ocr_result[0] else []
             
-            # Process specific elements based on type
-            elements = []
-            if visual_type == "flowchart":
-                elements = self._process_flowchart(processed_image, ocr_result)
-            elif visual_type == "diagram":
-                elements = self._process_diagram(processed_image, ocr_result)
+            # Save debug image
+            timestamp = int(time.time())
+            debug_path = f"logs/image_extractions/originals/image_{timestamp}.jpg"  # Use JPEG instead of PNG
+            os.makedirs(os.path.dirname(debug_path), exist_ok=True)
+            processed_image.convert('RGB').save(debug_path, 'JPEG')  # Convert to RGB and save as JPEG
             
-            # Create comprehensive result
             result = {
                 "type": "visual_element",
                 "visual_type": visual_type,
@@ -132,26 +139,19 @@ class ImageExtractor(BaseExtractor):
                 "structured_analysis": vision_analysis.get("structured_analysis", {}),
                 "metadata": {
                     "extracted_text": extracted_text,
-                    "element_count": len(elements),
+                    "element_count": len(extracted_text),
                     "dimensions": processed_image.size,
                     "analysis_timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "text_content": " ".join(extracted_text)  # Add concatenated text
+                    "text_content": " ".join(extracted_text)
                 },
-                "elements": elements,
-                "vector_ready": True,
-                "text_content": " ".join(extracted_text)  # Add at root level for compatibility
+                "text_content": " ".join(extracted_text),
+                "vector_ready": True
             }
-            
-            # Save debug information
-            timestamp = int(time.time())
-            debug_path = f"logs/image_extractions/originals/image_{timestamp}.png"
-            os.makedirs(os.path.dirname(debug_path), exist_ok=True)
-            processed_image.save(debug_path)
             
             return result
             
         except Exception as e:
-            logger.error(f"Error in image extraction: {str(e)}", exc_info=True)
+            logger.error(f"Error in image extraction: {str(e)}")
             return {
                 "error": str(e),
                 "type": "error",

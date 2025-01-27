@@ -315,23 +315,24 @@ class CoordinatorAgent(DocumentProcessor):
                 logger.error(f"Error in image extraction: {result['error']}")
                 return result
             
-            # Create comprehensive result
+            # Create comprehensive result with enhanced metadata
             enhanced_result = {
                 'type': 'image',
                 'page_number': page_num,
-                'text_content': result.get('description', ''),
+                'text_content': result.get('text_content', ''),
+                'description': result.get('description', ''),
                 'structured_analysis': result.get('structured_analysis', {}),
                 'metadata': {
                     **metadata,
                     **result.get('metadata', {}),
-                    'visual_type': result.get('visual_type', 'unknown'),
-                    'element_count': result.get('element_count', 0),
+                    'page_number': page_num,
                     'extraction_timestamp': time.strftime("%Y-%m-%d %H:%M:%S")
                 },
+                'visual_type': result.get('visual_type', 'unknown'),
                 'vector_ready': True
             }
             
-            logger.info(f"Image extraction completed for page {page_num}")
+            logger.info(f"Successfully extracted image from page {page_num}")
             return enhanced_result
             
         except Exception as e:
