@@ -20,6 +20,7 @@ import io
 from PIL import Image
 import fitz
 import concurrent.futures
+import time
 
 class CoordinatorAgent(DocumentProcessor):
     def __init__(self, extractors: Dict[str, Any], tools: List[BaseTool], 
@@ -104,11 +105,21 @@ class CoordinatorAgent(DocumentProcessor):
                     )
                     
                     for img in image_list:
-                        components.append({
-                            "type": "image",
-                            "location": img,
-                            "image": await loop.run_in_executor(thread_pool, page.get_pixmap)
-                        })
+                        xref = img[0]  # Get the image reference
+                        base_image = doc.extract_image(xref)
+                        if base_image:
+                            image_bytes = base_image["image"]
+                            # Convert to PIL Image
+                            pil_image = Image.open(io.BytesIO(image_bytes))
+                            components.append({
+                                "type": "image",
+                                "content": pil_image,
+                                "metadata": {
+                                    "width": base_image.get("width"),
+                                    "height": base_image.get("height"),
+                                    "colorspace": base_image.get("colorspace")
+                                }
+                            })
                     
                     # Process all components concurrently
                     extraction_tasks = []
@@ -294,29 +305,42 @@ class CoordinatorAgent(DocumentProcessor):
                 return {'error': 'Missing image content'}
             
             # Extract image data
-            result = await self.image_extractor.extract(component['content'])
+            image_data = component['content']
+            metadata = component.get('metadata', {})
+            
+            # Process image through extractor
+            result = await self.image_extractor.extract(image_data)
             
             if 'error' in result:
                 logger.error(f"Error in image extraction: {result['error']}")
                 return result
             
-            # Ensure all required fields are present
-            result.setdefault('text_content', '')
-            result.setdefault('metadata', {})
-            result.setdefault('description', '')
+            # Create comprehensive result
+            enhanced_result = {
+                'type': 'image',
+                'page_number': page_num,
+                'text_content': result.get('description', ''),
+                'structured_analysis': result.get('structured_analysis', {}),
+                'metadata': {
+                    **metadata,
+                    **result.get('metadata', {}),
+                    'visual_type': result.get('visual_type', 'unknown'),
+                    'element_count': result.get('element_count', 0),
+                    'extraction_timestamp': time.strftime("%Y-%m-%d %H:%M:%S")
+                },
+                'vector_ready': True
+            }
             
-            # Add page number to metadata
-            result['metadata']['page_number'] = page_num
-            
-            return result
+            logger.info(f"Image extraction completed for page {page_num}")
+            return enhanced_result
             
         except Exception as e:
             logger.error(f"Error extracting image: {str(e)}", exc_info=True)
             return {
                 'error': str(e),
+                'type': 'error',
                 'text_content': '',
-                'metadata': {},
-                'type': 'error'
+                'metadata': {}
             }
 
     async def process_page(self, page) -> Dict[str, Any]:
