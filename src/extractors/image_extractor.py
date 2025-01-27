@@ -350,7 +350,7 @@ class ImageExtractor(BaseExtractor):
             prompt = prompts.get(visual_type, prompts["image"])
             
             response = self.client.chat.completions.create(
-                model="gpt-4-vision-preview",
+                model="gpt-4o-mini",
                 messages=[
                     {
                         "role": "user",
