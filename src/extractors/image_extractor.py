@@ -62,7 +62,7 @@ class ImageExtractor(BaseExtractor):
             logger.info("Starting image preprocessing")
             
             if isinstance(image, Image.Image):
-                return image
+                return image.convert('RGB')
             
             if isinstance(image, fitz.Pixmap):
                 # Convert Pixmap to PIL Image
@@ -73,11 +73,12 @@ class ImageExtractor(BaseExtractor):
                     img_data = pix.samples
                     pix = None
                 
-                return Image.frombytes(
+                pil_image = Image.frombytes(
                     "RGB", 
                     [image.width, image.height], 
                     img_data
                 )
+                return pil_image
             
             # Handle bytes or BytesIO input
             if isinstance(image, (bytes, io.BytesIO)):
@@ -333,7 +334,9 @@ class ImageExtractor(BaseExtractor):
             
             # Convert image to base64
             buffered = io.BytesIO()
-            image.save(buffered, format="JPEG")
+            # Convert to RGB mode before saving as JPEG
+            rgb_image = image.convert('RGB')
+            rgb_image.save(buffered, format="JPEG")
             img_str = base64.b64encode(buffered.getvalue()).decode()
             
             # Create type-specific prompt
