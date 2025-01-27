@@ -364,7 +364,7 @@ class ImageExtractor(BaseExtractor):
             logger.info(f"Using {visual_type} analysis prompt")
             
             response = self.client.chat.completions.create(
-                model="gpt-4-vision-preview",
+                model="gpt-4o-mini",
                 messages=[
                     {
                         "role": "user",
