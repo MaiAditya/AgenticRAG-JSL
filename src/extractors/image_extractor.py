@@ -132,6 +132,12 @@ class ImageExtractor(BaseExtractor):
             os.makedirs(os.path.dirname(debug_path), exist_ok=True)
             processed_image.convert('RGB').save(debug_path, 'JPEG')  # Convert to RGB and save as JPEG
             
+            logger.info("=== Image Analysis Summary ===")
+            logger.info(f"Visual Type: {visual_type}")
+            logger.info(f"Description Length: {len(vision_analysis.get('raw_analysis', ''))}")
+            logger.info(f"Extracted Text Count: {len(extracted_text)}")
+            logger.info(f"Debug Image Saved: {debug_path}")
+            
             result = {
                 "type": "visual_element",
                 "visual_type": visual_type,
@@ -321,11 +327,13 @@ class ImageExtractor(BaseExtractor):
         return (x <= px <= x + w) and (y <= py <= y + h)
 
     async def _generate_vision_analysis(self, image: Image.Image, visual_type: str) -> Dict[str, Any]:
-        """Generate detailed analysis using GPT-4 Vision based on visual type"""
+        """Generate detailed analysis using GPT-4 Vision"""
         try:
+            logger.info("Starting vision analysis generation")
+            
             # Convert image to base64
             buffered = io.BytesIO()
-            image.save(buffered, format="PNG")
+            image.save(buffered, format="JPEG")
             img_str = base64.b64encode(buffered.getvalue()).decode()
             
             # Create type-specific prompt
@@ -335,30 +343,28 @@ class ImageExtractor(BaseExtractor):
                     2. Key decision points and their criteria
                     3. Important clinical steps and their sequence
                     4. Critical medical considerations or warnings
-                    5. Relevance for healthcare workflow
-                    Be specific and thorough in your medical analysis.""",
+                    5. Relevance for healthcare workflow""",
                 
                 "diagram": """Analyze this medical diagram in detail. Provide:
                     1. Main anatomical/clinical concept illustrated
                     2. Key components and their relationships
                     3. Important medical details shown
                     4. Clinical significance and applications
-                    5. Relevant medical implications
-                    Be specific and thorough in your medical analysis.""",
+                    5. Relevant medical implications""",
                 
                 "image": """Analyze this medical image in detail. Provide:
                     1. Type of medical imaging/visualization shown
                     2. Key anatomical/clinical features visible
                     3. Notable findings or patterns
                     4. Clinical significance
-                    5. Relevant diagnostic implications
-                    Be specific and thorough in your medical analysis."""
+                    5. Relevant diagnostic implications"""
             }
             
             prompt = prompts.get(visual_type, prompts["image"])
+            logger.info(f"Using {visual_type} analysis prompt")
             
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4-vision-preview",
                 messages=[
                     {
                         "role": "user",
@@ -367,7 +373,7 @@ class ImageExtractor(BaseExtractor):
                             {
                                 "type": "image_url",
                                 "image_url": {
-                                    "url": f"data:image/png;base64,{img_str}",
+                                    "url": f"data:image/jpeg;base64,{img_str}",
                                     "detail": "high"
                                 }
                             }
@@ -379,25 +385,41 @@ class ImageExtractor(BaseExtractor):
             
             analysis = response.choices[0].message.content
             
+            # Log the analysis results
+            logger.info("=== Vision Analysis Results ===")
+            logger.info(f"Visual Type: {visual_type}")
+            logger.info("Raw Analysis:")
+            for line in analysis.split('\n'):
+                logger.info(line.strip())
+            
             # Structure the analysis
             sections = {
                 "Main Topic": "",
-                "Key Components": "",
-                "Clinical Details": "",
+                "Key Features": "",
+                "Clinical Significance": "",
                 "Medical Implications": "",
-                "Healthcare Relevance": ""
+                "Additional Notes": ""
             }
             
-            # Parse sections from the response
-            current_section = None
+            current_section = "Main Topic"
             for line in analysis.split('\n'):
                 line = line.strip()
-                for section in sections.keys():
-                    if section.lower() in line.lower():
-                        current_section = section
-                        break
-                if current_section and line:
+                if any(keyword in line.lower() for keyword in ["feature", "component", "visible"]):
+                    current_section = "Key Features"
+                elif any(keyword in line.lower() for keyword in ["significance", "important"]):
+                    current_section = "Clinical Significance"
+                elif any(keyword in line.lower() for keyword in ["implication", "consideration"]):
+                    current_section = "Medical Implications"
+                elif any(keyword in line.lower() for keyword in ["note", "additional"]):
+                    current_section = "Additional Notes"
+                
+                if line:
                     sections[current_section] += line + "\n"
+            
+            logger.info("=== Structured Analysis ===")
+            for section, content in sections.items():
+                logger.info(f"{section}:")
+                logger.info(content.strip())
             
             return {
                 "raw_analysis": analysis,
