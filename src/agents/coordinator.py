@@ -118,7 +118,7 @@ class CoordinatorAgent(DocumentProcessor):
                         elif component['type'] == 'text':
                             extraction_tasks.append(self._extract_text(component))
                         elif component['type'] == 'image':
-                            extraction_tasks.append(self._extract_image(component))
+                            extraction_tasks.append(self._extract_image(component, page_num))
                     
                     # Execute all extraction tasks concurrently
                     component_results = await asyncio.gather(*extraction_tasks, return_exceptions=True)
@@ -285,31 +285,39 @@ class CoordinatorAgent(DocumentProcessor):
             logger.error(f"Error extracting text: {str(e)}")
             return {'error': str(e)}
 
-    async def _extract_image(self, component):
+    async def _extract_image(self, component, page_num):
         try:
-            extracted = await self.image_extractor.extract(component['image'])
-            if not 'error' in extracted:
-                # Prepare text representation for vector storage
-                text_representation = f"""
-                Visual Element Type: {extracted['visual_type']}
-                Description: {extracted['description']}
-                Extracted Text: {', '.join(extracted['extracted_text'])}
-                """
-                
-                # Store both text and structured data
-                return {
-                    'type': 'visual_element',
-                    'text_content': text_representation,
-                    'structured_data': extracted,
-                    'metadata': {
-                        'visual_type': extracted['visual_type'],
-                        'element_count': len(extracted.get('elements', [])),
-                        'has_text': bool(extracted.get('extracted_text'))
-                    }
-                }
+            logger.info(f"Starting image extraction for page {page_num}")
+            
+            if 'content' not in component:
+                logger.error("Image component missing content")
+                return {'error': 'Missing image content'}
+            
+            # Extract image data
+            result = await self.image_extractor.extract(component['content'])
+            
+            if 'error' in result:
+                logger.error(f"Error in image extraction: {result['error']}")
+                return result
+            
+            # Ensure all required fields are present
+            result.setdefault('text_content', '')
+            result.setdefault('metadata', {})
+            result.setdefault('description', '')
+            
+            # Add page number to metadata
+            result['metadata']['page_number'] = page_num
+            
+            return result
+            
         except Exception as e:
-            logger.error(f"Error extracting image: {str(e)}")
-            return {'error': str(e)}
+            logger.error(f"Error extracting image: {str(e)}", exc_info=True)
+            return {
+                'error': str(e),
+                'text_content': '',
+                'metadata': {},
+                'type': 'error'
+            }
 
     async def process_page(self, page) -> Dict[str, Any]:
         """Process a single page of the document"""

@@ -128,28 +128,36 @@ class ImageExtractor(BaseExtractor):
             result = {
                 "type": "visual_element",
                 "visual_type": visual_type,
-                "description": vision_analysis["raw_analysis"],
-                "structured_analysis": vision_analysis["structured_analysis"],
+                "description": vision_analysis.get("raw_analysis", ""),
+                "structured_analysis": vision_analysis.get("structured_analysis", {}),
                 "metadata": {
                     "extracted_text": extracted_text,
                     "element_count": len(elements),
                     "dimensions": processed_image.size,
-                    "analysis_timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+                    "analysis_timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "text_content": " ".join(extracted_text)  # Add concatenated text
                 },
                 "elements": elements,
-                "vector_ready": True
+                "vector_ready": True,
+                "text_content": " ".join(extracted_text)  # Add at root level for compatibility
             }
             
             # Save debug information
             timestamp = int(time.time())
             debug_path = f"logs/image_extractions/originals/image_{timestamp}.png"
+            os.makedirs(os.path.dirname(debug_path), exist_ok=True)
             processed_image.save(debug_path)
             
             return result
             
         except Exception as e:
             logger.error(f"Error in image extraction: {str(e)}", exc_info=True)
-            return {"error": str(e)}
+            return {
+                "error": str(e),
+                "type": "error",
+                "text_content": "",
+                "metadata": {}
+            }
 
     async def _extract_visual_info(self, image: Image.Image, visual_type: str) -> dict:
         """Extract detailed information based on visual type"""
