@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from src.api.models import QueryRequest, QueryResponse
 from src.rag.advanced_pipeline import AdvancedRAGPipeline
 from src.retrieval.hybrid_retriever import HybridRetriever
-from ..dependencies import get_vector_store
+from src.core.dependencies import get_vector_store
+from loguru import logger
 
 router = APIRouter(prefix="/query", tags=["query"])
 
@@ -12,6 +13,8 @@ async def query_documents(
     vector_store=Depends(get_vector_store)
 ):
     try:
+        logger.info(f"Received query request: {query_request.query}")
+        
         retriever = HybridRetriever(vector_store)
         pipeline = AdvancedRAGPipeline(retriever)
         
@@ -24,4 +27,5 @@ async def query_documents(
             reasoning_chain=result["reasoning_chain"]
         )
     except Exception as e:
+        logger.error(f"Error processing query: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e)) 

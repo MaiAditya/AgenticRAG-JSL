@@ -1,32 +1,236 @@
 from langchain.tools import BaseTool
-from typing import Optional
+from typing import Dict, Any, List, Optional
 from src.vectorstore.chroma_store import ChromaStore
+from loguru import logger
+import io
+from PIL import Image
 
-class DocumentSearchTool(BaseTool):
-    name = "document_search"
-    description = "Search for relevant information in the document collection"
+class DocumentAnalysisTool(BaseTool):
+    name = "document_analysis"
+    description = "Analyze document structure and identify components"
 
-    def __init__(self, vector_store: ChromaStore):
-        super().__init__()
-        self.vector_store = vector_store
+    async def _run(self, page: Any) -> Dict[str, Any]:
+        try:
+            components = []
+            
+            # Extract text content
+            text_content = page.get_text() if hasattr(page, 'get_text') else str(page)
+            
+            # Add text content
+            if text_content:
+                components.append({
+                    "type": "text",
+                    "content": text_content
+                })
+            
+            # Detect tables directly from page
+            tables = await self._detect_tables(page)
+            if tables:
+                logger.info(f"Detected {len(tables)} tables")
+                for table in tables:
+                    components.append({
+                        "type": "table",
+                        "content": table["cells"],
+                        "structure": table["structure"],
+                        "num_rows": table["num_rows"],
+                        "num_cols": table["num_cols"]
+                    })
+            
+            # Detect images directly from page
+            images = self._detect_images(page)
+            if images:
+                logger.info(f"Detected {len(images)} images")
+                for image in images:
+                    components.append({
+                        "type": "image",
+                        "content": image["content"],
+                        "metadata": image["metadata"]
+                    })
+            
+            return {
+                "type": "page",
+                "content": text_content,
+                "components": components
+            }
+        except Exception as e:
+            logger.error(f"Error in document analysis: {str(e)}")
+            return {"error": str(e)}
 
-    def _run(self, query: str) -> str:
-        results = self.vector_store.collection.query(
-            query_texts=[query],
-            n_results=3
-        )
-        return results
+    async def _detect_tables(self, page: Any) -> List[Dict[str, Any]]:
+        try:
+            # Convert page to numpy array for better handling
+            pix = page.get_pixmap()
+            
+            # Create table extractor instance
+            table_extractor = TableExtractor()
+            result = await table_extractor.extract(pix)
+            
+            if result and "table_data" in result and result["table_data"]:
+                logger.info(f"Successfully extracted {len(result['table_data'])} tables")
+                return [{
+                    "cells": table_data,
+                    "structure": table_data,
+                    "num_rows": len(table_data),
+                    "num_cols": len(table_data[0]) if table_data else 0,
+                    "metadata": result["metadata"]
+                } for table_data in result["table_data"]]
+            return []
+            
+        except Exception as e:
+            logger.error(f"Error detecting tables: {str(e)}")
+            return []
+
+    def _detect_images(self, page: Any) -> List[Dict[str, Any]]:
+        try:
+            # Get images directly from page object
+            image_list = page.get_images()
+            images = []
+            
+            for img in image_list:
+                xref = img[0]
+                image_info = {
+                    "content": {
+                        "xref": xref,
+                        "width": img[2],
+                        "height": img[3],
+                        "data": page.extract_image(xref)
+                    },
+                    "metadata": {
+                        "type": "image",
+                        "format": img[1],
+                        "colorspace": img[4]
+                    }
+                }
+                images.append(image_info)
+                logger.info(f"Extracted image: {img[1]} format, size: {img[2]}x{img[3]}")
+            
+            return images
+            
+        except Exception as e:
+            logger.error(f"Error detecting images: {str(e)}")
+            return []
+
+    def _arun(self, document: str) -> Dict[str, Any]:
+        return self._run(document)
+
+class StructureDetectionTool(BaseTool):
+    name = "structure_detection"
+    description = "Detect and classify document structural elements"
+
+    def _run(self, file_path: str) -> Dict[str, Any]:
+        try:
+            import fitz  # PyMuPDF
+            
+            doc = fitz.open(file_path)
+            total_pages = len(doc)
+            processed_pages = 0
+            components = []
+            
+            for page in doc:
+                # Get text content
+                text_content = page.get_text()
+                if text_content.strip():
+                    components.append({
+                        "type": "text",
+                        "content": text_content
+                    })
+                
+                # Convert page to image for table detection
+                pix = page.get_pixmap()
+                components.append({
+                    "type": "table",
+                    "image": pix,
+                    "page_number": page.number
+                })
+                
+                # Get images if any
+                image_list = page.get_images()
+                for img in image_list:
+                    components.append({
+                        "type": "image",
+                        "location": img,
+                        "image": page.get_pixmap()
+                    })
+                
+                processed_pages += 1
+            
+            return {
+                "type": "document",
+                "total_pages": total_pages,
+                "processed_pages": processed_pages,
+                "components": components
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in structure detection: {str(e)}")
+            return {
+                "type": "error",
+                "error": str(e)
+            }
+    async def _arun(self, file_path: str) -> Dict[str, Any]:
+        return self._run(file_path)
+
+    async def analyze(self, file_path: str) -> Dict[str, Any]:
+        return await self._arun(file_path)
+
+    async def analyze_page(self, page) -> Dict[str, Any]:
+        """Analyze a single page from PyMuPDF"""
+        try:
+            components = []
+            
+            # Get text content
+            text_content = page.get_text()
+            if text_content.strip():
+                components.append({
+                    "type": "text",
+                    "content": text_content
+                })
+            
+            # Convert page to image for table detection
+            pix = page.get_pixmap()
+            components.append({
+                "type": "table",
+                "image": pix,
+                "page_number": page.number
+            })
+            
+            # Get images if any
+            image_list = page.get_images()
+            for img in image_list:
+                components.append({
+                    "type": "image",
+                    "location": img,
+                    "image": page.get_pixmap()
+                })
+            
+            return {
+                "type": "page",
+                "components": components
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in page analysis: {str(e)}")
+            return {
+                "type": "error",
+                "error": str(e)
+            }
 
 class ContentExtractionTool(BaseTool):
     name = "content_extraction"
-    description = "Extract specific content from documents based on type (text, table, image)"
+    description = "Extract specific content from documents"
 
-    def __init__(self, extractors: dict):
+    def __init__(self, extractors: Dict[str, Any]):
         super().__init__()
         self.extractors = extractors
 
-    def _run(self, content_type: str, content: Any) -> dict:
-        extractor = self.extractors.get(content_type)
-        if not extractor:
-            raise ValueError(f"No extractor found for content type: {content_type}")
-        return extractor.extract(content) 
+    async def _arun(self, content_type: str, content: Any) -> Dict[str, Any]:
+        try:
+            extractor = self.extractors.get(content_type)
+            if not extractor:
+                raise ValueError(f"No extractor found for content type: {content_type}")
+            
+            # Only pass the content argument to extract()
+            return await extractor.extract(content)
+        except Exception as e:
+            logger.error(f"Error extracting component: {str(e)}")
+            return {"error": str(e)} 
