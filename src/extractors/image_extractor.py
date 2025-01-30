@@ -17,6 +17,8 @@ import base64
 from typing import Dict, Any
 import time
 import fitz
+from transformers import AutoImageProcessor, AutoModelForImageClassification
+import torch.quantization
 
 class ImageExtractor(BaseExtractor):
     def __init__(self):
@@ -27,24 +29,30 @@ class ImageExtractor(BaseExtractor):
             # Initialize OpenAI client for vision analysis
             self.client = OpenAI()
             
-            # Initialize BLIP-2 model for backup/supplementary analysis
-            logger.info("Loading BLIP-2 model...")
-            self.blip_processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
-            self.blip_model = Blip2ForConditionalGeneration.from_pretrained(
-                "Salesforce/blip2-opt-2.7b",
-                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
+            # Initialize TinyVIT model (quantized)
+            logger.info("Loading TinyVIT model...")
+            self.image_processor = AutoImageProcessor.from_pretrained("microsoft/tinyvit-21m-224-medical")
+            self.vision_model = AutoModelForImageClassification.from_pretrained(
+                "microsoft/tinyvit-21m-224-medical"
             )
-            logger.info("BLIP-2 model loaded successfully")
             
-            # Initialize PaddleOCR
+            # Quantize the model to INT8
+            self.vision_model.qconfig = torch.quantization.get_default_qconfig('fbgemm')
+            torch.quantization.prepare(self.vision_model, inplace=True)
+            torch.quantization.convert(self.vision_model, inplace=True)
+            
+            # Initialize PaddleOCR with fast mode
             logger.info("Initializing PaddleOCR...")
-            self.ocr = PaddleOCR(use_angle_cls=True, lang='en')
-            logger.info("PaddleOCR initialized successfully")
+            self.ocr = PaddleOCR(
+                use_angle_cls=False,  # Disable angle detection for speed
+                lang='en',
+                use_gpu=torch.cuda.is_available(),
+                enable_mkldnn=True  # Enable MKL-DNN acceleration
+            )
             
             # Move models to device
             self.device = torch.device(settings.DEVICE)
-            self.blip_model.to(self.device)
-            logger.info(f"Models moved to device: {self.device}")
+            self.vision_model.to(self.device)
             
             # Create output directories
             logger.info("Creating output directories...")
@@ -167,27 +175,40 @@ class ImageExtractor(BaseExtractor):
             }
 
     async def _extract_visual_info(self, image: Image.Image, visual_type: str) -> dict:
-        """Extract detailed information based on visual type"""
+        """Extract detailed information using quantized TinyVIT"""
         try:
-            # Get detailed caption from BLIP-2
-            inputs = self.blip_processor(images=image, return_tensors="pt").to(self.device)
-            outputs = self.blip_model.generate(**inputs, max_length=100)
-            caption = self.blip_processor.decode(outputs[0], skip_special_tokens=True)
+            # Preprocess image
+            inputs = self.image_processor(images=image, return_tensors="pt").to(self.device)
             
-            # Extract text using PaddleOCR
-            ocr_result = self.ocr.ocr(np.array(image))
+            # Get model predictions
+            with torch.no_grad():
+                outputs = self.vision_model(**inputs)
+                probs = torch.nn.functional.softmax(outputs.logits, dim=-1)
+            
+            # Get top predictions
+            top_probs, top_indices = torch.topk(probs[0], k=5)
+            
+            # Extract text using optimized PaddleOCR
+            ocr_result = self.ocr.ocr(
+                np.array(image),
+                cls=False,  # Disable classification for speed
+                det_db_unclip_ratio=1.5  # Adjust for better speed/accuracy trade-off
+            )
             extracted_text = [line[1][0] for line in ocr_result[0]] if ocr_result[0] else []
             
-            # Combine information based on visual type
-            if visual_type == "flowchart":
-                elements = self._process_flowchart(image, ocr_result)
-            elif visual_type == "diagram":
-                elements = self._process_diagram(image, ocr_result)
-            else:
-                elements = []
+            # Process elements based on visual type
+            elements = []
+            if visual_type in ["flowchart", "diagram"]:
+                elements = await self._process_visual_elements(image, visual_type)
             
             return {
-                "description": caption,
+                "predictions": [
+                    {
+                        "label": self.vision_model.config.id2label[idx.item()],
+                        "confidence": prob.item()
+                    }
+                    for prob, idx in zip(top_probs, top_indices)
+                ],
                 "metadata": {
                     "extracted_text": extracted_text,
                     "element_count": len(elements),
@@ -196,6 +217,7 @@ class ImageExtractor(BaseExtractor):
                 "elements": elements,
                 "extracted_text": extracted_text
             }
+            
         except Exception as e:
             logger.error(f"Error in visual info extraction: {str(e)}")
             return {
